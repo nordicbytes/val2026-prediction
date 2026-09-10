@@ -42,6 +42,11 @@ ELECTION_RESULT_COLUMNS = (
     "vote_share",
 )
 
+LEGACY_ELECTION_DATES = {
+    2010: date(2010, 9, 19),
+    2014: date(2014, 9, 14),
+}
+
 
 def canonical_party_expression(column: str = "raw_party_code") -> pl.Expr:
     normalized = pl.col(column).cast(pl.String).str.strip_chars().str.to_uppercase()
@@ -108,9 +113,9 @@ def election_quality_issues(frame: pl.DataFrame, tolerance: int = 1) -> pl.DataF
     )
     return district.with_columns(
         (pl.col("party_votes") - pl.col("valid_votes")).abs().alias("vote_difference"),
-        (
-            (pl.col("party_votes") - pl.col("valid_votes")).abs() > tolerance
-        ).alias("party_votes_mismatch"),
+        ((pl.col("party_votes") - pl.col("valid_votes")).abs() > tolerance).alias(
+            "party_votes_mismatch"
+        ),
         (pl.col("eligible_voters") < pl.col("valid_votes")).alias("eligible_below_valid"),
         (~pl.col("turnout").is_between(0, 1, closed="both")).alias("invalid_turnout"),
         ((pl.col("share_sum") - 1).abs() > 1e-6).alias("invalid_share_sum"),
@@ -171,6 +176,58 @@ def read_val2018_district_results(path: Path) -> pl.DataFrame:
     return add_derived_election_fields(pl.DataFrame(records))
 
 
+def read_legacy_district_results(path: Path, *, election_year: int) -> pl.DataFrame:
+    """Read Valmyndigheten's semicolon district files for 2010 or 2014."""
+    if election_year not in LEGACY_ELECTION_DATES:
+        raise ValueError(f"Unsupported legacy election year: {election_year}")
+    frame = pl.read_csv(
+        path,
+        separator=";",
+        encoding="windows-1252",
+        infer_schema_length=0,
+    )
+    name_column = "VALDISTRIKT" if election_year == 2010 else "Valdistrikt"
+    party_columns = [
+        column
+        for column in frame.columns
+        if column.endswith(" tal") and column not in {"BL tal", "OG tal"}
+    ]
+    records: list[dict[str, object]] = []
+    for row in frame.iter_rows(named=True):
+        county = str(row["LAN"]).zfill(2)
+        municipality = str(row["KOM"]).zfill(2)
+        eligible = int(str(row["Rostb"] or 0))
+        raw_district = str(row["VALDIST"])
+        district = (
+            raw_district.zfill(4) if eligible > 0 else raw_district.zfill(2)
+        )
+        valid_votes = int(str(row["Rost Giltiga"]))
+        votes_cast = int(str(row["Rostande"]))
+        district_id = f"{county}{municipality}{district}"
+        for party_column in party_columns:
+            raw_party_code = party_column.removesuffix(" tal")
+            records.append(
+                {
+                    "election_year": election_year,
+                    "election_date": LEGACY_ELECTION_DATES[election_year],
+                    "district_id": district_id,
+                    "district_version": f"VD_{election_year}",
+                    "district_kind": "COLLECTION" if eligible == 0 else "PHYSICAL",
+                    "municipality_id": f"{county}{municipality}",
+                    "county_id": county,
+                    "constituency_id": str(row["RIKSDAGSVALKRETS"]).strip(),
+                    "district_name": str(row[name_column]).strip(),
+                    "party": raw_party_code,
+                    "raw_party_code": raw_party_code,
+                    "votes": int(str(row[party_column] or 0)),
+                    "valid_votes": valid_votes,
+                    "invalid_votes": votes_cast - valid_votes,
+                    "eligible_voters": eligible,
+                }
+            )
+    return add_derived_election_fields(pl.DataFrame(records))
+
+
 def read_val2022_district_results(path: Path) -> pl.DataFrame:
     sheet = load_workbook(path, read_only=True, data_only=True)["roster_RD"]
     rows = sheet.iter_rows(values_only=True)
@@ -187,9 +244,7 @@ def read_val2022_district_results(path: Path) -> pl.DataFrame:
             {
                 "valid_votes": 0,
                 "invalid_votes": 0,
-                "eligible_voters": _excel_int(
-                    values[index["Röstberättigade"]], none_as_zero=True
-                ),
+                "eligible_voters": _excel_int(values[index["Röstberättigade"]], none_as_zero=True),
             },
         )
         votes = _excel_int(values[index["Röster"]], none_as_zero=True)
@@ -213,9 +268,7 @@ def read_val2022_district_results(path: Path) -> pl.DataFrame:
         raw_district = str(values[index["Distrikt"]]).strip()
         district_id = str(values[index["Valdistriktskod"]]).strip()
         district_totals = totals[raw_district]
-        district_kind = (
-            "COLLECTION" if district_totals["eligible_voters"] == 0 else "PHYSICAL"
-        )
+        district_kind = "COLLECTION" if district_totals["eligible_voters"] == 0 else "PHYSICAL"
         records.append(
             {
                 "election_year": 2022,
@@ -254,8 +307,4 @@ def district_id_2018(
     collection: bool,
 ) -> str:
     district_width = 2 if collection else 4
-    return (
-        f"{county_code:02d}{municipality_code:02d}"
-        f"{district_code:0{district_width}d}"
-    )
-
+    return f"{county_code:02d}{municipality_code:02d}{district_code:0{district_width}d}"

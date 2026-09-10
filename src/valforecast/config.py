@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Any, cast
 
@@ -25,6 +26,13 @@ REQUIRED_SOURCE_FIELDS = frozenset(
 
 
 @dataclass(frozen=True)
+class SourceVintage:
+    value: str
+    reference_date: str
+    available_date: str
+
+
+@dataclass(frozen=True)
 class Source:
     id: str
     source: str
@@ -41,6 +49,8 @@ class Source:
     status: str | None = None
     http_method: str = "GET"
     request_body: dict[str, object] | None = None
+    usage: str | None = None
+    vintages: tuple[SourceVintage, ...] = ()
 
 
 def load_sources(path: Path) -> list[Source]:
@@ -62,6 +72,27 @@ def load_sources(path: Path) -> list[Source]:
         missing = REQUIRED_SOURCE_FIELDS - row.keys()
         if missing:
             raise ValueError(f"Source at index {index} is missing: {sorted(missing)}")
+        vintages_raw = row.get("vintages", [])
+        if not isinstance(vintages_raw, list):
+            raise ValueError(f"Source vintages must be a list: {row['id']}")
+        vintages: list[SourceVintage] = []
+        for vintage in vintages_raw:
+            if not isinstance(vintage, dict):
+                raise ValueError(f"Invalid source vintage: {row['id']}")
+            required_vintage = {"value", "reference_date", "available_date"}
+            if not required_vintage.issubset(vintage):
+                raise ValueError(f"Incomplete source vintage: {row['id']}")
+            reference_date = str(vintage["reference_date"])
+            available_date = str(vintage["available_date"])
+            if date.fromisoformat(available_date) < date.fromisoformat(reference_date):
+                raise ValueError(f"Source available before its reference date: {row['id']}")
+            vintages.append(
+                SourceVintage(
+                    value=str(vintage["value"]),
+                    reference_date=reference_date,
+                    available_date=available_date,
+                )
+            )
         source = Source(
             id=str(row["id"]),
             source=str(row["source"]),
@@ -82,6 +113,8 @@ def load_sources(path: Path) -> list[Source]:
                 if isinstance(row.get("request_body"), dict)
                 else None
             ),
+            usage=str(row["usage"]) if row.get("usage") is not None else None,
+            vintages=tuple(vintages),
         )
         if source.id in seen_ids:
             raise ValueError(f"Duplicate source id: {source.id}")

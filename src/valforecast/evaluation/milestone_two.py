@@ -245,6 +245,19 @@ MAE at most 0.003, and no more than two parties worsened by over 0.0001.
 | Model | Counties won | Winning vote coverage | National MAE | Worsened parties | Pass |
 |---|---:|---:|---:|---:|---|
 {acceptance_rows}
+
+## Conclusion
+
+**PASS — Local political structure contains predictive signal beyond
+proportional national swing within the 2018→2022 transition.**
+
+LightGBM reduces weighted district-level MAE from 1.469 pp to 1.087 pp under
+leave-one-county-out validation, a 26.0% relative improvement.
+
+The model wins all 21 county holdouts.
+
+This establishes spatial predictive structure, but does **not** yet establish
+temporal generalization across elections.
 """
     (output_dir / "report.md").write_text(report, encoding="utf-8")
 

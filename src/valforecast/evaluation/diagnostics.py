@@ -211,7 +211,7 @@ def analyze_selection_bias(
         .join(municipal_2022, on="municipality_id", how="left")
         .join(_read_scb_population(population_path), on="municipality_id", how="left")
         .join(
-            _read_skr_municipality_groups(municipality_groups_path, population_path),
+            read_skr_municipality_groups(municipality_groups_path, population_path),
             on="municipality_id",
             how="left",
         )
@@ -269,7 +269,7 @@ def _read_scb_population(path: Path) -> pl.DataFrame:
     )
 
 
-def _read_skr_municipality_groups(
+def read_skr_municipality_groups(
     pdf_path: Path,
     population_path: Path,
 ) -> pl.DataFrame:

@@ -1,0 +1,10 @@
+{
+  "districts": 4164,
+  "weighted_mae": 0.014691687112835534,
+  "first_pca_explained_variance": 0.5134546979512041,
+  "second_pca_explained_variance": 0.18180979326284516,
+  "largest_residual_std_party": "S",
+  "largest_absolute_pc1_loading_party": "S",
+  "equal_block_residual_energy_share": 0.27793936377554906,
+  "prior_share_block_residual_energy_share": 0.455328563321295
+}

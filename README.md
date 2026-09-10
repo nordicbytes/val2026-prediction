@@ -21,8 +21,15 @@ uv sync
 uv run valforecast sources validate
 uv run valforecast sources fetch
 uv run valforecast build-initial
+uv run valforecast analyze-structure
 uv run pytest
 ```
+
+`analyze-structure` reproducerar selection-bias-diagnostik, residualplots och
+struktur-only-utvärdering av Ridge, ElasticNet, LightGBM och CatBoost med
+fem kommungrupper och 21-fold leave-one-county-out. Träning viktas med 2018
+års giltiga röster och utvärdering med 2022 års giltiga röster.
+På macOS kräver LightGBM systempaketet `libomp` (`brew install libomp`).
 
 ## Datapolicy
 

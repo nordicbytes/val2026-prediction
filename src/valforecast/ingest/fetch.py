@@ -58,7 +58,11 @@ def fetch_source(
     try:
         with (
             httpx.Client(follow_redirects=True, timeout=timeout_seconds) as client,
-            client.stream("GET", source.url) as response,
+            client.stream(
+                source.http_method,
+                source.url,
+                json=source.request_body,
+            ) as response,
             temporary.open("wb") as handle,
         ):
             response.raise_for_status()
@@ -99,4 +103,3 @@ def _write_receipt(
         encoding="utf-8",
     )
     return receipt
-

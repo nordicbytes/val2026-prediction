@@ -8,6 +8,7 @@ from typing import Annotated
 import typer
 
 from valforecast.config import load_sources
+from valforecast.evaluation.milestone_two import run_milestone_two
 from valforecast.ingest.fetch import fetch_source
 from valforecast.pipeline import run_initial_milestone
 
@@ -61,3 +62,8 @@ def build_initial() -> None:
     summary = run_initial_milestone(_root())
     typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))
 
+
+@app.command("analyze-structure")
+def analyze_structure() -> None:
+    summary = run_milestone_two(_root())
+    typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))

@@ -154,3 +154,48 @@ sources:
     notes: Officiell jämförelse publicerad före valdagen 2026.
     status: verified_download
 
+  - id: scb_municipal_population_2017_2021
+    source: Statistikdatabasen, tabell TAB638 / BE0101N1
+    provider: Statistiska centralbyrån
+    dataset: Folkmängd per kommun, civilstånd och kön 2017 och 2021
+    url: https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy
+    retrieved_at: "2026-09-10T19:02:11.503776+00:00"
+    reference_period: 2017–2021
+    geography_version: MUNICIPALITY_2017_2021
+    license: CC0 för statistik via SCB:s öppna API
+    raw_file: data/raw/scb/population/municipal_population_2017_2021.csv
+    sha256: 9ceae8a9059ca45ec7b0b79f63ef0d22847b697919ce9727e3a7d0e278327764
+    notes: POST-fråga; bestånd 31 december 2017 och 2021, publicerade före respektive val.
+    status: verified_post_api
+    http_method: POST
+    request_body:
+      query:
+        - code: Region
+          selection: {filter: all, values: ["*"]}
+        - code: Civilstand
+          selection: {filter: all, values: ["*"]}
+        - code: Alder
+          selection: {filter: item, values: [tot]}
+        - code: Kon
+          selection: {filter: all, values: ["*"]}
+        - code: ContentsCode
+          selection: {filter: item, values: [BE0101N1]}
+        - code: Tid
+          selection: {filter: item, values: ["2017", "2021"]}
+      response:
+        format: csv
+
+  - id: skr_municipality_groups_2017
+    source: Kommungruppsindelningen, bilaga 4
+    provider: Sveriges Kommuner och Regioner
+    dataset: Kommuner per kommungrupp enligt indelningen som började gälla 2017
+    url: https://extra.skr.se/download/18.6deffc76178c9b0208cefa7/1618408372071/Bilaga-4-Kommungruppsindelning-2020-sida-2.pdf
+    retrieved_at: "2026-09-10T18:53:39.110712+00:00"
+    reference_period: "2017-01-01–2022-12-31"
+    geography_version: MUNICIPALITY_SKR_2017
+    license: Offentlig SKR-publikation; källa ska anges
+    raw_file: data/raw/skr/kommungruppsindelning_2017_bilaga_4_sida_2.pdf
+    sha256: 0a6f82dbed93da059ce9612a10e7445547a48b827c752b7a94263a17b6b21a55
+    notes: Listan gäller SKR:s 2017-indelning; 2023-indelningen får inte ersätta den i 2022-backtest.
+    status: verified_download
+

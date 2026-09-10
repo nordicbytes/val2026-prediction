@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 
@@ -39,6 +39,8 @@ class Source:
     sha256: str | None
     notes: str
     status: str | None = None
+    http_method: str = "GET"
+    request_body: dict[str, object] | None = None
 
 
 def load_sources(path: Path) -> list[Source]:
@@ -66,9 +68,7 @@ def load_sources(path: Path) -> list[Source]:
             provider=str(row["provider"]),
             dataset=str(row["dataset"]),
             url=str(row["url"]),
-            retrieved_at=(
-                str(row["retrieved_at"]) if row["retrieved_at"] is not None else None
-            ),
+            retrieved_at=(str(row["retrieved_at"]) if row["retrieved_at"] is not None else None),
             reference_period=str(row["reference_period"]),
             geography_version=str(row["geography_version"]),
             license=str(row["license"]),
@@ -76,6 +76,12 @@ def load_sources(path: Path) -> list[Source]:
             sha256=str(row["sha256"]) if row["sha256"] is not None else None,
             notes=str(row["notes"]),
             status=str(row["status"]) if row.get("status") is not None else None,
+            http_method=str(row.get("http_method", "GET")).upper(),
+            request_body=(
+                cast(dict[str, object], row["request_body"])
+                if isinstance(row.get("request_body"), dict)
+                else None
+            ),
         )
         if source.id in seen_ids:
             raise ValueError(f"Duplicate source id: {source.id}")
@@ -87,4 +93,3 @@ def load_sources(path: Path) -> list[Source]:
         seen_ids.add(source.id)
         sources.append(source)
     return sources
-

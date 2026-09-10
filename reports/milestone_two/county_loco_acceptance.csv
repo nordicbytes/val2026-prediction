@@ -1,0 +1,5 @@
+model,counties_won,winning_county_vote_coverage,national_mae,materially_worsened_parties,passes_gate
+catboost,21,1.0,0.00048320466720852106,0,true
+elastic_net,21,1.0,0.0003192628516151229,0,true
+lightgbm,21,1.0,0.00036230105539944126,1,true
+ridge,21,1.0,0.0002921239061515364,0,true

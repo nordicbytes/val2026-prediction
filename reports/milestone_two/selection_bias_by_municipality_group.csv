@@ -1,0 +1,19 @@
+municipality_group_code,municipality_group,included,districts,valid_votes
+1,Storstäder,false,554,472999
+1,Storstäder,true,658,629653
+2,Pendlingskommun nära storstad,false,336,343643
+2,Pendlingskommun nära storstad,true,755,794272
+3,Större stad,false,656,661159
+3,Större stad,true,837,841053
+4,Pendlingskommun nära större stad,false,121,125340
+4,Pendlingskommun nära större stad,true,391,402354
+5,Lågpendlingskommun nära större stad,false,131,139686
+5,Lågpendlingskommun nära större stad,true,239,247201
+6,Mindre stad/tätort,false,200,211808
+6,Mindre stad/tätort,true,600,628666
+7,Pendlingskommun nära mindre stad/tätort,false,58,58575
+7,Pendlingskommun nära mindre stad/tätort,true,307,312148
+8,Landsbygdskommun,false,28,27405
+8,Landsbygdskommun,true,295,266304
+9,Landsbygdskommun med besöksnäring,false,16,14779
+9,Landsbygdskommun med besöksnäring,true,82,80284

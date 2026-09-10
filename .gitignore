@@ -6,6 +6,7 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+catboost_info/
 
 data/raw/**
 data/interim/**
@@ -16,5 +17,6 @@ data/processed/**
 
 forecast_snapshots/*.json
 reports/backtests/*.json
-reports/backtests/*.parquet
+reports/**/*.parquet
+reports/milestone_two/block_residuals*.csv
 

@@ -1,0 +1,12 @@
+{
+  "verdict": "SUPPORTED",
+  "primary_estimator": "T1_no_point_shrinkage_raked",
+  "secondary_estimator": "T1_previous_party_hierarchical_raked",
+  "cycles": [
+    2018,
+    2022
+  ],
+  "draws": 2000,
+  "seed": 20260911,
+  "four_a_sha256": "cee6d058647c9b0cfd4a3d01f5dda4ec31ee25a473b13f9be832072016c6cab3"
+}

@@ -2,15 +2,28 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import cast
+from typing import TypedDict, cast
 
 import numpy as np
 import polars as pl
 
+from valforecast.evaluation.milestone_four_a import (
+    _bloc_predictions,
+    _county_robustness,
+    _district_size_metrics,
+    _group_metrics,
+    _national_vector,
+    _urbanity_metrics,
+)
 from valforecast.features.election_history import PARTIES
-from valforecast.models.transition_matrix import build_transition_predictions
+from valforecast.models.baselines import evaluate_predictions
+from valforecast.models.transition_matrix import (
+    build_poll_state_proportional_predictions,
+    build_transition_predictions,
+)
+from valforecast.polls.transition_calibrate import calibrate_transition_matrix
 from valforecast.polls.transition_corpus import build_survey_corpora
 from valforecast.polls.transition_hierarchy import (
     HierarchyFit,
@@ -18,14 +31,29 @@ from valforecast.polls.transition_hierarchy import (
     predictive_kl,
     predictive_log_score,
 )
+from valforecast.polls.transition_ingest import (
+    extract_scb_2018_pdf_national_poll,
+    extract_scb_2018_pdf_transition,
+    extract_scb_national_poll,
+    extract_scb_transition_cells,
+    read_pxweb_jsonstat,
+)
+from valforecast.polls.transition_normalize import matrix_to_frame, normalize_transition_cells
 from valforecast.polls.transition_posterior import (
+    SuppressionStrategy,
     build_survey_point_estimate,
+    estimate_survey_transition,
     infer_row_effective_sample_sizes,
 )
 
 PRIMARY_MODEL = "T1_no_point_shrinkage_raked"
 SECONDARY_MODEL = "T1_previous_party_hierarchical_raked"
 BASELINE_MODEL = "B2_poll_state"
+PUBLISHED_POINT_MODEL = "T1_published_point_raked"
+SUPPRESSION_ZERO_MODEL = "T1_suppressed_zero_point"
+SUPPRESSION_HISTORY_MODEL = "T1_suppressed_historical_point"
+NONPARTY_POLL_MODEL = "T1_nonparty_poll_point"
+EXPECTED_POPULATIONS = {2018: 4631, 2022: 4164}
 
 
 @dataclass(frozen=True)
@@ -34,6 +62,642 @@ class DrawScore:
     model_mae: float
     baseline_mae: float
     delta_mae: float
+
+
+class TargetSurveyInput(TypedDict):
+    wave_id: str
+    cells: pl.DataFrame
+    poll: pl.DataFrame
+
+
+def _assert_clean_survey_lock(root: Path) -> None:
+    output = root / "reports" / "milestone_four_b"
+    lock_path = output / "survey_estimator_lock.json"
+    document = json.loads(lock_path.read_text(encoding="utf-8"))
+    if document.get("stage") != "survey_only_pre_election_scoring":
+        raise ValueError("Survey estimator lock is missing or has the wrong stage")
+    hashes = document.get("artifact_sha256")
+    if not isinstance(hashes, dict):
+        raise ValueError("Survey estimator lock has no artifact hashes")
+    for name, expected in hashes.items():
+        path = output / str(name)
+        if _sha256(path) != expected:
+            raise ValueError(f"Locked survey artifact changed: {name}")
+
+
+def _target_survey_inputs(root: Path) -> dict[int, TargetSurveyInput]:
+    psu = root / "data" / "raw" / "scb" / "psu"
+    pdf = psu / "psu_may_2018_original.pdf"
+    transition_2022 = read_pxweb_jsonstat(psu / "transition_2022M05.json")
+    national_2022 = read_pxweb_jsonstat(psu / "national_poll_2022M05.json")
+    return {
+        2018: {
+            "wave_id": "scb_2018M05_original",
+            "cells": extract_scb_2018_pdf_transition(pdf),
+            "poll": extract_scb_2018_pdf_national_poll(pdf),
+        },
+        2022: {
+            "wave_id": "scb_2022M05",
+            "cells": extract_scb_transition_cells(
+                transition_2022,
+                wave_id="scb_2022M05",
+                time_value="2022M05",
+            ),
+            "poll": extract_scb_national_poll(
+                national_2022,
+                wave_id="scb_2022M05",
+                time_value="2022M05",
+            ),
+        },
+    }
+
+
+def _frame_party_vector(
+    frame: pl.DataFrame,
+    party_column: str,
+    value_column: str,
+) -> np.ndarray:
+    by_party = dict(frame.select(party_column, value_column).iter_rows())
+    vector = np.array([float(by_party[party]) for party in PARTIES], dtype=float)
+    return np.asarray(vector / vector.sum(), dtype=float)
+
+
+def _locked_hierarchy_components(
+    root: Path,
+    cycle: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    output = root / "reports" / "milestone_four_b"
+    selected = pl.read_csv(output / "hierarchy_selected_concentrations.csv").filter(
+        pl.col("election_cycle") == cycle
+    )
+    means = pl.read_csv(output / "hierarchy_previous_party_means.csv").filter(
+        pl.col("election_cycle") == cycle
+    )
+    kappas_by_party = dict(selected.select("previous_party", "kappa").iter_rows())
+    means_by_pair = {
+        (str(previous), str(current)): float(probability)
+        for previous, current, probability in means.select(
+            "previous_party", "current_party", "prior_mean"
+        ).iter_rows()
+    }
+    kappas = np.array([float(kappas_by_party[party]) for party in PARTIES])
+    mean_matrix = np.array(
+        [
+            [means_by_pair[(previous, current)] for current in PARTIES]
+            for previous in PARTIES
+        ]
+    )
+    if not np.allclose(mean_matrix.sum(axis=1), 1.0, atol=1e-10):
+        raise ValueError("Locked hierarchy means are not row-simplex matrices")
+    return kappas, mean_matrix
+
+
+def _locked_hierarchy_alpha(
+    root: Path,
+    cycle: int,
+    observed: np.ndarray,
+    n_eff: np.ndarray,
+) -> np.ndarray:
+    kappas, means = _locked_hierarchy_components(root, cycle)
+    return np.asarray(
+        n_eff[:, None] * observed + kappas[:, None] * means,
+        dtype=float,
+    )
+
+
+def _sensitivity_predictions(
+    canonical: pl.DataFrame,
+    cells: pl.DataFrame,
+    poll: pl.DataFrame,
+    previous_national: np.ndarray,
+    poll_national: np.ndarray,
+    root: Path,
+    cycle: int,
+) -> list[pl.DataFrame]:
+    predictions: list[pl.DataFrame] = []
+    if cells["estimate"].null_count():
+        historical_means = _locked_hierarchy_components(root, cycle)[1]
+        by_previous = {
+            party: historical_means[index]
+            for index, party in enumerate(PARTIES)
+        }
+        for strategy, model in cast(
+            tuple[tuple[SuppressionStrategy, str], ...],
+            (
+            ("zero_renormalize", SUPPRESSION_ZERO_MODEL),
+            ("historical_origin", SUPPRESSION_HISTORY_MODEL),
+            ),
+        ):
+            point = build_survey_point_estimate(
+                cells,
+                suppression=strategy,
+                historical_origin_means=(
+                    by_previous if strategy == "historical_origin" else None
+                ),
+            )
+            calibrated = calibrate_transition_matrix(
+                point.stated_party_point,
+                previous_national,
+                poll_national,
+            )
+            predictions.append(
+                build_transition_predictions(canonical, calibrated.matrix, model=model)
+            )
+    nonparty = normalize_transition_cells(
+        cells,
+        poll,
+        prior_strength=0,
+        nonparty_strategy="allocate_poll",
+    )
+    nonparty_calibrated = calibrate_transition_matrix(
+        nonparty.raw_matrix,
+        previous_national,
+        poll_national,
+    )
+    predictions.append(
+        build_transition_predictions(
+            canonical,
+            nonparty_calibrated.matrix,
+            model=NONPARTY_POLL_MODEL,
+        )
+    )
+    return predictions
+
+
+def _point_metrics(predictions: pl.DataFrame) -> pl.DataFrame:
+    rows = []
+    for transition_id, model in predictions.select(
+        "transition_id", "model"
+    ).unique().sort("transition_id", "model").iter_rows():
+        scored = predictions.filter(
+            (pl.col("transition_id") == transition_id)
+            & (pl.col("model") == model)
+        )
+        rows.append(
+            {
+                "transition_id": transition_id,
+                "election_cycle": 2018 if transition_id == "2014_2018" else 2022,
+                **asdict(evaluate_predictions(scored, model=str(model))),
+            }
+        )
+    return pl.DataFrame(rows).sort("election_cycle", "model")
+
+
+def _point_comparison(metrics: pl.DataFrame) -> pl.DataFrame:
+    baseline = metrics.filter(pl.col("model") == BASELINE_MODEL).select(
+        "election_cycle",
+        pl.col("district_weighted_mae").alias("baseline_mae"),
+    )
+    return (
+        metrics.join(baseline, on="election_cycle")
+        .with_columns(
+            (pl.col("district_weighted_mae") - pl.col("baseline_mae")).alias(
+                "delta_mae"
+            )
+        )
+        .sort("election_cycle", "model")
+    )
+
+
+def _four_b_municipality_bootstrap(
+    predictions: pl.DataFrame,
+    *,
+    draws: int = 2000,
+    seed: int = 20260911,
+) -> pl.DataFrame:
+    rng = np.random.default_rng(seed)
+    rows: list[dict[str, object]] = []
+    for transition_id in sorted(predictions["transition_id"].unique().to_list()):
+        subset = predictions.filter(pl.col("transition_id") == transition_id)
+        baseline = subset.filter(pl.col("model") == BASELINE_MODEL).select(
+            "district_id",
+            "party",
+            pl.col("predicted_share").alias("baseline_share"),
+        )
+        models = sorted(
+            str(value)
+            for value in subset.filter(pl.col("model") != BASELINE_MODEL)[
+                "model"
+            ].unique().to_list()
+        )
+        for model in models:
+            municipality = (
+                subset.filter(pl.col("model") == model)
+                .join(baseline, on=["district_id", "party"])
+                .with_columns(
+                    (
+                        (
+                            (pl.col("actual_share") - pl.col("predicted_share")).abs()
+                            - (pl.col("actual_share") - pl.col("baseline_share")).abs()
+                        )
+                        * pl.col("valid_votes")
+                    ).alias("weighted_delta")
+                )
+                .group_by("municipality_id")
+                .agg(
+                    pl.col("weighted_delta").sum().alias("numerator"),
+                    pl.col("valid_votes").sum().alias("denominator"),
+                )
+                .sort("municipality_id")
+            )
+            numerators = municipality["numerator"].to_numpy()
+            denominators = municipality["denominator"].to_numpy()
+            indices = rng.integers(
+                0,
+                municipality.height,
+                size=(draws, municipality.height),
+            )
+            sampled = numerators[indices].sum(axis=1) / denominators[indices].sum(axis=1)
+            rows.append(
+                {
+                    "transition_id": transition_id,
+                    "model": model,
+                    "observed_delta_mae": float(
+                        numerators.sum() / denominators.sum()
+                    ),
+                    "ci_low": float(np.quantile(sampled, 0.025)),
+                    "ci_high": float(np.quantile(sampled, 0.975)),
+                    "draws": draws,
+                    "cluster_unit": "municipality",
+                }
+            )
+    return pl.DataFrame(rows).sort("transition_id", "model")
+
+
+def _write_four_b_report(
+    path: Path,
+    comparison: pl.DataFrame,
+    intervals: pl.DataFrame,
+    robustness: pl.DataFrame,
+    municipality_bootstrap: pl.DataFrame,
+    effective_n: pl.DataFrame,
+    verdict: str,
+) -> None:
+    point_rows = "\n".join(
+        "| {cycle} | {model} | {mae:.3f} | {baseline:.3f} | {delta:+.3f} |".format(
+            cycle=int(row["election_cycle"]),
+            model=row["model"],
+            mae=100 * float(row["district_weighted_mae"]),
+            baseline=100 * float(row["baseline_mae"]),
+            delta=100 * float(row["delta_mae"]),
+        )
+        for row in comparison.iter_rows(named=True)
+    )
+    interval_rows = "\n".join(
+        "| {cycle} | {model} | {mean:+.3f} | [{low:+.3f}, {high:+.3f}] | {draws} |".format(
+            cycle=int(row["election_cycle"]),
+            model=row["model"],
+            mean=100 * float(row["mean_delta_mae"]),
+            low=100 * float(row["interval_low"]),
+            high=100 * float(row["interval_high"]),
+            draws=int(row["draws"]),
+        )
+        for row in intervals.iter_rows(named=True)
+    )
+    robustness_rows = "\n".join(
+        "| {transition_id} | {model} | {won}/{total} | {coverage:.1%} | {delta:+.3f} |".format(
+            transition_id=row["transition_id"],
+            model=row["model"],
+            won=int(row["counties_won"]),
+            total=int(row["counties_total"]),
+            coverage=float(row["winning_vote_coverage"]),
+            delta=100 * float(row["median_county_delta"]),
+        )
+        for row in robustness.filter(
+            pl.col("model").is_in([PRIMARY_MODEL, SECONDARY_MODEL])
+        ).iter_rows(named=True)
+    )
+    bootstrap_rows = "\n".join(
+        "| {transition_id} | {model} | {delta:+.3f} | [{low:+.3f}, {high:+.3f}] |".format(
+            transition_id=row["transition_id"],
+            model=row["model"],
+            delta=100 * float(row["observed_delta_mae"]),
+            low=100 * float(row["ci_low"]),
+            high=100 * float(row["ci_high"]),
+        )
+        for row in municipality_bootstrap.filter(
+            pl.col("model").is_in([PRIMARY_MODEL, SECONDARY_MODEL])
+        ).iter_rows(named=True)
+    )
+    ess_rows = "\n".join(
+        "| {cycle} | {party} | {base} | {n_eff:.1f} | {deff} | {fallback} |".format(
+            cycle=int(row["election_cycle"]),
+            party=row["previous_party"],
+            base=int(row["row_base"]),
+            n_eff=float(row["n_eff"]),
+            deff=(
+                "—"
+                if row["design_effect"] is None
+                else f"{float(row['design_effect']):.2f}"
+            ),
+            fallback="yes" if row["used_fallback"] else "no",
+        )
+        for row in effective_n.iter_rows(named=True)
+    )
+    report = f"""# Milestone 4B — Survey-based transition estimator
+
+## Status
+
+Milestone 4A remains byte-for-byte frozen as **UNCLEAR**. Its report SHA-256 is
+`cee6d058647c9b0cfd4a3d01f5dda4ec31ee25a473b13f9be832072016c6cab3`.
+This is a separate 4B result and does not revise 4A.
+
+## Why the 4A prior was misspecified
+
+The 4A `n/(n+200)` estimator pulled every previous-party row toward the same
+current-party national marginal. That mechanically reduces the
+`previous_party → current_party` dependence T0 exists to measure. It was
+generic regularization, but not a coherent origin-specific transition prior.
+
+The locked 4B primary leaves SCB's survey-weighted published proportions
+unchanged as point estimates. Sampling uncertainty is represented by
+deterministic Dirichlet draws using margin-inverted approximate effective
+sample sizes. These are explicitly not Kish ESS. Every draw is conditioned on
+a stated party and raked separately. Same-wave Vid10 enters only raking and B2.
+
+## Survey-only lock
+
+All estimator choices were committed before election scoring. The historical
+corpus contains 14 vintage-correct waves and 1,932 cells. Original PDF
+vintages are used for the 2018 hierarchy; the revised series available from
+2020 is used for 2022. `2018M05` and `2022M05` never enter prior fitting.
+The secondary prior is previous-party-specific, and κ was selected with
+whole-year-held-out survey waves only. `2017M11` and `2021M11` are untouched
+survey audits, not tuning data.
+
+## Approximate effective sample sizes
+
+| Election | Previous party | Public base | Approx. n_eff | Implied design effect | Fallback |
+|---:|---|---:|---:|---:|---|
+{ess_rows}
+
+## Locked point backtest
+
+MAE is vote-weighted over district-party cells on the unchanged 4A populations.
+B2 and every transition model receive exactly the same May national poll
+vector. Negative ΔMAE is improvement. The primary point forecast is the mean
+of 2,000 independently raked survey draws.
+
+| Election | Model | Weighted MAE (pp) | B2 MAE (pp) | ΔMAE (pp) |
+|---:|---|---:|---:|---:|
+{point_rows}
+
+`T1_published_point_raked` isolates the directly raked published matrix.
+Suppression and nonparty variants are preregistered diagnostics. The
+hierarchical estimator remains secondary and cannot replace the primary.
+
+## Survey uncertainty
+
+These intervals vary transition-table sampling uncertainty while holding the
+May national poll state fixed. They are not election-prediction intervals and
+exclude poll-state error, correlated panel error and weight-estimation error.
+
+| Election | Model | Mean draw ΔMAE (pp) | Survey-draw 95% interval | Draws |
+|---:|---|---:|---:|---:|
+{interval_rows}
+
+## Geographic robustness
+
+| Transition | Model | Counties won | Winning vote coverage | Median county ΔMAE (pp) |
+|---|---|---:|---:|---:|
+{robustness_rows}
+
+The municipality-cluster bootstrap is separate from survey uncertainty and
+does not select κ or an estimator.
+
+| Transition | Model | Point ΔMAE (pp) | Municipality-bootstrap 95% |
+|---|---|---:|---:|
+{bootstrap_rows}
+
+## Decision
+
+**{verdict}**
+
+The locked rule is `SUPPORTED` only if primary point ΔMAE is negative and the
+survey-draw 95% upper bound is below zero in both elections; `NOT_SUPPORTED`
+if either primary point ΔMAE is non-negative; otherwise `UNCLEAR`.
+
+This tests transition estimation only. It does not validate regional
+conditioning, demographic poststratification or MRP, and no MRP implementation
+is started here.
+"""
+    path.write_text(report, encoding="utf-8")
+
+
+def run_milestone_four_b(root: Path) -> dict[str, object]:
+    """Run locked election scoring; all survey choices must already be persisted."""
+    assert_frozen_four_a(root)
+    _assert_clean_survey_lock(root)
+    output = root / "reports" / "milestone_four_b"
+    canonical_all = pl.read_parquet(
+        root / "data" / "processed" / "canonical_temporal_transitions.parquet"
+    )
+    cycles = _target_survey_inputs(root)
+    predictions: list[pl.DataFrame] = []
+    draw_scores: list[pl.DataFrame] = []
+    matrices: list[pl.DataFrame] = []
+    ess_rows: list[pl.DataFrame] = []
+    calibration_rows: list[pl.DataFrame] = []
+    for cycle in (2018, 2022):
+        cycle_input = cycles[cycle]
+        transition_id = "2014_2018" if cycle == 2018 else "2018_2022"
+        canonical = canonical_all.filter(pl.col("transition_id") == transition_id)
+        if canonical["to_district_id"].n_unique() != EXPECTED_POPULATIONS[cycle]:
+            raise ValueError(f"Frozen {cycle} evaluation population changed")
+        previous_national = _national_vector(
+            pl.read_parquet(
+                root / "data" / "processed" / f"election_results_{cycle - 4}.parquet"
+            )
+        )
+        poll_national = _frame_party_vector(
+            cycle_input["poll"], "party", "poll_share"
+        )
+        baseline = build_poll_state_proportional_predictions(
+            canonical,
+            previous_national,
+            poll_national,
+            model=BASELINE_MODEL,
+        )
+        predictions.append(baseline)
+        primary = estimate_survey_transition(
+            cycle_input["cells"],
+            previous_national=previous_national,
+            target_national=poll_national,
+            n_draws=2000,
+            seed=20260911,
+            suppression="flat",
+            estimator=PRIMARY_MODEL,
+        )
+        if primary.raked is None:
+            raise AssertionError("Primary draws were not raked")
+        predictions.extend(
+            [
+                posterior_mean_predictions(
+                    canonical,
+                    primary.raked.raked_draws,
+                    model=PRIMARY_MODEL,
+                ),
+                build_transition_predictions(
+                    canonical,
+                    primary.raked.raked_point_matrix,
+                    model=PUBLISHED_POINT_MODEL,
+                ),
+            ]
+        )
+        primary_scores = score_transition_draws(
+            canonical,
+            primary.raked.raked_draws,
+            baseline,
+        )
+        draw_scores.append(
+            draw_score_frame(primary_scores, election_cycle=cycle, model=PRIMARY_MODEL)
+        )
+        ess_rows.append(
+            primary.n_eff.rows.with_columns(pl.lit(cycle).alias("election_cycle"))
+        )
+        calibration_rows.append(
+            primary.raked.calibration_diagnostics.with_columns(
+                pl.lit(cycle).alias("election_cycle"),
+                pl.lit(PRIMARY_MODEL).alias("model"),
+            )
+        )
+        matrices.extend(
+            [
+                matrix_to_frame(
+                    primary.raked.mean_raked_draws,
+                    wave_id=str(cycle_input["wave_id"]),
+                    matrix_stage="PRIMARY_POSTERIOR_MEAN_RAKED",
+                ).with_columns(pl.lit(cycle).alias("election_cycle")),
+                matrix_to_frame(
+                    primary.raked.raked_point_matrix,
+                    wave_id=str(cycle_input["wave_id"]),
+                    matrix_stage="PUBLISHED_POINT_RAKED",
+                ).with_columns(pl.lit(cycle).alias("election_cycle")),
+            ]
+        )
+        hierarchy_alpha = _locked_hierarchy_alpha(
+            root,
+            cycle,
+            primary.point.stated_party_point,
+            primary.n_eff.vector(),
+        )
+        secondary = estimate_survey_transition(
+            cycle_input["cells"],
+            previous_national=previous_national,
+            target_national=poll_national,
+            n_draws=2000,
+            seed=20260911,
+            suppression="flat",
+            dirichlet_alpha=hierarchy_alpha,
+            estimator=SECONDARY_MODEL,
+        )
+        if secondary.raked is None:
+            raise AssertionError("Secondary draws were not raked")
+        predictions.append(
+            posterior_mean_predictions(
+                canonical,
+                secondary.raked.raked_draws,
+                model=SECONDARY_MODEL,
+            )
+        )
+        draw_scores.append(
+            draw_score_frame(
+                score_transition_draws(
+                    canonical,
+                    secondary.raked.raked_draws,
+                    baseline,
+                ),
+                election_cycle=cycle,
+                model=SECONDARY_MODEL,
+            )
+        )
+        calibration_rows.append(
+            secondary.raked.calibration_diagnostics.with_columns(
+                pl.lit(cycle).alias("election_cycle"),
+                pl.lit(SECONDARY_MODEL).alias("model"),
+            )
+        )
+        matrices.append(
+            matrix_to_frame(
+                secondary.raked.mean_raked_draws,
+                wave_id=str(cycle_input["wave_id"]),
+                matrix_stage="HIERARCHICAL_POSTERIOR_MEAN_RAKED",
+            ).with_columns(pl.lit(cycle).alias("election_cycle"))
+        )
+        predictions.extend(
+            _sensitivity_predictions(
+                canonical,
+                cycle_input["cells"],
+                cycle_input["poll"],
+                previous_national,
+                poll_national,
+                root,
+                cycle,
+            )
+        )
+
+    all_predictions = pl.concat(predictions)
+    metrics = _point_metrics(all_predictions)
+    comparison = _point_comparison(metrics)
+    all_draw_scores = pl.concat(draw_scores).sort("election_cycle", "model", "draw")
+    intervals = survey_interval(all_draw_scores)
+    verdict = four_b_verdict(comparison, intervals)
+    party_metrics = _group_metrics(all_predictions, ["party"])
+    bloc_metrics = _group_metrics(_bloc_predictions(all_predictions), ["party"])
+    county_metrics = _group_metrics(all_predictions, ["county_id"])
+    robustness = _county_robustness(county_metrics, all_predictions)
+    size_metrics = _district_size_metrics(all_predictions)
+    urbanity_metrics = _urbanity_metrics(all_predictions, root)
+    municipality_bootstrap = _four_b_municipality_bootstrap(all_predictions)
+    artifacts = {
+        "model_metrics.csv": metrics,
+        "point_comparison.csv": comparison,
+        "survey_draw_metrics.csv": all_draw_scores,
+        "survey_intervals.csv": intervals,
+        "model_metrics_by_party.csv": party_metrics,
+        "model_metrics_by_bloc.csv": bloc_metrics,
+        "model_metrics_by_county.csv": county_metrics,
+        "geographic_robustness.csv": robustness,
+        "model_metrics_by_district_size.csv": size_metrics,
+        "model_metrics_by_urbanity.csv": urbanity_metrics,
+        "municipality_bootstrap.csv": municipality_bootstrap,
+        "target_wave_effective_n.csv": pl.concat(ess_rows).sort(
+            "election_cycle", "previous_party"
+        ),
+        "draw_calibration_diagnostics.csv": pl.concat(calibration_rows).sort(
+            "election_cycle", "model", "draw_index"
+        ),
+        "transition_matrices.csv": pl.concat(matrices).sort(
+            "election_cycle", "matrix_stage", "previous_party", "current_party"
+        ),
+    }
+    for name, frame in artifacts.items():
+        frame.write_csv(output / name, float_precision=12)
+    _write_four_b_report(
+        root / "reports" / "milestone_4b_transition_posterior.md",
+        comparison,
+        intervals,
+        robustness,
+        municipality_bootstrap,
+        artifacts["target_wave_effective_n.csv"],
+        verdict,
+    )
+    summary = {
+        "verdict": verdict,
+        "primary_estimator": PRIMARY_MODEL,
+        "secondary_estimator": SECONDARY_MODEL,
+        "cycles": [2018, 2022],
+        "draws": 2000,
+        "seed": 20260911,
+        "four_a_sha256": _sha256(
+            root / "reports" / "milestone_4a_transition_matrix.md"
+        ),
+    }
+    (output / "summary.json").write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return summary
 
 
 def lock_survey_estimators(root: Path, *, fetch_missing: bool = True) -> dict[str, object]:

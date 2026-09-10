@@ -1,0 +1,5 @@
+election_cycle,model,mean_delta_mae,interval_low,interval_high,draws
+2018,T1_no_point_shrinkage_raked,-0.000755167303,-0.000958277445,-0.000532160633,2000
+2018,T1_previous_party_hierarchical_raked,-0.000768249367,-0.000933194424,-0.000598556210,2000
+2022,T1_no_point_shrinkage_raked,-0.000965198793,-0.001166303994,-0.000752126391,2000
+2022,T1_previous_party_hierarchical_raked,-0.001010165774,-0.001187643431,-0.000825787254,2000

@@ -9,7 +9,10 @@ import typer
 
 from valforecast.config import load_sources
 from valforecast.evaluation.milestone_four_a import run_milestone_four_a
-from valforecast.evaluation.milestone_four_b import lock_survey_estimators
+from valforecast.evaluation.milestone_four_b import (
+    lock_survey_estimators,
+    run_milestone_four_b,
+)
 from valforecast.evaluation.milestone_three import run_milestone_three
 from valforecast.evaluation.milestone_two import run_milestone_two
 from valforecast.ingest.fetch import fetch_source
@@ -94,4 +97,10 @@ def ingest_survey_corpus() -> None:
 @app.command("lock-transitions-b-survey")
 def lock_transitions_b_survey() -> None:
     summary = lock_survey_estimators(_root())
+    typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))
+
+
+@app.command("validate-transitions-b")
+def validate_transitions_b() -> None:
+    summary = run_milestone_four_b(_root())
     typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))

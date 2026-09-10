@@ -27,6 +27,12 @@ STRUCTURE_FEATURES = (
     "previous_largest_party_margin",
 )
 TURNOUT_SIZE_FEATURES = ("previous_turnout", "log_previous_eligible_voters")
+M2_FROZEN_FEATURES = (
+    *SHARE_FEATURES,
+    "previous_turnout",
+    "previous_party_entropy",
+    "previous_eligible_voters",
+)
 HISTORICAL_FEATURES = (
     *(f"historical_party_sensitivity_{party}" for party in PARTIES),
     *(f"historical_residual_std_{party}" for party in PARTIES),
@@ -34,6 +40,7 @@ HISTORICAL_FEATURES = (
 )
 
 ABLATION_NUMERIC_FEATURES = {
+    "M2_frozen": M2_FROZEN_FEATURES,
     "A_previous_shares": SHARE_FEATURES,
     "B_plus_structure": (*SHARE_FEATURES, *STRUCTURE_FEATURES),
     "C_plus_turnout_size": (
@@ -52,6 +59,19 @@ ABLATION_NUMERIC_FEATURES = {
         *STRUCTURE_FEATURES,
         *TURNOUT_SIZE_FEATURES,
         *HISTORICAL_FEATURES,
+    ),
+}
+
+ABLATION_CATEGORICAL_FEATURES = {
+    "M2_frozen": (),
+    "A_previous_shares": (),
+    "B_plus_structure": ("previous_largest_party",),
+    "C_plus_turnout_size": ("previous_largest_party",),
+    "D_plus_historical": ("previous_largest_party",),
+    "E_plus_geography": (
+        "previous_largest_party",
+        "municipality_id",
+        "county_id",
     ),
 }
 
@@ -148,16 +168,13 @@ def run_temporal_validation(
                 is False
             ):
                 continue
-            categorical_columns = ["previous_largest_party"]
-            if ablation == "E_plus_geography":
-                categorical_columns.extend(["municipality_id", "county_id"])
             metrics, predictions = _fit_model_family(
                 train,
                 future,
                 test,
                 ablation,
                 list(numeric_columns),
-                categorical_columns,
+                list(ABLATION_CATEGORICAL_FEATURES[ablation]),
                 random_seed=random_seed,
             )
             metric_rows.extend(metrics)
@@ -179,19 +196,18 @@ def _fit_model_family(
         SimpleImputer(strategy="median", keep_empty_features=True),
         StandardScaler(),
     )
-    encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
-    x_train = np.hstack(
-        [
-            numeric_pipeline.fit_transform(train.select(numeric_columns).to_numpy()),
-            encoder.fit_transform(train.select(categorical_columns).to_numpy()),
-        ]
-    )
-    x_test = np.hstack(
-        [
-            numeric_pipeline.transform(future.select(numeric_columns).to_numpy()),
-            encoder.transform(future.select(categorical_columns).to_numpy()),
-        ]
-    )
+    train_parts = [
+        numeric_pipeline.fit_transform(train.select(numeric_columns).to_numpy())
+    ]
+    test_parts = [numeric_pipeline.transform(future.select(numeric_columns).to_numpy())]
+    if categorical_columns:
+        encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
+        train_parts.append(
+            encoder.fit_transform(train.select(categorical_columns).to_numpy())
+        )
+        test_parts.append(encoder.transform(future.select(categorical_columns).to_numpy()))
+    x_train = np.hstack(train_parts)
+    x_test = np.hstack(test_parts)
     targets = [f"target_{party}" for party in PARTIES[:-1]]
     y_train = train.select(targets).to_numpy()
     fit_weights = train["previous_valid_votes"].to_numpy()

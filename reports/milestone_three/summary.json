@@ -1,7 +1,7 @@
 {
   "conclusion": "FAIL",
   "primary_model": "lightgbm",
-  "primary_ablation": "C_plus_turnout_size",
+  "primary_ablation": "M2_frozen",
   "primary_test": "B0",
   "available_transitions": [
     "2010_2014",

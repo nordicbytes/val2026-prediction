@@ -32,7 +32,7 @@ from valforecast.models.temporal import (
     run_temporal_validation,
 )
 
-PRIMARY_ABLATION = "C_plus_turnout_size"
+PRIMARY_ABLATION = "M2_frozen"
 PRIMARY_MODEL = "lightgbm"
 PRIMARY_TEST_ID = "B0"
 
@@ -726,9 +726,9 @@ correlations, so PC1 is not automatically a substantive left-right factor.
 ## Temporal models
 
 All preprocessing is fit on training transitions only. No test-transition
-target is used in scaling, imputation, encoding or fitting. LightGBM with
-ablation C is preregistered as the primary model because it won Milestone 2;
-Ridge and ElasticNet are comparators. B0 (official 2014→2018 only, tested on
+target is used in scaling, imputation, encoding or fitting. LightGBM with the
+exact frozen Milestone 2 feature specification is the primary model; Ridge and
+ElasticNet are comparators. B0 (official 2014→2018 only, tested on
 2018→2022) is the strict primary gate. A and pooled B use the non-official
 MEDIUM stable-ID 2010→2014 mapping and are sensitivity tests.
 
@@ -768,6 +768,7 @@ elections.
 - C: B plus prior turnout and electorate size
 - D: C plus strictly lagged historical sensitivity
 - E: D plus municipality/county identifiers
+- M2 frozen: previous party shares, turnout, entropy and raw electorate size
 
 Historical sensitivity for a target transition uses only the immediately prior
 transition and is unavailable where no high-quality identity chain exists.
@@ -804,9 +805,10 @@ In strict B0, LightGBM reaches
 covering {float(gate_robustness["winning_vote_coverage"]):.1%} of evaluation
 votes.
 
-The decision is based only on preregistered LightGBM CORE ablation C in strict
-test B0 against proportional swing on a wholly unseen future election, plus
-county robustness. This gate concerns temporal allocation of known national
-swing; it does not validate polling, RICH demographics or a 2026 forecast.
+The decision is based only on the frozen Milestone 2 LightGBM specification in
+strict test B0 against proportional swing on a wholly unseen future election,
+plus county robustness and municipality-bootstrap uncertainty. This gate
+concerns temporal allocation of known national swing; it does not validate
+polling, RICH demographics or a 2026 forecast.
 """
     path.write_text(report, encoding="utf-8")

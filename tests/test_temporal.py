@@ -4,6 +4,7 @@ from zipfile import ZipFile
 import polars as pl
 from openpyxl import Workbook
 
+from valforecast.features.election_history import PARTIES
 from valforecast.features.temporal import (
     CORE_NUMERIC_FEATURES,
     RICH_FEATURES,
@@ -15,7 +16,12 @@ from valforecast.geo.crosswalk import (
     read_official_val2018_2022_crosswalk,
 )
 from valforecast.ingest.elections import read_legacy_district_results
-from valforecast.models.temporal import ABLATION_NUMERIC_FEATURES
+from valforecast.models.temporal import (
+    ABLATION_CATEGORICAL_FEATURES,
+    ABLATION_NUMERIC_FEATURES,
+    M2_FROZEN_FEATURES,
+    TEMPORAL_TESTS,
+)
 
 
 def test_legacy_result_parser_canonicalizes_parties(tmp_path: Path) -> None:
@@ -134,6 +140,19 @@ def test_core_and_ablation_features_are_forecast_time_fields() -> None:
     assert set(CORE_NUMERIC_FEATURES).issubset(all_model_features | {"previous_largest_party"})
     assert not any(feature.startswith(forbidden_prefixes) for feature in all_model_features)
     assert not set(RICH_FEATURES).intersection(all_model_features)
+    assert ABLATION_CATEGORICAL_FEATURES["A_previous_shares"] == ()
+    assert (
+        *(f"previous_share_{party}" for party in PARTIES),
+        "previous_turnout",
+        "previous_party_entropy",
+        "previous_eligible_voters",
+    ) == M2_FROZEN_FEATURES
+
+
+def test_b0_is_official_only_primary_temporal_split() -> None:
+    b0 = next(test for test in TEMPORAL_TESTS if test.test_id == "B0")
+    assert b0.train_transitions == ("2014_2018",)
+    assert b0.test_transition == "2018_2022"
 
 
 def test_lagged_sensitivity_uses_only_prior_transition_target() -> None:

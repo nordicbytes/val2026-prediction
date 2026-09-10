@@ -27,6 +27,7 @@ CORE_NUMERIC_FEATURES = (
     "previous_sd_share",
     "previous_bloc_margin",
     "previous_largest_party_margin",
+    "previous_eligible_voters",
     "log_previous_eligible_voters",
 )
 
@@ -173,6 +174,7 @@ def build_canonical_transition(
             - _party_sum(previous_vector, ALLIANCE_PARTIES),
             "previous_largest_party": PARTIES[largest_index],
             "previous_largest_party_margin": float(sorted_shares[0] - sorted_shares[1]),
+            "previous_eligible_voters": int(record["previous_eligible_voters"]),
             "log_previous_eligible_voters": float(
                 np.log1p(int(record["previous_eligible_voters"]))
             ),

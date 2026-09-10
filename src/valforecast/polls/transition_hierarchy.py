@@ -333,7 +333,7 @@ def _validate_hierarchy_cells(cells: pl.DataFrame) -> None:
 
 def _prepare_wave_rows(cells: pl.DataFrame) -> list[_PreparedWaveRow]:
     prepared: list[_PreparedWaveRow] = []
-    wave_ids = cells["wave_id"].unique().to_list()
+    wave_ids = sorted(str(value) for value in cells["wave_id"].unique().to_list())
     for wave_id in wave_ids:
         wave = cells.filter(pl.col("wave_id") == wave_id)
         references = wave["previous_election"].unique().to_list()

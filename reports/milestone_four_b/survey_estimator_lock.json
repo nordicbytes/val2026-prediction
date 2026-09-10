@@ -92,7 +92,7 @@
     {
       "previous_party": "OTHER",
       "kappa": 100.0,
-      "log_score": -966.7505172648968,
+      "log_score": -966.7505172648969,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -176,7 +176,7 @@
     {
       "previous_party": "L",
       "kappa": 50.0,
-      "log_score": -2038.5002506511605,
+      "log_score": -2038.50025065116,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -204,7 +204,7 @@
     {
       "previous_party": "MP",
       "kappa": 50.0,
-      "log_score": -1332.6644951617145,
+      "log_score": -1332.6644951617147,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -218,7 +218,7 @@
     {
       "previous_party": "OTHER",
       "kappa": 100.0,
-      "log_score": -456.48496866669467,
+      "log_score": -456.4849686666946,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -232,7 +232,7 @@
     {
       "previous_party": "S",
       "kappa": 100.0,
-      "log_score": -4002.754903177659,
+      "log_score": -4002.75490317766,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -246,7 +246,7 @@
     {
       "previous_party": "SD",
       "kappa": 50.0,
-      "log_score": -2407.800571487974,
+      "log_score": -2407.8005714879755,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -260,7 +260,7 @@
     {
       "previous_party": "V",
       "kappa": 100.0,
-      "log_score": -1413.5879140100042,
+      "log_score": -1413.5879140100035,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -273,9 +273,9 @@
     }
   ],
   "artifact_sha256": {
-    "hierarchy_selected_concentrations.csv": "cde445347d97149f4453db6de1a07b5ecb7762ee4decf1024e55008e3dc71d85",
+    "hierarchy_selected_concentrations.csv": "8799d4a6b70ede7692c55eba467cb8cf72d98b6a8ace5f939d9331f9b7eb9ff4",
     "hierarchy_previous_party_means.csv": "11c2cbaefb87b48a41bdf4a5e4f0262cf6696a6019c9d493889de5d4b2ddc960",
-    "hierarchy_survey_cv.csv": "9be327f9e343b5799b4c42a99560166960232c45292cd418983b1808c44befcf",
+    "hierarchy_survey_cv.csv": "52a262c5b484f9e35f2d62be2139142cea866453173024a75eb06d9a1ac18f43",
     "hierarchy_untouched_survey_validation.csv": "a681b30b998e01ff5a4eeb37f74e971a8b284ca66d0e028ff5ee31eae06f8e7a"
   },
   "forbidden_inputs_confirmed_absent": [

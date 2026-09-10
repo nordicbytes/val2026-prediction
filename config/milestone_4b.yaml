@@ -1,0 +1,97 @@
+schema_version: 1
+frozen_milestone_4a:
+  commit: 4bc155da6b22681a1c84b940342bb928daacc8be
+  tag: transition-gate-4a-unclear-v1
+  report: reports/milestone_4a_transition_matrix.md
+  report_sha256: cee6d058647c9b0cfd4a3d01f5dda4ec31ee25a473b13f9be832072016c6cab3
+
+primary_estimator: T1_no_point_shrinkage_raked
+secondary_estimator: T1_previous_party_hierarchical_raked
+
+random_seed: 20260911
+survey_draws: 2000
+confidence_level: 0.95
+
+effective_sample_size:
+  z_value: 1.96
+  cell_formula: p*(1-p)/(margin/z)^2
+  row_aggregation: median
+  lower_bound: 1.0
+  upper_bound: public_row_base
+  excluded_cells: [zero_estimate, zero_margin, missing_estimate, missing_margin]
+  fallback: median_design_effect_within_wave
+
+primary_point_estimate:
+  published_party_cells: unchanged
+  suppressed_residual: flat_across_suppressed_party_cells
+  nonparty: condition_on_stated_party
+  point_shrinkage: none
+  national_poll_role: draw_wise_raking_only
+
+hierarchy:
+  concentration_grid: [0, 2, 5, 10, 20, 50, 100]
+  mean: equal_weight_previous_party_rows_within_training_corpus
+  zero_smoothing: 0.5
+  selection_metric: effective_n_weighted_predictive_kl
+  cross_validation: leave_one_calendar_year_out
+  untouched_validation_waves:
+    2018: 2017M11
+    2022: 2021M11
+  fallback: concentration_zero
+  forbidden_inputs: [2018_election_result, 2022_election_result, target_may_wave]
+
+survey_corpora:
+  2018:
+    vintage: ORIGINAL_PRE_2020_PDF
+    previous_election: 2014
+    train_waves: [2015M11, 2016M05, 2016M11, 2017M05]
+    validation_wave: 2017M11
+    excluded_primary:
+      2014M11: first_post_election_wave
+      2015M05: anomalous_extra_panel
+    target_wave: 2018M05
+  2022:
+    vintage: REVISED_2020_AVAILABLE_AT_CUTOFF
+    previous_election: 2018
+    train_waves: [2019M05, 2019M11, 2020M05, 2020M11, 2021M05]
+    validation_wave: 2021M11
+    excluded_primary:
+      2018M11: first_post_election_wave
+    target_wave: 2022M05
+
+calibration:
+  method: minimum_kl_ipf
+  previous_vote_vector: full_sweden_previous_election
+  target: same_wave_scb_vid10
+  apply_to_each_draw: true
+  tolerance: 1.0e-10
+
+evaluation:
+  populations:
+    2018: 4631
+    2022: 4164
+  benchmark: B2_poll_state
+  metric: vote_weighted_district_party_mae
+  result_use: scoring_only_after_estimator_lock
+  decision:
+    supported:
+      point_delta_negative_both_cycles: true
+      survey_interval_upper_negative_both_cycles: true
+    not_supported:
+      point_delta_nonnegative_any_cycle: true
+    otherwise: UNCLEAR
+  geographic_robustness:
+    minimum_counties_won: 11
+    minimum_winning_vote_coverage: 0.5
+    role: diagnostic_only
+
+sensitivities:
+  - historical_origin_split_for_suppressed
+  - suppressed_zero_lower_bound
+  - allocate_nonparty_by_poll
+
+forbidden:
+  - choose_concentration_from_election_mae
+  - promote_secondary_after_scoring
+  - retune_milestone_4a
+  - implement_mrp

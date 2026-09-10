@@ -10,7 +10,7 @@ import polars as pl
 import pymupdf
 
 from valforecast.features.election_history import PARTIES
-from valforecast.polls.schema import validate_transition_cells
+from valforecast.polls.schema import POLL_PREVIOUS_CATEGORIES, validate_transition_cells
 
 SCB_PARTY_CODES = {
     "m": "M",
@@ -51,6 +51,46 @@ SCB_2018_PREVIOUS_COLUMN_INDEX = {
     "SD": 8,
     "OTHER": 9,
 }
+SCB_PREVIOUS_CODES = {
+    **SCB_PARTY_CODES,
+    "ej röstat": "DID_NOT_VOTE",
+    "ej röstberättigad": "NOT_ELIGIBLE",
+    "uppgift saknas": "MISSING",
+}
+SCB_PDF_CURRENT_LABEL_ALIASES = {
+    "M": ("Moderaterna",),
+    "C": ("Centerpartiet",),
+    "L": ("Liberalerna", "Folkpartiet"),
+    "KD": ("Kristdemokraterna",),
+    "MP": ("Miljöpartiet",),
+    "S": ("Socialdemokraterna",),
+    "V": ("Vänsterpartiet",),
+    "SD": ("Sverigedemokraterna",),
+    "OTHER": ("Övriga partier",),
+    "BLANK": ("Blankt",),
+    "DONT_KNOW": ("Vet ej",),
+    "MISSING": ("Uppgift saknas",),
+}
+SCB_PDF_PREVIOUS_COLUMN_INDEX = {
+    "MISSING": 0,
+    "M": 1,
+    "C": 2,
+    "L": 3,
+    "KD": 4,
+    "MP": 5,
+    "S": 6,
+    "V": 7,
+    "SD": 8,
+    "OTHER": 9,
+    "DID_NOT_VOTE": 10,
+    "NOT_ELIGIBLE": 11,
+}
+SCB_PDF_TABLE21_COLUMNS = 13
+SCB_PDF_UNCERTAINTY_MARKERS = frozenset({"ost", "±", "+"})
+SCB_PDF_PREVIOUS_ELECTION = re.compile(
+    r"valt parti vid (?P<year>20\d{2}) års riksdagsval",
+    re.IGNORECASE,
+)
 
 
 def read_pxweb_jsonstat(path: Path) -> pl.DataFrame:
@@ -63,10 +103,7 @@ def read_pxweb_jsonstat(path: Path) -> pl.DataFrame:
         category = dimensions[dimension_id]["category"]
         index = category["index"]
         if isinstance(index, dict):
-            ordered = [
-                value
-                for value, _ in sorted(index.items(), key=lambda item: int(item[1]))
-            ]
+            ordered = [value for value, _ in sorted(index.items(), key=lambda item: int(item[1]))]
         else:
             ordered = [str(value) for value in index]
         if len(ordered) != expected_size:
@@ -131,15 +168,12 @@ def extract_scb_2018_pdf_transition(
     }
     for (previous, current), expected in gold_cells.items():
         value = result.filter(
-            (pl.col("previous_party") == previous)
-            & (pl.col("current_party") == current)
+            (pl.col("previous_party") == previous) & (pl.col("current_party") == current)
         ).item(0, "estimate")
         if not np_isclose(float(value), expected, tolerance=1e-12):
             raise ValueError(f"SCB 2018 gold cell changed: {previous}/{current}")
     column_sums = result.group_by("previous_party").agg(pl.col("estimate").sum())
-    if column_sums.filter(
-        (pl.col("estimate") < 0.995) | (pl.col("estimate") > 1.005)
-    ).height:
+    if column_sums.filter((pl.col("estimate") < 0.995) | (pl.col("estimate") > 1.005)).height:
         raise ValueError("SCB 2018 Table 21 columns do not sum to one")
     return result
 
@@ -189,6 +223,122 @@ def extract_scb_2018_pdf_national_poll(
     return result
 
 
+def extract_scb_pdf_table21(
+    path: Path,
+    *,
+    wave_id: str,
+) -> tuple[pl.DataFrame, int, int]:
+    with pymupdf.open(path) as document:  # type: ignore[no-untyped-call]
+        page_index = _find_scb_table21_page(document)
+        page_text = document[page_index].get_text()
+        if "Antal i urvalet" not in page_text and page_index + 1 < document.page_count:
+            page_text += "\n" + document[page_index + 1].get_text()
+    match = SCB_PDF_PREVIOUS_ELECTION.search(page_text)
+    if match is None:
+        raise ValueError(f"Could not read previous-election reference in {wave_id}")
+    previous_election = int(match.group("year"))
+    lines = [line.strip() for line in page_text.splitlines() if line.strip()]
+    cells = parse_scb_pdf_table21_lines(lines, wave_id=wave_id)
+    return cells, previous_election, _parse_scb_pdf_row_bases(lines)[12]
+
+
+def parse_scb_pdf_table21_lines(
+    lines: list[str],
+    *,
+    wave_id: str,
+) -> pl.DataFrame:
+    row_bases = _parse_scb_pdf_row_bases(lines)
+    rows = []
+    search_from = 0
+    for current_party, labels in SCB_PDF_CURRENT_LABEL_ALIASES.items():
+        start, _label = _find_current_label(lines, labels, search_from, current_party)
+        if lines[start + 1] != "%":
+            raise ValueError(f"Unexpected Table 21 layout after {current_party}")
+        estimates = [
+            _swedish_number(value) / 100
+            for value in lines[start + 2 : start + 2 + SCB_PDF_TABLE21_COLUMNS]
+        ]
+        if lines[start + 2 + SCB_PDF_TABLE21_COLUMNS] not in SCB_PDF_UNCERTAINTY_MARKERS:
+            raise ValueError(f"Missing uncertainty row after {current_party}")
+        margins = [
+            _swedish_number(value) / 100
+            for value in lines[
+                start + 3 + SCB_PDF_TABLE21_COLUMNS : start + 3 + 2 * SCB_PDF_TABLE21_COLUMNS
+            ]
+        ]
+        search_from = start + 3 + 2 * SCB_PDF_TABLE21_COLUMNS
+        for previous_party, column_index in SCB_PDF_PREVIOUS_COLUMN_INDEX.items():
+            rows.append(
+                {
+                    "wave_id": wave_id,
+                    "previous_party": previous_party,
+                    "current_party": current_party,
+                    "estimate": estimates[column_index],
+                    "margin_error": margins[column_index],
+                    "row_base": row_bases[column_index],
+                    "cell_status": "PUBLISHED",
+                }
+            )
+    result = pl.DataFrame(rows).sort("previous_party", "current_party")
+    validate_transition_cells(result)
+    _validate_pdf_column_totals(result)
+    return result
+
+
+def _find_scb_table21_page(document: Any) -> int:
+    for index, page in enumerate(document):
+        text = page.get_text()
+        if re.search(r"Tabell\s+21\b", text) and (
+            "Väljarkåren fördelad" in text or "riksdagsval" in text.lower()
+        ):
+            return int(index)
+    raise ValueError("Could not locate SCB Table 21")
+
+
+def _find_current_label(
+    lines: list[str],
+    labels: tuple[str, ...],
+    search_from: int,
+    current_party: str,
+) -> tuple[int, str]:
+    for label in labels:
+        try:
+            return lines.index(label, search_from), label
+        except ValueError:
+            continue
+    raise ValueError(f"Missing Table 21 current-intention row {current_party}")
+
+
+def _parse_scb_pdf_row_bases(lines: list[str]) -> list[int]:
+    start = lines.index("Antal i urvalet") + 1
+    values: list[int] = []
+    for value in lines[start:]:
+        cleaned = value.replace(" ", "").replace("\xa0", "")
+        if not cleaned.isdigit():
+            break
+        values.append(int(cleaned))
+    if len(values) != SCB_PDF_TABLE21_COLUMNS:
+        raise ValueError(
+            f"Expected {SCB_PDF_TABLE21_COLUMNS} Table 21 row bases, got {len(values)}"
+        )
+    if sum(values[:12]) != values[12]:
+        raise ValueError("Table 21 row bases do not partition the gross sample")
+    return values
+
+
+def _validate_pdf_column_totals(frame: pl.DataFrame) -> None:
+    totals = frame.group_by("previous_party").agg(
+        pl.col("estimate").sum().alias("estimate"),
+        pl.col("row_base").max().alias("row_base"),
+    )
+    empty = totals.filter((pl.col("row_base") == 0) & (pl.col("estimate") != 0))
+    if empty.height:
+        raise ValueError("Empty Table 21 previous-vote columns must be zero")
+    nonempty = totals.filter(pl.col("row_base") > 0)
+    if nonempty.filter((pl.col("estimate") < 0.995) | (pl.col("estimate") > 1.005)).height:
+        raise ValueError("SCB Table 21 columns do not sum to one")
+
+
 def _parse_scb_2018_row_bases(lines: list[str]) -> list[int]:
     start = lines.index("Antal i urvalet") + 1
     values = [int(value.replace(" ", "")) for value in lines[start : start + 13]]
@@ -215,12 +365,13 @@ def extract_scb_transition_cells(
     missing = required - set(frame.columns)
     if missing:
         raise ValueError(f"Missing SCB transition dimensions: {sorted(missing)}")
-    selected = frame.filter(pl.col("Tid") == time_value).with_columns(
-        pl.col("PvalRV").replace_strict(SCB_PARTY_CODES, default=None).alias("previous_party"),
-        pl.col("Pvalnu").replace_strict(SCB_PARTY_CODES, default=None).alias("current_party"),
-    ).filter(
-        pl.col("previous_party").is_in(PARTIES)
-        & pl.col("current_party").is_not_null()
+    selected = (
+        frame.filter(pl.col("Tid") == time_value)
+        .with_columns(
+            pl.col("PvalRV").replace_strict(SCB_PARTY_CODES, default=None).alias("previous_party"),
+            pl.col("Pvalnu").replace_strict(SCB_PARTY_CODES, default=None).alias("current_party"),
+        )
+        .filter(pl.col("previous_party").is_in(PARTIES) & pl.col("current_party").is_not_null())
     )
     wide = selected.pivot(
         on="ContentsCode",
@@ -244,6 +395,97 @@ def extract_scb_transition_cells(
     ).sort("previous_party", "current_party")
     validate_transition_cells(result)
     return result
+
+
+def extract_scb_corpus_transition_cells(
+    frame: pl.DataFrame,
+    *,
+    wave_id: str,
+    time_value: str,
+) -> pl.DataFrame:
+    required = {"PvalRV", "Pvalnu", "ContentsCode", "Tid", "value"}
+    missing = required - set(frame.columns)
+    if missing:
+        raise ValueError(f"Missing SCB transition dimensions: {sorted(missing)}")
+    selected = (
+        frame.filter(pl.col("Tid") == time_value)
+        .with_columns(
+            pl.col("PvalRV")
+            .replace_strict(SCB_PREVIOUS_CODES, default=None)
+            .alias("previous_party"),
+            pl.col("Pvalnu").replace_strict(SCB_PARTY_CODES, default=None).alias("current_party"),
+        )
+        .filter(
+            pl.col("previous_party").is_in(POLL_PREVIOUS_CATEGORIES)
+            & pl.col("current_party").is_not_null()
+        )
+    )
+    wide = selected.pivot(
+        on="ContentsCode",
+        index=["previous_party", "current_party"],
+        values="value",
+    )
+    for column in ("000001IX", "000001IW", "000001IV"):
+        if column not in wide.columns:
+            wide = wide.with_columns(pl.lit(None).cast(pl.Float64).alias(column))
+    result = wide.select(
+        pl.lit(wave_id).alias("wave_id"),
+        "previous_party",
+        "current_party",
+        (pl.col("000001IX") / 100).alias("estimate"),
+        (pl.col("000001IW") / 100).alias("margin_error"),
+        pl.col("000001IV").cast(pl.Int64, strict=False).alias("row_base"),
+        pl.when(pl.col("000001IX").is_null())
+        .then(pl.lit("SUPPRESSED"))
+        .otherwise(pl.lit("PUBLISHED"))
+        .alias("cell_status"),
+    ).sort("previous_party", "current_party")
+    validate_transition_cells(result)
+    return result
+
+
+def validate_scb_historical_pxweb(
+    frame: pl.DataFrame,
+    *,
+    expected_times: set[str],
+) -> None:
+    expected_previous = {
+        "m",
+        "c",
+        "l",
+        "kd",
+        "mp",
+        "s",
+        "v",
+        "SD",
+        "övr",
+        "ej röstat",
+        "ej röstberättigad",
+        "uppgift saknas",
+        "hela väljarkåren",
+    }
+    expected_current = {
+        "m",
+        "c",
+        "l",
+        "kd",
+        "mp",
+        "s",
+        "v",
+        "SD",
+        "övr",
+        "blankt",
+        "vet ej",
+    }
+    expected_contents = {"000001IX", "000001IW", "000001IV"}
+    if set(frame["Tid"].unique()) != expected_times:
+        raise ValueError("SCB historical source does not contain the locked 2018M11–2021M11 waves")
+    if set(frame["PvalRV"].unique()) != expected_previous:
+        raise ValueError("SCB source has an unexpected previous-vote code set")
+    if set(frame["Pvalnu"].unique()) != expected_current:
+        raise ValueError("SCB source has an unexpected current-vote code set")
+    if set(frame["ContentsCode"].unique()) != expected_contents:
+        raise ValueError("SCB source has an unexpected content code set")
 
 
 def validate_scb_2022_wave(frame: pl.DataFrame) -> None:
@@ -329,13 +571,8 @@ def extract_scb_national_poll(
     if missing:
         raise ValueError(f"Missing SCB national poll dimensions: {sorted(missing)}")
     result = (
-        frame.filter(
-            (pl.col("Tid") == time_value)
-            & (pl.col("ContentsCode") == "ME0201B1")
-        )
-        .with_columns(
-            pl.col("Parti").replace_strict(SCB_PARTY_CODES, default=None).alias("party")
-        )
+        frame.filter((pl.col("Tid") == time_value) & (pl.col("ContentsCode") == "ME0201B1"))
+        .with_columns(pl.col("Parti").replace_strict(SCB_PARTY_CODES, default=None).alias("party"))
         .filter(pl.col("party").is_in(PARTIES))
         .select(
             pl.lit(wave_id).alias("wave_id"),

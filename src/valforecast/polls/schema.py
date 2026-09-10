@@ -8,6 +8,8 @@ import polars as pl
 from valforecast.features.election_history import PARTIES
 
 POLL_CURRENT_CATEGORIES = (*PARTIES, "BLANK", "DONT_KNOW", "MISSING")
+POLL_PREVIOUS_NONPARTY = ("DID_NOT_VOTE", "NOT_ELIGIBLE", "MISSING")
+POLL_PREVIOUS_CATEGORIES = (*PARTIES, *POLL_PREVIOUS_NONPARTY)
 INFORMATION_LEVELS = frozenset(
     {
         "MICRODATA",
@@ -54,7 +56,9 @@ def validate_transition_cells(frame: pl.DataFrame) -> None:
     missing = required - set(frame.columns)
     if missing:
         raise ValueError(f"Missing transition columns: {sorted(missing)}")
-    invalid_previous = set(frame["previous_party"].drop_nulls().unique()) - set(PARTIES)
+    invalid_previous = set(frame["previous_party"].drop_nulls().unique()) - set(
+        POLL_PREVIOUS_CATEGORIES
+    )
     invalid_current = set(frame["current_party"].drop_nulls().unique()) - set(
         POLL_CURRENT_CATEGORIES
     )

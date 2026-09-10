@@ -428,3 +428,304 @@ sources:
       page_or_table: Vid10, 2022M05, ME0201B1
       archive_status: LIVE_API
 
+  - id: scb_psu_2014M11_original_report
+    source: Partisympatiundersökningen november 2014
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig publiceringsvintage, PSU november 2014
+    url: https://urn.kb.se/resolve?urn=urn:nbn:se:scb-2014-me60br1402_pdf
+    retrieved_at: "2026-09-10T22:09:57.925220+00:00"
+    reference_period: "2014-10-29–2014-11-25"
+    geography_version: NATIONAL
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/psu_2014M11_original.pdf
+    sha256: bb3cdb60301afbaea89685551c2582b02d792d2bfac7a8abcbfecbc603cd3965
+    notes: Originalvintage via KB URN; första vågen efter 2014, exkluderad från primär 2018-hierarki men sparad som sensitivitet.
+    status: verified_download
+    usage: survey_corpus_2018
+    vintages:
+      - value: ORIGINAL_PRE_2020_PDF
+        reference_date: "2014-11-25"
+        available_date: "2014-12-04"
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2014-12-04"
+      fieldwork_start: "2014-10-29"
+      fieldwork_end: "2014-11-25"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 9031
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Poststratifiering på föregående partival
+      question_wording: Parti i riksdagsval 2014 och parti vid val idag
+      extraction_method: PDF_TABLE
+      page_or_table: Tabell 21, lokaliserad dynamiskt
+      archive_status: KB_URN_RESOLVER
+
+  - id: scb_psu_2015M05_original_report
+    source: Partisympatiundersökningen maj 2015
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig publiceringsvintage, PSU maj 2015
+    url: https://urn.kb.se/resolve?urn=urn:nbn:se:scb-2015-me60br1501_pdf
+    retrieved_at: "2026-09-10T22:09:57.926778+00:00"
+    reference_period: "2015-04-27–2015-05-27"
+    geography_version: NATIONAL
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/psu_2015M05_original.pdf
+    sha256: 06d1a67ed7377d5d766da0f97fe2876f752788a66330785731c1b9712aa08a9e
+    notes: Originalvintage via KB URN; extra mixed-mode-panel, exkluderad från primär 2018-hierarki men sparad som sensitivitet.
+    status: verified_download
+    usage: survey_corpus_2018
+    vintages:
+      - value: ORIGINAL_PRE_2020_PDF
+        reference_date: "2015-05-27"
+        available_date: "2015-06-08"
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2015-06-08"
+      fieldwork_start: "2015-04-27"
+      fieldwork_end: "2015-05-27"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 12091
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Poststratifiering på föregående partival
+      question_wording: Parti i riksdagsval 2014 och parti vid val idag
+      extraction_method: PDF_TABLE
+      page_or_table: Tabell 21, lokaliserad dynamiskt
+      archive_status: KB_URN_RESOLVER
+
+  - id: scb_psu_2015M11_original_report
+    source: Partisympatiundersökningen november 2015
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig publiceringsvintage, PSU november 2015
+    url: https://urn.kb.se/resolve?urn=urn:nbn:se:scb-2015-me60br1502_pdf
+    retrieved_at: "2026-09-10T22:09:57.928209+00:00"
+    reference_period: "2015-11-02–2015-11-25"
+    geography_version: NATIONAL
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/psu_2015M11_original.pdf
+    sha256: c232fb8ed6d7f0fcdcf15166c3164d2542a6e7be1d119f39f9572731c1de5990
+    notes: Originalvintage via KB URN; Folkpartiet bytte namn till Liberalerna denna våg.
+    status: verified_download
+    usage: survey_corpus_2018
+    vintages:
+      - value: ORIGINAL_PRE_2020_PDF
+        reference_date: "2015-11-25"
+        available_date: "2015-12-03"
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2015-12-03"
+      fieldwork_start: "2015-11-02"
+      fieldwork_end: "2015-11-25"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 9021
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Poststratifiering på föregående partival
+      question_wording: Parti i riksdagsval 2014 och parti vid val idag
+      extraction_method: PDF_TABLE
+      page_or_table: Tabell 21, lokaliserad dynamiskt
+      archive_status: KB_URN_RESOLVER
+
+  - id: scb_psu_2016M05_original_report
+    source: Partisympatiundersökningen maj 2016
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig publiceringsvintage, PSU maj 2016
+    url: https://urn.kb.se/resolve?urn=urn:nbn:se:scb-2016-me60br1601_pdf
+    retrieved_at: "2026-09-10T22:09:57.930036+00:00"
+    reference_period: "2016-04-28–2016-05-26"
+    geography_version: NATIONAL
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/psu_2016M05_original.pdf
+    sha256: 1966383d6a524de302d2e88b374cca148db2d6575e3415e3dd6adc6d645a6e0f
+    notes: Originalvintage via KB URN; första vågen med full mixed-mode.
+    status: verified_download
+    usage: survey_corpus_2018
+    vintages:
+      - value: ORIGINAL_PRE_2020_PDF
+        reference_date: "2016-05-26"
+        available_date: "2016-06-02"
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2016-06-02"
+      fieldwork_start: "2016-04-28"
+      fieldwork_end: "2016-05-26"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 9033
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Poststratifiering på föregående partival
+      question_wording: Parti i riksdagsval 2014 och parti vid val idag
+      extraction_method: PDF_TABLE
+      page_or_table: Tabell 21, lokaliserad dynamiskt
+      archive_status: KB_URN_RESOLVER
+
+  - id: scb_psu_2016M11_original_report
+    source: Partisympatiundersökningen november 2016
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig publiceringsvintage, PSU november 2016
+    url: https://urn.kb.se/resolve?urn=urn:nbn:se:scb-2016-me60br1602_pdf
+    retrieved_at: "2026-09-10T22:09:57.932306+00:00"
+    reference_period: "2016-10-28–2016-11-27"
+    geography_version: NATIONAL
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/psu_2016M11_original.pdf
+    sha256: 33e1dda2e803502d10700962eb825e34be18a34cc6ae370c1135ac8176c9a9ab
+    notes: Originalvintage via KB URN; 2014-referens, prediktiv träning för 2018-hierarkin.
+    status: verified_download
+    usage: survey_corpus_2018
+    vintages:
+      - value: ORIGINAL_PRE_2020_PDF
+        reference_date: "2016-11-27"
+        available_date: "2016-11-30"
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2016-11-30"
+      fieldwork_start: "2016-10-28"
+      fieldwork_end: "2016-11-27"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 8952
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Poststratifiering på föregående partival
+      question_wording: Parti i riksdagsval 2014 och parti vid val idag
+      extraction_method: PDF_TABLE
+      page_or_table: Tabell 21, lokaliserad dynamiskt
+      archive_status: KB_URN_RESOLVER
+
+  - id: scb_psu_2017M05_original_report
+    source: Partisympatiundersökningen maj 2017
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig publiceringsvintage, PSU maj 2017
+    url: https://urn.kb.se/resolve?urn=urn:nbn:se:scb-2017-me60br1701_pdf
+    retrieved_at: "2026-09-10T22:09:57.934117+00:00"
+    reference_period: "2017-04-27–2017-05-25"
+    geography_version: NATIONAL
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/psu_2017M05_original.pdf
+    sha256: 3951853da50d0c6ba4e9ced383472284e9e04e7837c933367c298ac18c082e1b
+    notes: Originalvintage via KB URN; direkt SCB-fallback https://www.scb.se/contentassets/fd0936a6f2a64881b22d2cb9628b9a45/me0201_2017m05_br_me60br1701.pdf
+    status: verified_download
+    usage: survey_corpus_2018
+    vintages:
+      - value: ORIGINAL_PRE_2020_PDF
+        reference_date: "2017-05-25"
+        available_date: "2017-06-02"
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2017-06-02"
+      fieldwork_start: "2017-04-27"
+      fieldwork_end: "2017-05-25"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 8973
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Poststratifiering på föregående partival
+      question_wording: Parti i riksdagsval 2014 och parti vid val idag
+      extraction_method: PDF_TABLE
+      page_or_table: Tabell 21, lokaliserad dynamiskt
+      archive_status: KB_URN_RESOLVER
+
+  - id: scb_psu_2017M11_original_report
+    source: Partisympatiundersökningen november 2017
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig publiceringsvintage, PSU november 2017
+    url: https://urn.kb.se/resolve?urn=urn:nbn:se:scb-2017-me60br1702_pdf
+    retrieved_at: "2026-09-10T22:09:57.936655+00:00"
+    reference_period: "2017-10-30–2017-11-26"
+    geography_version: NATIONAL
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/psu_2017M11_original.pdf
+    sha256: fac9623d355a306e703b79540226acb431897b987623f29e84ba87b6426a19c1
+    notes: Originalvintage via KB URN; orörd survey-valideringsvåg för 2018-hierarkin.
+    status: verified_download
+    usage: survey_corpus_2018
+    vintages:
+      - value: ORIGINAL_PRE_2020_PDF
+        reference_date: "2017-11-26"
+        available_date: "2017-12-08"
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2017-12-08"
+      fieldwork_start: "2017-10-30"
+      fieldwork_end: "2017-11-26"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 8919
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Poststratifiering på föregående partival
+      question_wording: Parti i riksdagsval 2014 och parti vid val idag
+      extraction_method: PDF_TABLE
+      page_or_table: Tabell 21, lokaliserad dynamiskt
+      archive_status: KB_URN_RESOLVER
+
+  - id: scb_psu_transition_2018M11_2021M11
+    source: Statistikdatabasen Rostningssympati1900
+    provider: Statistiska centralbyrån
+    dataset: Partival 2018 × partival nu, PSU 2018M11–2021M11
+    url: https://api.scb.se/OV0104/v1/doris/sv/ssd/START/ME/ME0201/ME0201A/Rostningssympati1900
+    retrieved_at: "2026-09-10T22:09:57.937548+00:00"
+    reference_period: 2018M11–2021M11
+    geography_version: NATIONAL
+    license: CC0
+    raw_file: data/raw/scb/psu/transition_2018M11_2021M11.json
+    sha256: e54d2480ff335346ad0b351c69f6b452ae71dfab16c05222fecbd41e73fe124f
+    notes: Reviderad live-tabell tillgänglig från maj 2020; 2018M11 sparas men exkluderas från primär 2022-hierarki. Inga målvalsvågor ingår.
+    status: verified_post_api
+    usage: survey_corpus_2022
+    vintages:
+      - value: REVISED_2020_AVAILABLE_AT_CUTOFF
+        reference_date: "2020-05-01"
+        available_date: "2020-06-11"
+    http_method: POST
+    request_body:
+      query:
+        - code: PvalRV
+          selection:
+            filter: item
+            values:
+              - m
+              - c
+              - l
+              - kd
+              - mp
+              - s
+              - v
+              - SD
+              - övr
+              - ej röstat
+              - ej röstberättigad
+              - uppgift saknas
+              - hela väljarkåren
+        - code: Pvalnu
+          selection: {filter: all, values: ["*"]}
+        - code: ContentsCode
+          selection: {filter: all, values: ["*"]}
+        - code: Tid
+          selection:
+            filter: item
+            values:
+              - 2018M11
+              - 2019M05
+              - 2019M11
+              - 2020M05
+              - 2020M11
+              - 2021M05
+              - 2021M11
+      response:
+        format: json-stat2
+

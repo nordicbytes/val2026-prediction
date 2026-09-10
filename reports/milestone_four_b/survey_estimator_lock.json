@@ -92,7 +92,7 @@
     {
       "previous_party": "OTHER",
       "kappa": 100.0,
-      "log_score": -966.7505172648969,
+      "log_score": -966.7505172648968,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -218,7 +218,7 @@
     {
       "previous_party": "OTHER",
       "kappa": 100.0,
-      "log_score": -456.4849686666946,
+      "log_score": -456.48496866669467,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -232,7 +232,7 @@
     {
       "previous_party": "S",
       "kappa": 100.0,
-      "log_score": -4002.75490317766,
+      "log_score": -4002.754903177659,
       "underidentified": false,
       "used_fallback": false,
       "n_calendar_years": 3,
@@ -273,9 +273,10 @@
     }
   ],
   "artifact_sha256": {
-    "hierarchy_selected_concentrations.csv": "3f91a90014ea11aac4e6c91afae1a35941621c49a6905fd9d0c5a2565f2cfcc9",
-    "hierarchy_survey_cv.csv": "6d7074de276c8b9d287b325094b0a60c11ae2502473a182f8f4b5e77fc627e64",
-    "hierarchy_untouched_survey_validation.csv": "a4f051948257b6a860d9389a0e6612c451fa37c1d445484eda87eb3964be409b"
+    "hierarchy_selected_concentrations.csv": "cde445347d97149f4453db6de1a07b5ecb7762ee4decf1024e55008e3dc71d85",
+    "hierarchy_previous_party_means.csv": "11c2cbaefb87b48a41bdf4a5e4f0262cf6696a6019c9d493889de5d4b2ddc960",
+    "hierarchy_survey_cv.csv": "9be327f9e343b5799b4c42a99560166960232c45292cd418983b1808c44befcf",
+    "hierarchy_untouched_survey_validation.csv": "a681b30b998e01ff5a4eeb37f74e971a8b284ca66d0e028ff5ee31eae06f8e7a"
   },
   "forbidden_inputs_confirmed_absent": [
     "election_results_2018",

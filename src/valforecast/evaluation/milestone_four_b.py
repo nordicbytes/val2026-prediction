@@ -45,6 +45,7 @@ def lock_survey_estimators(root: Path, *, fetch_missing: bool = True) -> dict[st
     output.mkdir(parents=True, exist_ok=True)
     cells = pl.read_parquet(processed / "survey_corpus_cells.parquet")
     selected_frames: list[pl.DataFrame] = []
+    mean_frames: list[pl.DataFrame] = []
     fold_frames: list[pl.DataFrame] = []
     audit_frames: list[pl.DataFrame] = []
     for cycle, target_wave, validation_wave in (
@@ -68,6 +69,22 @@ def lock_survey_estimators(root: Path, *, fetch_missing: bool = True) -> dict[st
                 pl.lit(fit.selection_metric).alias("selection_metric"),
             )
         )
+        mean_frames.append(
+            pl.DataFrame(
+                [
+                    {
+                        "election_cycle": cycle,
+                        "previous_party": previous_party,
+                        "current_party": current_party,
+                        "prior_mean": float(
+                            fit.means[previous_party][PARTIES.index(current_party)]
+                        ),
+                    }
+                    for previous_party in PARTIES
+                    for current_party in PARTIES
+                ]
+            )
+        )
         fold_frames.append(
             fit.fold_scores.with_columns(pl.lit(cycle).alias("election_cycle"))
         )
@@ -79,14 +96,19 @@ def lock_survey_estimators(root: Path, *, fetch_missing: bool = True) -> dict[st
             )
         )
     selected = pl.concat(selected_frames).sort("election_cycle", "previous_party")
+    means = pl.concat(mean_frames).sort(
+        "election_cycle", "previous_party", "current_party"
+    )
     folds = pl.concat(fold_frames).sort(
         "election_cycle", "previous_party", "held_out_year", "wave_id", "kappa"
     )
     audits = pl.concat(audit_frames).sort("election_cycle", "previous_party")
     selected_path = output / "hierarchy_selected_concentrations.csv"
+    means_path = output / "hierarchy_previous_party_means.csv"
     folds_path = output / "hierarchy_survey_cv.csv"
     audit_path = output / "hierarchy_untouched_survey_validation.csv"
     selected.write_csv(selected_path, float_precision=12)
+    means.write_csv(means_path, float_precision=12)
     folds.write_csv(folds_path, float_precision=12)
     audits.write_csv(audit_path, float_precision=12)
     lock = {
@@ -96,6 +118,7 @@ def lock_survey_estimators(root: Path, *, fetch_missing: bool = True) -> dict[st
         "selected_concentrations": _records_for_json(selected),
         "artifact_sha256": {
             selected_path.name: _sha256(selected_path),
+            means_path.name: _sha256(means_path),
             folds_path.name: _sha256(folds_path),
             audit_path.name: _sha256(audit_path),
         },

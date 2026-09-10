@@ -77,6 +77,9 @@ of 2,000 independently raked survey draws.
 `T1_published_point_raked` isolates the directly raked published matrix.
 Suppression and nonparty variants are preregistered diagnostics. The
 hierarchical estimator remains secondary and cannot replace the primary.
+The nonparty-allocation sensitivity loses to B2 in 2018 and is effectively
+flat in 2022. `SUPPORTED` therefore applies to the locked stated-party
+estimand; it is not robustness to assumptions about unresolved respondents.
 
 ## Survey uncertainty
 

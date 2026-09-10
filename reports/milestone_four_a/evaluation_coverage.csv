@@ -1,0 +1,3 @@
+transition_id,from_election,to_election,evaluation_districts,physical_target_districts,district_coverage,evaluation_valid_votes,national_valid_votes,vote_coverage,mapping_methods,mapping_qualities,comparable_target_districts,merged_target_districts,split_comparable_target_districts
+2014_2018,2014,2018,4631,6004,0.771319120586,4858338,6476725,0.750122631423,OFFICIAL_COMPARABLE + OFFICIAL_MERGE,HIGH,4611,20,0
+2018_2022,2018,2022,4164,6264,0.664750957854,4201935,6477970,0.648649962874,OFFICIAL_COMPARABLE + OFFICIAL_MERGE + OFFICIAL_SPLIT_COMPARABLE,HIGH,4153,11,2

@@ -1,0 +1,46 @@
+transition_id,model,municipality_main_group,weighted_mae,weighted_observations
+2014_2018,B2_poll_state,Mindre orter och landsbygd,0.018023303007,12709512
+2014_2018,B2_poll_state,Storstäder och storstadsnära,0.023150168907,13965138
+2014_2018,B2_poll_state,Större städer och närkommuner,0.018316344784,17050392
+2014_2018,T0_calibrated,Mindre orter och landsbygd,0.022016417159,12709512
+2014_2018,T0_calibrated,Storstäder och storstadsnära,0.024734153430,13965138
+2014_2018,T0_calibrated,Större städer och närkommuner,0.021794588795,17050392
+2014_2018,T0_calibrated_nonparty_poll,Mindre orter och landsbygd,0.021413050092,12709512
+2014_2018,T0_calibrated_nonparty_poll,Storstäder och storstadsnära,0.023902024201,13965138
+2014_2018,T0_calibrated_nonparty_poll,Större städer och närkommuner,0.021143588604,17050392
+2014_2018,T0_calibrated_prior_0,Mindre orter och landsbygd,0.018154179436,12709512
+2014_2018,T0_calibrated_prior_0,Storstäder och storstadsnära,0.020626590593,13965138
+2014_2018,T0_calibrated_prior_0,Större städer och närkommuner,0.018264376578,17050392
+2014_2018,T0_calibrated_prior_1000,Mindre orter och landsbygd,0.028589008255,12709512
+2014_2018,T0_calibrated_prior_1000,Storstäder och storstadsnära,0.032792055365,13965138
+2014_2018,T0_calibrated_prior_1000,Större städer och närkommuner,0.027862009206,17050392
+2014_2018,T0_raw,Mindre orter och landsbygd,0.016958107761,12709512
+2014_2018,T0_raw,Storstäder och storstadsnära,0.019142549896,13965138
+2014_2018,T0_raw,Större städer och närkommuner,0.017100952389,17050392
+2014_2018,T0_shrunk_uncalibrated,Mindre orter och landsbygd,0.022791504114,12709512
+2014_2018,T0_shrunk_uncalibrated,Storstäder och storstadsnära,0.026971947817,13965138
+2014_2018,T0_shrunk_uncalibrated,Större städer och närkommuner,0.022914051111,17050392
+2018_2022,B2_poll_state,Mindre orter och landsbygd,0.021418555959,11586618
+2018_2022,B2_poll_state,Storstäder och storstadsnära,0.022092963995,12815325
+2018_2022,B2_poll_state,Större städer och närkommuner,0.020325186519,13415472
+2018_2022,T0_calibrated,Mindre orter och landsbygd,0.023083772065,11586618
+2018_2022,T0_calibrated,Storstäder och storstadsnära,0.025014874187,12815325
+2018_2022,T0_calibrated,Större städer och närkommuner,0.022490564873,13415472
+2018_2022,T0_calibrated_nonparty_poll,Mindre orter och landsbygd,0.021244190682,11586618
+2018_2022,T0_calibrated_nonparty_poll,Storstäder och storstadsnära,0.022153070228,12815325
+2018_2022,T0_calibrated_nonparty_poll,Större städer och närkommuner,0.020555207798,13415472
+2018_2022,T0_calibrated_prior_0,Mindre orter och landsbygd,0.020584950080,11586618
+2018_2022,T0_calibrated_prior_0,Storstäder och storstadsnära,0.020643479659,12815325
+2018_2022,T0_calibrated_prior_0,Större städer och närkommuner,0.019788222311,13415472
+2018_2022,T0_calibrated_prior_1000,Mindre orter och landsbygd,0.028075898695,11586618
+2018_2022,T0_calibrated_prior_1000,Storstäder och storstadsnära,0.032583660859,12815325
+2018_2022,T0_calibrated_prior_1000,Större städer och närkommuner,0.027634953271,13415472
+2018_2022,T0_calibrated_suppressed_zero,Mindre orter och landsbygd,0.020528592561,11586618
+2018_2022,T0_calibrated_suppressed_zero,Storstäder och storstadsnära,0.020358242191,12815325
+2018_2022,T0_calibrated_suppressed_zero,Större städer och närkommuner,0.019667906443,13415472
+2018_2022,T0_raw,Mindre orter och landsbygd,0.020006213698,11586618
+2018_2022,T0_raw,Storstäder och storstadsnära,0.022269010504,12815325
+2018_2022,T0_raw,Större städer och närkommuner,0.019907145396,13415472
+2018_2022,T0_shrunk_uncalibrated,Mindre orter och landsbygd,0.024746870177,11586618
+2018_2022,T0_shrunk_uncalibrated,Storstäder och storstadsnära,0.029544109379,12815325
+2018_2022,T0_shrunk_uncalibrated,Större städer och närkommuner,0.025300252616,13415472

@@ -1,0 +1,11 @@
+{
+  "conclusion": "UNCLEAR",
+  "primary_model": "T0_calibrated",
+  "baseline_model": "B2_poll_state",
+  "available_strict_cycles": [
+    2018,
+    2022
+  ],
+  "blocked_strict_cycles": [],
+  "primary_prior_strength": 200.0
+}

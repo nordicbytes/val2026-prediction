@@ -1,0 +1,10 @@
+election_cycle,wave_id,prior_strength,suppressed_strategy,nonparty_strategy,iterations,converged,maximum_margin_error,kl_divergence
+2018,scb_2018M05_original,0.000000000000,allocate_gap,condition,35,true,0.000000000098,0.001780390596
+2018,scb_2018M05_original,0.000000000000,allocate_gap,allocate_poll,16,true,0.000000000081,0.001840990816
+2018,scb_2018M05_original,200.000000000000,allocate_gap,condition,21,true,0.000000000044,0.004065527610
+2018,scb_2018M05_original,1000.000000000000,allocate_gap,condition,11,true,0.000000000022,0.005813500116
+2022,scb_2022M05,0.000000000000,allocate_gap,condition,48,true,0.000000000085,0.003564216172
+2022,scb_2022M05,0.000000000000,zero_sensitivity,condition,57,true,0.000000000082,0.004456721916
+2022,scb_2022M05,0.000000000000,allocate_gap,allocate_poll,30,true,0.000000000098,0.003001118941
+2022,scb_2022M05,200.000000000000,allocate_gap,condition,20,true,0.000000000039,0.006753478811
+2022,scb_2022M05,1000.000000000000,allocate_gap,condition,10,true,0.000000000016,0.004360694201

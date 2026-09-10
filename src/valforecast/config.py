@@ -33,6 +33,25 @@ class SourceVintage:
 
 
 @dataclass(frozen=True)
+class PollSourceMetadata:
+    election_cycle: int
+    pollster: str
+    publication_date: str
+    fieldwork_start: str
+    fieldwork_end: str
+    information_level: str
+    population: str
+    sample_size: int | None
+    sample_size_basis: str
+    effective_n: float | None
+    survey_weight_method: str
+    question_wording: str
+    extraction_method: str
+    page_or_table: str
+    archive_status: str
+
+
+@dataclass(frozen=True)
 class Source:
     id: str
     source: str
@@ -51,6 +70,7 @@ class Source:
     request_body: dict[str, object] | None = None
     usage: str | None = None
     vintages: tuple[SourceVintage, ...] = ()
+    poll: PollSourceMetadata | None = None
 
 
 def load_sources(path: Path) -> list[Source]:
@@ -93,6 +113,72 @@ def load_sources(path: Path) -> list[Source]:
                     available_date=available_date,
                 )
             )
+        poll_raw = row.get("poll")
+        poll: PollSourceMetadata | None = None
+        if poll_raw is not None:
+            if not isinstance(poll_raw, dict):
+                raise ValueError(f"Poll metadata must be a mapping: {row['id']}")
+            required_poll = {
+                "election_cycle",
+                "pollster",
+                "publication_date",
+                "fieldwork_start",
+                "fieldwork_end",
+                "information_level",
+                "population",
+                "sample_size",
+                "sample_size_basis",
+                "effective_n",
+                "survey_weight_method",
+                "question_wording",
+                "extraction_method",
+                "page_or_table",
+                "archive_status",
+            }
+            missing_poll = required_poll - poll_raw.keys()
+            if missing_poll:
+                raise ValueError(
+                    f"Incomplete poll metadata for {row['id']}: {sorted(missing_poll)}"
+                )
+            fieldwork_start = date.fromisoformat(str(poll_raw["fieldwork_start"]))
+            fieldwork_end = date.fromisoformat(str(poll_raw["fieldwork_end"]))
+            publication_date = date.fromisoformat(str(poll_raw["publication_date"]))
+            if fieldwork_start > fieldwork_end or fieldwork_end > publication_date:
+                raise ValueError(f"Invalid poll chronology: {row['id']}")
+            information_level = str(poll_raw["information_level"])
+            allowed_levels = {
+                "MICRODATA",
+                "FULL_TRANSITION_TABLE",
+                "PARTIAL_TRANSITION_TABLE",
+                "MARGINAL_ONLY",
+            }
+            if information_level not in allowed_levels:
+                raise ValueError(f"Invalid poll information level: {row['id']}")
+            poll = PollSourceMetadata(
+                election_cycle=int(poll_raw["election_cycle"]),
+                pollster=str(poll_raw["pollster"]),
+                publication_date=publication_date.isoformat(),
+                fieldwork_start=fieldwork_start.isoformat(),
+                fieldwork_end=fieldwork_end.isoformat(),
+                information_level=information_level,
+                population=str(poll_raw["population"]),
+                sample_size=(
+                    int(poll_raw["sample_size"])
+                    if poll_raw["sample_size"] is not None
+                    else None
+                ),
+                sample_size_basis=str(poll_raw["sample_size_basis"]),
+                effective_n=(
+                    float(poll_raw["effective_n"])
+                    if poll_raw["effective_n"] is not None
+                    else None
+                ),
+                survey_weight_method=str(poll_raw["survey_weight_method"]),
+                question_wording=str(poll_raw["question_wording"]),
+                extraction_method=str(poll_raw["extraction_method"]),
+                page_or_table=str(poll_raw["page_or_table"]),
+                archive_status=str(poll_raw["archive_status"]),
+            )
         source = Source(
             id=str(row["id"]),
             source=str(row["source"]),
@@ -115,6 +201,7 @@ def load_sources(path: Path) -> list[Source]:
             ),
             usage=str(row["usage"]) if row.get("usage") is not None else None,
             vintages=tuple(vintages),
+            poll=poll,
         )
         if source.id in seen_ids:
             raise ValueError(f"Duplicate source id: {source.id}")

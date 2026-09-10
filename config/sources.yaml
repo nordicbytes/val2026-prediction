@@ -296,3 +296,135 @@ sources:
     notes: Listan gäller SKR:s 2017-indelning; 2023-indelningen får inte ersätta den i 2022-backtest.
     status: verified_download
 
+  - id: scb_psu_may_2018_original_report
+    source: Partisympatiundersökningen maj 2018
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig publiceringsvintage, PSU maj 2018
+    url: https://urn.kb.se/resolve?urn=urn:nbn:se:scb-2018-me60br1801_pdf
+    retrieved_at: "2026-09-10T21:02:43.845462+00:00"
+    reference_period: "2018-04-27–2018-05-29"
+    geography_version: NATIONAL
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/psu_may_2018_original.pdf
+    sha256: e151389f255512744f3148ecd2b545b1f1e43c9398c0cb27380d179f7d47c73e
+    notes: Originalvintage hämtad via Kungliga bibliotekets URN-resolver; äldre PSU-serier räknades om 2020.
+    status: verified_download
+    usage: strict_t0
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2018-06-11"
+      fieldwork_start: "2018-04-27"
+      fieldwork_end: "2018-05-29"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 8951
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Poststratifiering på föregående partival × 10 valkretsgrupper
+      question_wording: Parti i riksdagsval 2014 och parti vid val idag
+      extraction_method: PDF_TABLE
+      page_or_table: Tabell 21, tryckt sida 97/PDF 99; Tablå 1, tryckt sida 3/PDF 5
+      archive_status: KB_URN_RESOLVER
+
+  - id: scb_psu_transition_2022_may
+    source: Statistikdatabasen Rostningssympati1900
+    provider: Statistiska centralbyrån
+    dataset: Partival 2018 × partival nu, PSU 2022M05
+    url: https://api.scb.se/OV0104/v1/doris/sv/ssd/START/ME/ME0201/ME0201A/Rostningssympati1900
+    retrieved_at: "2026-09-10T21:13:18.718245+00:00"
+    reference_period: "2022M05"
+    geography_version: NATIONAL
+    license: CC0
+    raw_file: data/raw/scb/psu/transition_2022M05.json
+    sha256: 3e13c316c96aec6b7bbbede5500fdfcb9e7625f1d0cfc3994e8a328ae9b5a53b
+    notes: Viktade procentskattningar, felmarginaler och oviktat bastal; post-election waves får inte användas.
+    status: verified_post_api
+    usage: strict_t0
+    http_method: POST
+    request_body:
+      query:
+        - code: PvalRV
+          selection:
+            filter: item
+            values:
+              - m
+              - c
+              - l
+              - kd
+              - mp
+              - s
+              - v
+              - SD
+              - övr
+              - ej röstat
+              - ej röstberättigad
+              - uppgift saknas
+              - hela väljarkåren
+        - code: Pvalnu
+          selection: {filter: all, values: ["*"]}
+        - code: ContentsCode
+          selection: {filter: all, values: ["*"]}
+        - code: Tid
+          selection: {filter: item, values: [2022M05]}
+      response:
+        format: json-stat2
+    poll:
+      election_cycle: 2022
+      pollster: SCB
+      publication_date: "2022-06-08"
+      fieldwork_start: "2022-04-28"
+      fieldwork_end: "2022-05-25"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 4274
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: SCB:s justerade val-idag-estimator; se kvalitetsdeklarationen
+      question_wording: Vilket parti skulle du rösta på om det vore riksdagsval?
+      extraction_method: PXWEB_API
+      page_or_table: Rostningssympati1900, 2022M05
+      archive_status: LIVE_API
+
+  - id: scb_psu_national_2022_may
+    source: Statistikdatabasen Vid10
+    provider: Statistiska centralbyrån
+    dataset: Val idag, PSU 2022M05
+    url: https://api.scb.se/OV0104/v1/doris/sv/ssd/START/ME/ME0201/ME0201A/Vid10
+    retrieved_at: "2026-09-10T20:53:57.450428+00:00"
+    reference_period: "2022M05"
+    geography_version: NATIONAL
+    license: CC0
+    raw_file: data/raw/scb/psu/national_poll_2022M05.json
+    sha256: 7b6fe44a0a666acb4260c5c7e6c6222b358737854c9accefad63a72f41a440de
+    notes: Samma PSU-wave som transitionstabellen och används som gemensamt national state för B2 och T0.
+    status: verified_post_api
+    usage: strict_t0_calibration
+    http_method: POST
+    request_body:
+      query:
+        - code: Parti
+          selection: {filter: item, values: [c, l, m, kd, s, v, mp, SD, övr]}
+        - code: ContentsCode
+          selection: {filter: item, values: [ME0201B1]}
+        - code: Tid
+          selection: {filter: item, values: [2022M05]}
+      response:
+        format: json-stat2
+    poll:
+      election_cycle: 2022
+      pollster: SCB
+      publication_date: "2022-06-02"
+      fieldwork_start: "2022-04-28"
+      fieldwork_end: "2022-05-25"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade i riksdagsval
+      sample_size: 4274
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: SCB val-idag-estimator
+      question_wording: Vilket parti skulle du rösta på om det vore riksdagsval?
+      extraction_method: PXWEB_API
+      page_or_table: Vid10, 2022M05, ME0201B1
+      archive_status: LIVE_API
+

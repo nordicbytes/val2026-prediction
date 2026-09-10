@@ -8,6 +8,7 @@ from typing import Annotated
 import typer
 
 from valforecast.config import load_sources
+from valforecast.evaluation.milestone_four_a import run_milestone_four_a
 from valforecast.evaluation.milestone_three import run_milestone_three
 from valforecast.evaluation.milestone_two import run_milestone_two
 from valforecast.ingest.fetch import fetch_source
@@ -73,4 +74,10 @@ def analyze_structure() -> None:
 @app.command("validate-temporally")
 def validate_temporally() -> None:
     summary = run_milestone_three(_root())
+    typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))
+
+
+@app.command("validate-transitions")
+def validate_transitions() -> None:
+    summary = run_milestone_four_a(_root())
     typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prognos riksdagsvalet 2026</title>
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link
+  rel="stylesheet"
+  href="https://api.fontshare.com/v2/css?f%5B%5D=satoshi@400,500,700,900&f%5B%5D=gambetta@400,500&display=swap"
+/>
+<style>
+  :root {
+    --ink: #14161a;
+    --ink-soft: #4a5058;
+    --ink-faint: #868d96;
+    --paper: #fbfaf8;
+    --card: #ffffff;
+    --line: #e6e3dd;
+    --line-soft: #f0eee9;
+
+    --s: #e8112d;
+    --sd: #ddb500;
+    --m: #52bdec;
+    --c: #009933;
+    --v: #af0000;
+    --mp: #83cf39;
+    --kd: #231977;
+    --l: #006ab3;
+    --other: #9aa0a8;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Satoshi", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 28px; }
+
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 72px 0 40px;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin: 0 0 18px;
+  }
+
+  h1 {
+    font-family: "Gambetta", Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(38px, 6vw, 62px);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    margin: 0 0 20px;
+  }
+
+  .lede {
+    font-size: 20px;
+    color: var(--ink-soft);
+    max-width: 60ch;
+    margin: 0 0 32px;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    font-size: 14px;
+    color: var(--ink-faint);
+  }
+
+  .meta b { color: var(--ink); font-weight: 500; }
+
+  h2 {
+    font-family: "Gambetta", Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(26px, 3.4vw, 34px);
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+  }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 32px 0 8px;
+  }
+
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+
+  .section-note {
+    color: var(--ink-soft);
+    max-width: 64ch;
+    margin: 0 0 32px;
+  }
+
+  p { margin: 0 0 16px; }
+
+  /* ---------- bar chart ---------- */
+
+  .chart { margin: 8px 0 4px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 128px 1fr 116px;
+    align-items: center;
+    gap: 18px;
+    padding: 9px 0;
+  }
+
+  .party { display: flex; align-items: center; gap: 11px; min-width: 0; }
+
+  .mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    flex: 0 0 30px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+  }
+
+  .mark.light { color: #14161a; }
+
+  .party-name { font-size: 14px; color: var(--ink-soft); font-weight: 500; }
+
+  .track {
+    position: relative;
+    height: 30px;
+    background: var(--line-soft);
+    border-radius: 3px;
+  }
+
+  .bar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 3px;
+  }
+
+  .ci {
+    position: absolute;
+    top: 50%;
+    height: 11px;
+    transform: translateY(-50%);
+    border-left: 2px solid rgba(20, 22, 26, 0.5);
+    border-right: 2px solid rgba(20, 22, 26, 0.5);
+  }
+
+  .ci::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: 2px solid rgba(20, 22, 26, 0.28);
+  }
+
+  .threshold {
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    width: 0;
+    border-left: 1px dashed #b9b3a8;
+  }
+
+  .value { text-align: right; font-variant-numeric: tabular-nums; }
+  .value .pt { font-size: 19px; font-weight: 700; }
+  .value .rng { display: block; font-size: 12px; color: var(--ink-faint); }
+
+  .axis {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 6px;
+    padding-left: 146px;
+    padding-right: 134px;
+  }
+
+  .caption {
+    font-size: 13px;
+    color: var(--ink-faint);
+    margin-top: 18px;
+    max-width: 70ch;
+  }
+
+  /* ---------- blocks ---------- */
+
+  .blocks { display: grid; gap: 18px; margin: 8px 0 0; }
+
+  .block-row { display: grid; grid-template-columns: 200px 1fr 90px; gap: 18px; align-items: center; }
+
+  .block-label { font-size: 14px; font-weight: 500; }
+  .block-label span { display: block; font-size: 12px; color: var(--ink-faint); font-weight: 400; }
+
+  .block-track { position: relative; height: 34px; background: var(--line-soft); border-radius: 3px; }
+  .block-bar { position: absolute; inset: 0 auto 0 0; border-radius: 3px; display: flex; }
+  .block-seg { height: 100%; }
+  .block-value { text-align: right; font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ---------- tables ---------- */
+
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+
+  caption { text-align: left; font-size: 13px; color: var(--ink-faint); padding-bottom: 10px; }
+
+  th {
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 0 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  td {
+    padding: 11px 12px 11px 0;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
+
+  .scroll { overflow-x: auto; }
+
+  /* ---------- steps ---------- */
+
+  ol.steps { counter-reset: step; list-style: none; margin: 0; padding: 0; }
+
+  ol.steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 22px 52px;
+    border-left: 1px solid var(--line);
+    margin-left: 14px;
+  }
+
+  ol.steps li:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: -15px;
+    top: 0;
+    width: 29px;
+    height: 29px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  ol.steps b { display: block; font-weight: 700; }
+  ol.steps p { color: var(--ink-soft); margin: 2px 0 0; }
+
+  .note {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin: 28px 0 0;
+  }
+
+  .note h3 { margin-top: 0; }
+  .note p:last-child { margin-bottom: 0; }
+
+  ul.plain { margin: 0 0 16px; padding-left: 20px; color: var(--ink-soft); }
+  ul.plain li { margin-bottom: 7px; }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em;
+    background: #f3f1ec;
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+
+  footer { padding: 44px 0 72px; font-size: 13.5px; color: var(--ink-faint); }
+  footer a { color: var(--ink-soft); }
+
+  @media (max-width: 700px) {
+    .row { grid-template-columns: 74px 1fr 84px; gap: 12px; }
+    .party-name { display: none; }
+    .axis { padding-left: 86px; padding-right: 96px; }
+    .block-row { grid-template-columns: 120px 1fr 70px; }
+    .value .pt { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Prognos · riksdagsvalet 13 september 2026</p>
+    <h1>Så tror modellen att Sverige röstar</h1>
+    <p class="lede">
+      En prognos byggd på fem opinionsmätningar som publicerats före midnatt den 11 september,
+      kombinerade med hur väljare bytte parti mellan 2022 och i dag. Ingen efterhandsjustering,
+      inga gissningar på fri hand.
+    </p>
+    <div class="meta">
+      <span>Datastopp <b>11 sep 2026, 22:29</b></span>
+      <span>Modell <b>T1 nationell (4B)</b></span>
+      <span>Valdistrikt <b>6 312</b></span>
+      <span>Simuleringar <b>2 000</b></span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>Prognos per parti</h2>
+    <p class="section-note">
+      Staplarna visar prognosens mittvärde i procent av giltiga röster. Det tunna strecket visar
+      hur mycket siffran rör sig när mätningarna får variera — mer om det längre ned.
+    </p>
+    <div class="chart" id="chart"></div>
+    <div class="axis"><span>0 %</span><span>8 %</span><span>16 %</span><span>24 %</span><span>32 %</span></div>
+    <p class="caption">
+      Enhet: procent av giltiga röster. Streckad linje = 4 % riksdagsspärr. Skala 0–32 %.
+      Källa: egen prognos, fem mätningar med fältarbete 2–11 september 2026.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Blocken</h2>
+    <p class="section-note">
+      Summan av partierna på varje sida. Prognosen ger vänster-mitten ett litet försprång, men
+      marginalen är liten nog att de fem mätningarna inte är eniga om den.
+    </p>
+    <div class="blocks" id="blocks"></div>
+    <p class="caption">
+      Enhet: procent av giltiga röster. S+V+C+MP mot M+SD+KD+L. I 98,9 % av simuleringarna är
+      S+V+C+MP störst. Det är ett mått på hur mycket mätningarna skiljer sig, inte en valchans.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Mätningarna som ligger till grund</h2>
+    <p class="section-note">
+      En mätning per institut: den senaste som hunnit publiceras före datastoppet. Vikten avgörs av
+      hur färsk mätningen är och hur många som svarat.
+    </p>
+    <div class="scroll">
+      <table>
+        <caption>Procent av giltiga röster. Vikt = andel av prognosens underlag.</caption>
+        <thead>
+          <tr>
+            <th>Institut</th>
+            <th>Fältperiod</th>
+            <th class="num">Svar</th>
+            <th class="num">Vikt</th>
+            <th class="num">S</th>
+            <th class="num">SD</th>
+            <th class="num">M</th>
+            <th class="num">C</th>
+            <th class="num">V</th>
+            <th class="num">MP</th>
+            <th class="num">KD</th>
+            <th class="num">L</th>
+          </tr>
+        </thead>
+        <tbody id="polls"></tbody>
+      </table>
+    </div>
+    <p class="caption">
+      Verian/SVT och Novus/TV4 är hämtade från institutens egna publiceringar. Ipsos, Indikator och
+      Demoskop är hämtade från publicerade tabeller hos DN/Omni, Expressen och Nyhetsbyrån Direkt,
+      dubbelkollade mot institut eller beställare på metod, fältperiod, antal svar och blocksiffror.
+      Sentio saknar publicerad slutmätning och ingår inte.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Så räknar modellen</h2>
+    <p class="section-note">
+      Grundidén: vi vet exakt hur varje valdistrikt röstade 2022. Mätningarna säger var landet
+      ligger i dag. Modellen kopplar ihop de två.
+    </p>
+
+    <ol class="steps">
+      <li>
+        <b>Slå ihop mätningarna till en nivå</b>
+        <p>
+          De fem mätningarna vägs samman. En mätning tappar hälften av sin vikt var sjunde dag, och
+          mätningar med fler svarande väger mer (kvadratroten ur antalet svar). Bara en mätning per
+          institut får vara med, så att ett institut inte får extra tyngd bara för att det släpper
+          fler mätningar. Resultatet motsvarar ungefär 2 200 svarande.
+        </p>
+      </li>
+      <li>
+        <b>Ta reda på hur väljare byter parti</b>
+        <p>
+          SCB:s partisympatiundersökning från maj 2026 frågar också vad man röstade på 2022. Det ger
+          en tabell över flyttmönster: hur stor andel av 2022 års S-väljare som i dag säger S, M, SD
+          och så vidare. Vi använder den tabellen som den är publicerad, utan att putsa på den.
+        </p>
+      </li>
+      <li>
+        <b>Lägg mönstret på varje valdistrikt</b>
+        <p>
+          Varje distrikts 2022-resultat skickas genom flyttabellen. Ett distrikt som var starkt S
+          2022 får därför en annan prognos än ett som var starkt M — vi utgår från vad människor på
+          platsen faktiskt röstade, inte från ett riksgenomsnitt.
+        </p>
+      </li>
+      <li>
+        <b>Stäm av mot mätningarna</b>
+        <p>
+          Summan av alla distrikt, viktad med antalet röstberättigade, justeras så att den hamnar
+          exakt på nivån från steg 1. Justeringen är den minsta möjliga: den flyttar siffrorna så
+          lite som matematiskt går för att träffa rätt totalnivå. Distriktsmönstret bevaras.
+        </p>
+      </li>
+      <li>
+        <b>Gör om det 2 000 gånger</b>
+        <p>
+          Hela kedjan körs 2 000 gånger. Varje gång dras nya mätningar och nya flyttmönster inom sin
+          osäkerhet. Spridningen mellan körningarna blir intervallen i diagrammet.
+        </p>
+      </li>
+    </ol>
+
+    <div class="note">
+      <h3>Vad intervallen betyder — och inte betyder</h3>
+      <p>
+        Intervallen visar hur mycket prognosen svänger när instituten får variera: vi drar om vilka
+        institut som hamnar i underlaget och lägger till vanligt urvalsfel inom varje mätning.
+      </p>
+      <p>
+        De är <b>inte</b> ett fullständigt felintervall för valresultatet. Tre saker saknas: hur
+        mycket mätningar historiskt brukar missa ett valresultat, opinionsrörelser under de sista
+        dygnen, och osäkerhet om hur många som faktiskt röstar. Verkligt utfall kan alltså ligga
+        utanför intervallet.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Om vi bara hade använt institutens egna filer</h2>
+    <p class="section-note">
+      Ett test av hur känslig prognosen är för valet av källor. Här används bara mätningar som
+      instituten själva publicerat i egna dokument, vilket innebär att Demoskops slutmätning byts
+      mot deras diagram från 3 september och att Ipsos och Indikator faller bort.
+    </p>
+    <div class="scroll">
+      <table>
+        <caption>Procent av giltiga röster. Huvudprognos mot känslighetstest.</caption>
+        <thead>
+          <tr>
+            <th>Parti</th>
+            <th class="num">Huvudprognos</th>
+            <th class="num">Endast egna filer</th>
+            <th class="num">Skillnad</th>
+          </tr>
+        </thead>
+        <tbody id="sens"></tbody>
+      </table>
+    </div>
+    <p class="caption">
+      Skillnaderna är små, med ett undantag: L landar på 4,8 i stället för 5,1, och det testets
+      intervall når ner under spärren. Orsaken är det äldre Demoskop-diagrammet, där L står på 2,8.
+      Huvudprognosen är den som speglar opinionen närmast datastoppet.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Prognos i de största länen</h2>
+    <p class="section-note">
+      Eftersom modellen räknar per valdistrikt går den också att summera geografiskt. Mönstret är
+      det förväntade: SD står svagt i Stockholm och starkt i Skåne, KD starkt i Jönköping.
+    </p>
+    <div class="scroll">
+      <table>
+        <caption>Procent av giltiga röster. De åtta länen med flest röstberättigade.</caption>
+        <thead>
+          <tr>
+            <th>Län</th>
+            <th class="num">Röstberättigade</th>
+            <th class="num">S</th>
+            <th class="num">SD</th>
+            <th class="num">M</th>
+            <th class="num">C</th>
+            <th class="num">V</th>
+            <th class="num">MP</th>
+            <th class="num">KD</th>
+            <th class="num">L</th>
+          </tr>
+        </thead>
+        <tbody id="counties"></tbody>
+      </table>
+    </div>
+    <p class="caption">
+      Vikten är röstberättigade den 14 augusti 2026. Valdeltagandet 2026 är okänt vid datastoppet
+      och ingår inte i beräkningen.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Vad som medvetet inte används</h2>
+    <ul class="plain">
+      <li>Valresultat 2026, VALU och vallokalsundersökningar — finns inte vid datastoppet.</li>
+      <li>Material publicerat efter 11 september 22:29.</li>
+      <li>Regionala flyttmönster. Vi testade dem separat och de höll inte, så modellen använder
+        nationella mönster.</li>
+      <li>Institutspecifika korrigeringar. Sådana kräver en historisk databas över mätningar mot
+        faktiska valresultat, som vi inte har låst.</li>
+      <li>Mandatfördelning. Prognosen gäller röstandelar, inte antal riksdagsplatser.</li>
+      <li>Egna partiloggor. Vi använder partibeteckning och partifärg i stället, eftersom loggorna
+        är skyddade av upphovsrätt.</li>
+    </ul>
+    <p>
+      Allt är låst i efterkontrollerbara filer: en kontraktsfil med alla regler, ett inputlås med
+      kontrollsummor för varje källfil och en oföränderlig resultatfil. Resultatet går att räkna om
+      exakt med samma slumpfrö.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      Prognos <code>forecast-2026-national-4b-v1</code> · slumpfrö 20260911 ·
+      resultatfil <code>forecast_snapshots/official_forecast_2026.json</code> ·
+      kontrollsumma <code>48702a6d…4c9da6f7</code>
+    </p>
+    <p>
+      Prognos, inte facit. Alla siffror är beräknade före valdagen och uppdateras inte i efterhand.
+    </p>
+  </div>
+</footer>
+
+<script>
+  const SCALE = 32;
+
+  const parties = [
+    { key: "S",  name: "Socialdemokraterna", color: "var(--s)",     point: 28.34, low: 27.35, high: 29.48 },
+    { key: "SD", name: "Sverigedemokraterna", color: "var(--sd)",   point: 18.71, low: 17.89, high: 19.63, light: true },
+    { key: "M",  name: "Moderaterna",        color: "var(--m)",     point: 17.08, low: 16.02, high: 18.20, light: true },
+    { key: "C",  name: "Centerpartiet",      color: "var(--c)",     point:  8.07, low:  7.35, high:  8.85 },
+    { key: "V",  name: "Vänsterpartiet",     color: "var(--v)",     point:  7.44, low:  6.77, high:  8.06 },
+    { key: "MP", name: "Miljöpartiet",       color: "var(--mp)",    point:  6.81, low:  5.92, high:  7.63, light: true },
+    { key: "KD", name: "Kristdemokraterna",  color: "var(--kd)",    point:  6.68, low:  5.91, high:  7.48 },
+    { key: "L",  name: "Liberalerna",        color: "var(--l)",     point:  5.08, low:  4.57, high:  5.59 },
+    { key: "Ö",  name: "Övriga",             color: "var(--other)", point:  1.78, low:  1.34, high:  2.28 }
+  ];
+
+  const nf = (value, digits = 1) =>
+    value.toLocaleString("sv-SE", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+
+  const pct = (value) => (value / SCALE) * 100;
+
+  document.getElementById("chart").innerHTML = parties.map((party) => `
+    <div class="row">
+      <div class="party">
+        <div class="mark${party.light ? " light" : ""}" style="background:${party.color}">${party.key}</div>
+        <div class="party-name">${party.name}</div>
+      </div>
+      <div class="track">
+        <div class="bar" style="width:${pct(party.point)}%;background:${party.color}"></div>
+        <div class="threshold" style="left:${pct(4)}%"></div>
+        <div class="ci" style="left:${pct(party.low)}%;width:${pct(party.high - party.low)}%"></div>
+      </div>
+      <div class="value">
+        <span class="pt">${nf(party.point)} %</span>
+        <span class="rng">${nf(party.low)}–${nf(party.high)}</span>
+      </div>
+    </div>
+  `).join("");
+
+  const blocks = [
+    {
+      name: "S, V, C, MP",
+      sub: "50,7 % · intervall 49,4–51,7",
+      total: 50.66,
+      parts: [
+        { key: "S", value: 28.34, color: "var(--s)" },
+        { key: "C", value: 8.07, color: "var(--c)" },
+        { key: "V", value: 7.44, color: "var(--v)" },
+        { key: "MP", value: 6.81, color: "var(--mp)" }
+      ]
+    },
+    {
+      name: "M, SD, KD, L",
+      sub: "47,6 % · intervall 46,3–48,9",
+      total: 47.55,
+      parts: [
+        { key: "SD", value: 18.71, color: "var(--sd)" },
+        { key: "M", value: 17.08, color: "var(--m)" },
+        { key: "KD", value: 6.68, color: "var(--kd)" },
+        { key: "L", value: 5.08, color: "var(--l)" }
+      ]
+    }
+  ];
+
+  document.getElementById("blocks").innerHTML = blocks.map((block) => `
+    <div class="block-row">
+      <div class="block-label">${block.name}<span>${block.sub}</span></div>
+      <div class="block-track">
+        <div class="block-bar" style="width:${(block.total / 55) * 100}%">
+          ${block.parts.map((part) => `
+            <div class="block-seg" title="${part.key} ${nf(part.value)} %"
+                 style="width:${(part.value / block.total) * 100}%;background:${part.color}"></div>
+          `).join("")}
+        </div>
+      </div>
+      <div class="block-value">${nf(block.total)}</div>
+    </div>
+  `).join("");
+
+  const polls = [
+    { name: "Verian / SVT", field: "4–10 sep", n: 3063, weight: 23.6, v: [27.6, 18.1, 15.8, 8.2, 7.7, 8.0, 6.5, 5.5] },
+    { name: "Novus / TV4", field: "7–10 sep", n: 2292, weight: 20.5, v: [28.6, 19.5, 18.1, 9.2, 6.6, 6.4, 5.5, 4.7] },
+    { name: "Indikator / Ekot", field: "2–10 sep", n: 2189, weight: 20.0, v: [28.6, 18.3, 16.8, 7.5, 7.8, 6.9, 7.1, 5.4] },
+    { name: "Ipsos / DN", field: "7–10 sep", n: 1800, weight: 18.1, v: [27.4, 18.8, 18.3, 7.6, 7.6, 6.8, 6.9, 5.0] },
+    { name: "Demoskop / Aftonbladet, SvD", field: "7–11 sep", n: 1419, weight: 17.8, v: [29.7, 19.0, 16.7, 7.7, 7.5, 5.6, 7.6, 4.7] }
+  ];
+
+  document.getElementById("polls").innerHTML = polls.map((poll) => `
+    <tr>
+      <td>${poll.name}</td>
+      <td>${poll.field}</td>
+      <td class="num">${poll.n.toLocaleString("sv-SE")}</td>
+      <td class="num">${nf(poll.weight)} %</td>
+      ${poll.v.map((value) => `<td class="num">${nf(value)}</td>`).join("")}
+    </tr>
+  `).join("");
+
+  const sensitivity = [
+    { key: "S", main: 28.34, alt: 27.93 },
+    { key: "SD", main: 18.71, alt: 18.94 },
+    { key: "M", main: 17.08, alt: 16.83 },
+    { key: "C", main: 8.07, alt: 8.65 },
+    { key: "V", main: 7.44, alt: 7.30 },
+    { key: "MP", main: 6.81, alt: 7.20 },
+    { key: "KD", main: 6.68, alt: 6.32 },
+    { key: "L", main: 5.08, alt: 4.78 },
+    { key: "Övriga", main: 1.78, alt: 2.05 }
+  ];
+
+  document.getElementById("sens").innerHTML = sensitivity.map((row) => {
+    const diff = row.alt - row.main;
+    const sign = diff > 0 ? "+" : diff < 0 ? "−" : "±";
+    return `
+      <tr>
+        <td>${row.key}</td>
+        <td class="num">${nf(row.main)}</td>
+        <td class="num">${nf(row.alt)}</td>
+        <td class="num">${sign}${nf(Math.abs(diff))}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const counties = [
+    { name: "Stockholm", eligible: 1832061, v: [27.0, 14.4, 18.6, 9.1, 8.9, 8.3, 6.0, 5.8] },
+    { name: "Västra Götaland", eligible: 1354200, v: [27.2, 18.8, 17.3, 7.9, 7.8, 7.0, 7.1, 5.3] },
+    { name: "Skåne", eligible: 1075715, v: [25.8, 22.1, 17.5, 7.1, 7.3, 6.5, 6.4, 5.3] },
+    { name: "Östergötland", eligible: 367060, v: [28.5, 19.3, 17.5, 7.8, 6.7, 6.4, 7.1, 5.0] },
+    { name: "Uppsala", eligible: 309333, v: [28.0, 16.5, 16.3, 8.6, 8.6, 8.2, 6.8, 5.2] },
+    { name: "Jönköping", eligible: 279005, v: [27.4, 20.9, 17.2, 8.5, 5.2, 5.2, 9.2, 4.8] },
+    { name: "Halland", eligible: 268009, v: [26.5, 20.8, 19.3, 8.3, 5.2, 5.3, 7.4, 5.4] },
+    { name: "Örebro", eligible: 238704, v: [30.5, 19.6, 15.4, 7.7, 7.1, 6.1, 6.7, 5.1] }
+  ];
+
+  document.getElementById("counties").innerHTML = counties.map((county) => `
+    <tr>
+      <td>${county.name}</td>
+      <td class="num">${county.eligible.toLocaleString("sv-SE")}</td>
+      ${county.v.map((value) => `<td class="num">${nf(value)}</td>`).join("")}
+    </tr>
+  `).join("");
+</script>
+
+</body>
+</html>

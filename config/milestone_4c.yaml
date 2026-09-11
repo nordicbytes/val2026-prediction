@@ -1,0 +1,151 @@
+schema_version: 1
+frozen_milestone_4a:
+  commit: 4bc155da6b22681a1c84b940342bb928daacc8be
+  tag: transition-gate-4a-unclear-v1
+  report: reports/milestone_4a_transition_matrix.md
+  report_sha256: cee6d058647c9b0cfd4a3d01f5dda4ec31ee25a473b13f9be832072016c6cab3
+
+frozen_milestone_4b:
+  commit: 32a8a4a29699dcfdc4641aa6e3de6b6ff64f0977
+  tag: transition-estimator-4b-supported-v2
+  report: reports/milestone_4b_transition_posterior.md
+  report_sha256: 16da240fe08876646fd97a60c53f5b01ac7d87e042b3b492051324a17533e7f7
+  lock: reports/milestone_four_b/survey_estimator_lock.json
+  lock_sha256: 2820459aeff35a3a1c40c969ecd9c3797efabce466a39a44fbbfc3dcdf4265d5
+  primary_estimator: T1_no_point_shrinkage_raked
+
+information:
+  three_way_table: unavailable
+  published_object: regional_current_vote_marginals
+  kernel: locked_national_4b_transition
+  derivation: minimum_kl_calibration_of_national_kernel_to_regional_margins
+
+primary_estimator: R1_region_transition
+secondary_estimator: omitted_no_survey_only_pooling_lock
+national_transition_model: T_nat
+national_baseline: B2_national
+regional_baseline: B2_region
+
+random_seed: 20260911
+survey_draws: 2000
+confidence_level: 0.95
+
+geography:
+  codebook: SCB_VID12_8
+  regions:
+    - id: SE2
+      label: Sydsverige
+      counties: ["10", "12"]
+    - id: SE09
+      label: Småland med öarna
+      counties: ["06", "07", "08", "09"]
+    - id: SE0A
+      label: Västsverige
+      counties: ["13", "14"]
+    - id: SE01exkl0180
+      label: Stockholms län exkl. Stockholms kommun
+      counties: ["01"]
+      exclude_municipalities: ["0180"]
+    - id: "0180"
+      label: Stockholms kommun
+      municipalities: ["0180"]
+    - id: SE12
+      label: Östra Mellansverige
+      counties: ["03", "04", "05", "18", "19"]
+    - id: SE06
+      label: Norra Mellansverige
+      counties: ["17", "20", "21"]
+    - id: SE07+SE08
+      label: Mellersta och övre Norrland
+      counties: ["22", "23", "24", "25"]
+  mapping_rule: municipality_0180_else_county_union
+  region_weight: full_sweden_previous_election_valid_votes
+
+sources:
+  2018:
+    vintage: ORIGINAL_2018_06_05_NEWS
+    calendar_wave: 2018M05
+    previous_election: 2014
+    publication_date: "2018-06-05"
+    fieldwork_start: "2018-04-27"
+    fieldwork_end: "2018-05-29"
+    forecast_cutoff: "2018-06-11"
+    forbidden: live_revised_vid12_2018M05
+  2022:
+    vintage: ORIGINAL_2022_06_02_NEWS
+    calendar_wave: 2022M05
+    previous_election: 2018
+    publication_date: "2022-06-02"
+    fieldwork_start: "2022-04-28"
+    fieldwork_end: "2022-05-25"
+    forecast_cutoff: "2022-06-08"
+    pinned_api_crosscheck: scb_psu_regional_2022_may_vid12
+
+effective_sample_size:
+  z_value: 1.96
+  cell_formula: p*(1-p)/(margin/z)^2
+  row_aggregation: median
+  lower_bound: 1.0
+  upper_bound: none_when_public_base_missing
+  excluded_cells: [zero_estimate, zero_margin, missing_estimate, missing_margin]
+  label: approximate_margin_inverted_not_kish
+
+point_estimate:
+  published_party_cells: unchanged
+  suppressed_residual: flat_across_suppressed_party_cells
+  point_shrinkage: none
+  national_poll_role: regional_margin_reconciliation_and_b2_only
+
+calibration:
+  regional_margins_to_national: minimum_kl_ipf
+  transition_to_region: minimum_kl_ipf
+  previous_vote_vector: full_sweden_previous_election_by_region
+  national_target: same_wave_scb_vid10
+  apply_to_each_draw: true
+  tolerance: 1.0e-10
+
+pooling:
+  primary: none
+  secondary: omitted
+  reason: no_vintage_correct_historical_regional_waves_for_both_cycles
+
+model_ladder:
+  - B2_national
+  - T_nat
+  - B2_region
+  - R1_region_transition
+  - R1_published_point
+  - R1_suppressed_zero
+
+uncertainty:
+  - transition_draws_fixed_region_margins
+  - region_draws_fixed_transition
+  - independent_joint_draws_labeled_dependence_approximation
+  - municipality_cluster_bootstrap_diagnostic_only
+
+evaluation:
+  populations:
+    2018: 4631
+    2022: 4164
+  metric: vote_weighted_district_party_mae
+  result_use: scoring_only_after_estimator_lock
+  comparisons:
+    regional_value: R1_minus_T_nat
+    transition_value: R1_minus_B2_region
+  decision:
+    supported:
+      both_comparisons_point_negative_both_cycles: true
+      both_comparisons_survey_interval_upper_negative_both_cycles: true
+    not_supported:
+      any_required_point_comparison_nonnegative: true
+    otherwise: UNCLEAR
+
+forbidden:
+  - invent_previous_current_region_joint
+  - choose_geography_or_pooling_from_election_mae
+  - retune_milestone_4a_or_4b
+  - use_revised_2018_vid12
+  - use_partisympati_as_val_idag
+  - let_regional_polls_enter_B2_national
+  - implement_mrp
+  - promote_omitted_pooling_after_scoring

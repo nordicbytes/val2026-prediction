@@ -428,6 +428,123 @@ sources:
       page_or_table: Vid10, 2022M05, ME0201B1
       archive_status: LIVE_API
 
+  - id: scb_psu_regional_2018_may_original_news
+    source: Partisympatiundersökningen maj 2018, statistiknyhet val idag
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig regional val-idag-tabell, 2018-06-05
+    url: https://www.scb.se/hitta-statistik/statistik-efter-amne/demokrati/partisympatier/partisympatiundersokningen-psu/pong/statistiknyhet/partisympatiundersokningen-psu-i-maj-2018---val-idag/
+    retrieved_at: "2026-09-11T06:45:58.590499+00:00"
+    reference_period: "2018-04-27–2018-05-29"
+    geography_version: VID12_8
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/regional_val_idag_2018_06_05.html
+    sha256: 6d1b71e1c1b5e4711535310a0b4803f12b53a4ab8a4caf3c7b3da3b49121b0b4
+    notes: Originaltabellen före 2020 års omräkning. Live Vid12 2018M05 är förbjuden.
+    status: verified_download
+    usage: strict_t0_regional
+    poll:
+      election_cycle: 2018
+      pollster: SCB
+      publication_date: "2018-06-05"
+      fieldwork_start: "2018-04-27"
+      fieldwork_end: "2018-05-29"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade i riksdagsval
+      sample_size: 8951
+      sample_size_basis: GROSS_SAMPLE
+      effective_n: null
+      survey_weight_method: Publicerade regionala val-idag-marginaler; inget publicerat bastal
+      question_wording: Vilket parti skulle du rösta på om det vore riksdagsval i dag?
+      extraction_method: HTML_TABLE
+      page_or_table: Regional val-idag-tabell, publicerad 2018-06-05
+      archive_status: SCB_NEWS_ORIGINAL
+
+  - id: scb_psu_regional_2022_may_original_news
+    source: Partisympatiundersökningen maj 2022, statistiknyhet
+    provider: Statistiska centralbyrån
+    dataset: Ursprunglig regional val-idag-tabell, 2022-06-02
+    url: https://www.scb.se/hitta-statistik/statistik-efter-amne/demokrati/partisympatier/partisympatiundersokningen-psu/pong/statistiknyhet/partisympatiundersokningen-maj-2022/
+    retrieved_at: "2026-09-11T06:45:58.926822+00:00"
+    reference_period: "2022-04-28–2022-05-25"
+    geography_version: VID12_8
+    license: SCB öppna data, ange källa
+    raw_file: data/raw/scb/psu/regional_val_idag_2022_06_02.html
+    sha256: f4b502ffd23d577f74f69a03e213d202817391a3ea9197116b504b5795073b37
+    notes: Primär 2022-vintage för Vid12-marginaler. Övr är undertryckt i tre regioner.
+    status: verified_download
+    usage: strict_t0_regional
+    poll:
+      election_cycle: 2022
+      pollster: SCB
+      publication_date: "2022-06-02"
+      fieldwork_start: "2022-04-28"
+      fieldwork_end: "2022-05-25"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade i riksdagsval
+      sample_size: 4274
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Publicerade regionala val-idag-marginaler; inget publicerat bastal
+      question_wording: Vilket parti skulle du rösta på om det vore riksdagsval i dag?
+      extraction_method: HTML_TABLE
+      page_or_table: Regional val-idag-tabell, publicerad 2022-06-02
+      archive_status: SCB_NEWS_ORIGINAL
+
+  - id: scb_psu_regional_2022_may_vid12
+    source: Statistikdatabasen Vid12
+    provider: Statistiska centralbyrån
+    dataset: Val idag efter region, PSU 2022M05
+    url: https://api.scb.se/OV0104/v1/doris/sv/ssd/START/ME/ME0201/ME0201A/Vid12
+    retrieved_at: "2026-09-11T06:45:59.716328+00:00"
+    reference_period: "2022M05"
+    geography_version: VID12_8
+    license: CC0
+    raw_file: data/raw/scb/psu/regional_poll_2022M05_vid12.json
+    sha256: c0f2e9dc93db7c76df9423f2154f3ec5aef0c44e1f70fda84042a20075ec4cc1
+    notes: Pinnad API-korskontroll mot nyheten 2022-06-02. Inte primärkälla för 2018.
+    status: verified_post_api
+    usage: strict_t0_regional_crosscheck
+    http_method: POST
+    request_body:
+      query:
+        - code: Region
+          selection:
+            filter: item
+            values:
+              - "0180"
+              - SE01exkl0180
+              - SE12
+              - SE09
+              - SE0A
+              - SE2
+              - SE06
+              - SE07+SE08
+              - Z01
+        - code: Parti
+          selection: {filter: item, values: [c, l, m, kd, s, v, mp, SD, övr]}
+        - code: ContentsCode
+          selection: {filter: item, values: [000001YF, 000001YE]}
+        - code: Tid
+          selection: {filter: item, values: [2022M05]}
+      response:
+        format: json-stat2
+    poll:
+      election_cycle: 2022
+      pollster: SCB
+      publication_date: "2022-06-02"
+      fieldwork_start: "2022-04-28"
+      fieldwork_end: "2022-05-25"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade i riksdagsval
+      sample_size: 4274
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: SCB val-idag-estimator efter region
+      question_wording: Vilket parti skulle du rösta på om det vore riksdagsval?
+      extraction_method: PXWEB_API
+      page_or_table: Vid12, 2022M05, 000001YF/000001YE
+      archive_status: PINNED_API
+
   - id: scb_psu_2014M11_original_report
     source: Partisympatiundersökningen november 2014
     provider: Statistiska centralbyrån

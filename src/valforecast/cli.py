@@ -13,6 +13,10 @@ from valforecast.evaluation.milestone_four_b import (
     lock_survey_estimators,
     run_milestone_four_b,
 )
+from valforecast.evaluation.milestone_four_c import (
+    lock_region_estimators,
+    run_milestone_four_c,
+)
 from valforecast.evaluation.milestone_three import run_milestone_three
 from valforecast.evaluation.milestone_two import run_milestone_two
 from valforecast.ingest.fetch import fetch_source
@@ -103,4 +107,16 @@ def lock_transitions_b_survey() -> None:
 @app.command("validate-transitions-b")
 def validate_transitions_b() -> None:
     summary = run_milestone_four_b(_root())
+    typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))
+
+
+@app.command("lock-transitions-c-survey")
+def lock_transitions_c_survey() -> None:
+    summary = lock_region_estimators(_root())
+    typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))
+
+
+@app.command("validate-transitions-c")
+def validate_transitions_c() -> None:
+    summary = run_milestone_four_c(_root())
     typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "stage": "survey_only_pre_election_scoring",
+  "primary_estimator": "R1_region_transition",
+  "secondary_estimator": "omitted_no_survey_only_pooling_lock",
+  "random_seed": 20260911,
+  "survey_draws": 2000,
+  "three_way_table": "unavailable",
+  "pooling": "omitted",
+  "gate_intervals": {
+    "regional_value": "region_draws_fixed_transition",
+    "transition_value": "transition_draws_fixed_region_margins"
+  },
+  "artifact_sha256": {
+    "regional_cells.csv": "81b659ffd161a528840973eb084a8c448c65b6c2580cc5793ccbbedd1c2a9dfb",
+    "regional_point_margins.csv": "8c62eb8b09310de0cc391ce8d630edf25c4e0f93fcd99bdb3962f43edfe43d40",
+    "regional_effective_n.csv": "1bcec8dfa327df38ff7766f246bc23b80853ca7b788162151cb83c48af9e4afa",
+    "reconciled_regional_margins.csv": "8f756d286df5cef2a19d98087b08d70ef3355826d841661a8de6810b35855950",
+    "previous_region_vectors.csv": "d922b104f23c6501515b8cc25d97fb0dac2dba8caa9ec50f85253981cb485cfd",
+    "region_weights.csv": "bae9b7c7b183891895ebdf66fd7729797c4d8394f66b79e1b183da16ce9493c1",
+    "national_poll_targets.csv": "aff18a0943f972fe7c7d79af798d2a6cf67369013c1b7d184556d53f1ce9c146"
+  },
+  "forbidden_inputs_confirmed_absent": [
+    "election_results_2022",
+    "canonical_temporal_transitions",
+    "target_election_actual_share"
+  ]
+}

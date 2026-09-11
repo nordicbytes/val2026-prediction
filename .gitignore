@@ -16,6 +16,7 @@ data/processed/**
 !data/processed/.gitkeep
 
 forecast_snapshots/*.json
+!forecast_snapshots/official_forecast_2026.json
 reports/backtests/*.json
 reports/**/*.parquet
 reports/milestone_two/block_residuals*.csv

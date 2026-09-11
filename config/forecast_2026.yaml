@@ -1,0 +1,159 @@
+schema_version: 1
+model_version: forecast-2026-national-4b-v1
+
+cutoff:
+  datetime: "2026-09-11T22:29:00+02:00"
+  timezone: Europe/Stockholm
+  election_date: "2026-09-13"
+
+model:
+  primary: T1_no_point_shrinkage_raked
+  milestone_4b_status: SUPPORTED
+  regional_4c: forbidden
+  milestone_3_local_structure: forbidden
+  seats: not_implemented
+
+transition_kernel:
+  source: scb_psu_transition_2026M05
+  vintage: 2026M05
+  previous_election: 2022
+  estimator: T1_no_point_shrinkage_raked
+  point_shrinkage: none
+  nonparty: condition_on_stated_party
+  suppression: flat
+  same_wave_raking:
+    target: scb_psu_national_2026M05
+    method: minimum_kl_ipf
+    role: same_wave_reconciliation_only
+  election_day_raking:
+    target: locked_poll_aggregator
+    method: minimum_kl_ipf
+    previous_vote_vector: full_sweden_2022
+  zero_share_crumb:
+    method: replace_zero_counts_with_pseudo_count
+    pseudo_count: 0.5
+    same_as: milestone_4b
+
+poll_aggregation:
+  method: time_and_n_weighted_mean
+  house_effects: none
+  house_effects_reason: >
+    House effects kräver en låst historisk poll-mot-val-korpus. En sådan korpus
+    finns inte i repot, och att skatta instituteffekter mot 2022 skulle kräva
+    ny overifierad historisk pollingest. Konservativ default är tids- och
+    urvalsviktning utan house effects.
+  half_life_days: 7
+  age_origin: fieldwork_end
+  sample_size_weight: sqrt
+  missing_sample_size_fallback: 1000
+  inclusion:
+    geography: national
+    office: riksdag
+    latest_publication: cutoff
+    earliest_fieldwork_end: "2026-08-01"
+    require_complete_party_vector: true
+    require_primary_source: false
+    verification_ladder:
+      a_pollster_or_commissioner_original: include
+      b_established_media_table_crosschecked: include
+      aggregator_only: exclude
+  overlap:
+    key: pollster
+    definition: closed_fieldwork_interval_overlap
+    keep: latest_fieldwork_end_then_latest_publication
+  pollster_balance: latest_fieldwork_end_per_pollster
+  pollster_balance_rule: >
+    Efter cutoff, primärkälla och överlappskollaps behålls bara den senaste
+    mätningen per institut, rangordnad på fieldwork_end och därefter
+    publication_date. Syftet är inte att optimera utfallet utan att ett
+    institut inte ska få mer vikt bara för fler släpp. Tidsdecay och
+    sqrt(n) tillämpas på den kvarvarande mätningen. Productionstarget är
+    senaste verifierade mätning per institut enligt verifieringsstegen.
+  sensitivity:
+    strict_primary_hosted:
+      - verian_svt_2026_sep_final
+      - novus_tv4_2026_09_11
+      - demoskop_2026_sep_early
+  other_and_residual:
+    missing_named_party: reject
+    missing_other_if_named_sum_within: 0.005
+    missing_other_otherwise: reject
+    rounding_residual_to_other_if_abs_at_most: 0.005
+    derived_residual_other:
+      allow: true
+      require_all_eight_named: true
+      named_sum_min: 0.97
+      named_sum_max: 1.00
+      mark_as: DERIVED_RESIDUAL
+      note: >
+        OTHER får härledas som 1 minus namngiven summa när alla åtta
+        namngivna partier är publicerade. Det är en dokumenterad
+        avrundningsresidual, inte en publicerad cell.
+    then_renormalize: true
+  same_day_unknown_clock:
+    rule: include_only_static_primary_document_dated_that_calendar_day
+  election_day_national_target: aggregator_not_vid10
+  scb_vid10_role: same_wave_kernel_raking_only
+
+uncertainty:
+  draws: 2000
+  random_seed: 20260911
+  confidence_level: 0.95
+  poll_uncertainty: pollster_bootstrap_then_dirichlet
+  pollster_bootstrap:
+    method: resample_institutes_with_replacement
+    apply_fixed_recency_sqrt_n_weights: true
+    then: dirichlet_within_poll
+    role: pollster_heterogeneity_approximation
+    not: election_result_interval
+  transition_uncertainty: locked_4b_dirichlet_n_eff
+  public_covariance: absent
+  interval: equal_tailed
+
+mapping_2022_2026:
+  source: val2026_district_mapping_from_2022
+  vintage: official_pre_election_2026-08-17
+  target_universe: all_sweden_2026_eligible_districts
+  relations:
+    Kan jämföras: copy_single_predecessor
+    Kan jämföras mot flera: vote_weighted_merge
+    Ej jämförbart: municipality_2022_then_national_2022
+  splits_without_observed_2022_shares: copy_predecessor_vector
+  unmatched_rule: municipality_then_national
+  expected_target_districts: 6312
+  expected_relations:
+    SAME: 4937
+    COMPARABLE: 87
+    MERGED: 35
+    UNMATCHED: 1253
+  merged_incomplete_predecessors: fallback_with_diagnostics
+  weight: eligible_voters_2026_qualification_day
+  weight_note: >
+    Distriktsvikten är röstberättigade vid kvalifikationsdagen 2026-08-14, inte
+    framtida giltiga röster. Valdeltagande 2026 är okänt vid cutoff.
+
+forbidden_inputs:
+  - election_results_2026
+  - exit_polls
+  - valu
+  - post_cutoff_material
+  - regional_4c_conditioning
+  - milestone_3_local_structure
+  - post_hoc_adjustment
+  - secondary_aggregator_numbers_as_production_shares
+
+outputs:
+  national_point_and_interval: true
+  district_point_and_interval: true
+  aggregates: [municipality, county, constituency]
+  seats: false
+  snapshot_immutable: true
+  overwrite_existing_snapshot: false
+  official_filename: official_forecast_2026.json
+  official_never_overwrite: true
+  timestamped_snapshots_are_drafts_until_reproducing_commit: true
+
+lock:
+  two_step: true
+  input_lock: reports/forecast_2026/input_lock.json
+  require_lock_before_snapshot: true

@@ -38,6 +38,22 @@ väljarmatriser från maj 2018 och maj 2022 kalibreras till respektive
 samtida nationella PSU-läge och jämförs med proportionell swing. Kommandot
 stannar vid T0-gaten och bygger inte MRP.
 
+Produktionsprognosen 2026 låses och körs separat:
+
+```bash
+uv run valforecast lock-forecast-2026-inputs
+uv run valforecast forecast-2026 --dry-run
+uv run valforecast forecast-2026 --official
+```
+
+Kommandona använder den låsta nationella 4B-kärnan, inte 4C och inte
+milestone 3-struktur. `--dry-run` skriver ingen fil. `--official` skapar
+bara `forecast_snapshots/official_forecast_2026.json` och vägrar skriva
+över den. Timestamp-snapshots är utkast tills `git_commit` är den commit
+som innehåller kontrakt, kod och input-lås. `.gitignore` ignorerar
+timestampade JSON-utkast men undantar den officiella filen så att den
+kan committas.
+
 ## Datapolicy
 
 - `data/raw` innehåller oförändrade originalfiler och committas inte.

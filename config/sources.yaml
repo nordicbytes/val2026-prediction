@@ -846,3 +846,553 @@ sources:
       response:
         format: json-stat2
 
+  - id: scb_psu_transition_2026M05
+    source: Statistikdatabasen Rostningssympati1900
+    provider: Statistiska centralbyrån
+    dataset: Partival 2022 × partival nu, PSU 2026M05
+    url: https://api.scb.se/OV0104/v1/doris/sv/ssd/START/ME/ME0201/ME0201A/Rostningssympati1900
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026M05"
+    geography_version: NATIONAL
+    license: CC0
+    raw_file: data/raw/scb/psu/transition_2026M05.json
+    sha256: 069909b5cc77e0035a71dc2a0a8164ad50e4cecfa7d97a91530f11f2db3f80ff
+    notes: Forecast-time 2026-vintage för T1-kärnan. Inte valresultat.
+    status: verified_post_api
+    usage: forecast_2026_kernel
+    http_method: POST
+    request_body:
+      query:
+        - code: PvalRV
+          selection:
+            filter: item
+            values:
+              - m
+              - c
+              - l
+              - kd
+              - mp
+              - s
+              - v
+              - SD
+              - övr
+              - ej röstat
+              - ej röstberättigad
+              - uppgift saknas
+              - hela väljarkåren
+        - code: Pvalnu
+          selection: {filter: all, values: ["*"]}
+        - code: ContentsCode
+          selection: {filter: all, values: ["*"]}
+        - code: Tid
+          selection: {filter: item, values: [2026M05]}
+      response:
+        format: json-stat2
+    poll:
+      election_cycle: 2026
+      pollster: SCB
+      publication_date: "2026-06-10"
+      fieldwork_start: "2026-04-28"
+      fieldwork_end: "2026-05-28"
+      information_level: FULL_TRANSITION_TABLE
+      population: Röstberättigade i riksdagsval
+      sample_size: 4542
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: SCB justerad val-idag-estimator
+      question_wording: Vilket parti skulle du rösta på om det vore riksdagsval?
+      extraction_method: PXWEB_API
+      page_or_table: Rostningssympati1900, 2026M05
+      archive_status: PINNED_API
+
+  - id: scb_psu_national_2026M05
+    source: Statistikdatabasen Vid10
+    provider: Statistiska centralbyrån
+    dataset: Val idag, PSU 2026M05
+    url: https://api.scb.se/OV0104/v1/doris/sv/ssd/START/ME/ME0201/ME0201A/Vid10
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026M05"
+    geography_version: NATIONAL
+    license: CC0
+    raw_file: data/raw/scb/psu/national_poll_2026M05.json
+    sha256: 47bba0af73155986c2338c418351fe08ecc01368b384e38d681cdcb5a1d38742
+    notes: Same-wave-raking för 2026-kärnan. Inte valdagens nationella target.
+    status: verified_post_api
+    usage: forecast_2026_same_wave
+    http_method: POST
+    request_body:
+      query:
+        - code: Parti
+          selection: {filter: item, values: [c, l, m, kd, s, v, mp, SD, övr]}
+        - code: ContentsCode
+          selection: {filter: item, values: [ME0201B1]}
+        - code: Tid
+          selection: {filter: item, values: [2026M05]}
+      response:
+        format: json-stat2
+    poll:
+      election_cycle: 2026
+      pollster: SCB
+      publication_date: "2026-06-04"
+      fieldwork_start: "2026-04-28"
+      fieldwork_end: "2026-05-28"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade i riksdagsval
+      sample_size: 4542
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: SCB val-idag-estimator
+      question_wording: Vilket parti skulle du rösta på om det vore riksdagsval?
+      extraction_method: PXWEB_API
+      page_or_table: Vid10, 2026M05, ME0201B1
+      archive_status: PINNED_API
+
+  - id: verian_svt_2026_sep_monthly
+    source: Väljarbarometern september 2026
+    provider: Verian
+    dataset: SVT/Verian månadsbarometer, publicerad 3 september 2026
+    url: https://www.veriangroup.com/hubfs/SE/Valjarbarometern/Verian-Valjarbarometer_September-2026.pdf
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026-08-20–2026-09-02"
+    geography_version: NATIONAL
+    license: Verian-publikation; källa ska anges
+    raw_file: data/raw/polls/verian_valjarbarometer_september_2026.pdf
+    sha256: 69ec0aee3f2582f59f81e41b58ce7c1c137e4b7c682e07c6d68672417ac0abfc
+    notes: Primär PDF. n=3069 som angett parti.
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Verian
+      publication_date: "2026-09-03"
+      fieldwork_start: "2026-08-20"
+      fieldwork_end: "2026-09-02"
+      information_level: MARGINAL_ONLY
+      population: Allmänheten 18 år och äldre
+      sample_size: 3069
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Vägt på kön, ålder, utbildning och partival 2022
+      question_wording: Om det vore val till riksdagen i dag, vilket parti skulle du rösta på?
+      extraction_method: PDF_TABLE
+      page_or_table: Sidan 2, kolumn 2026 sep
+      archive_status: PINNED_PDF
+
+  - id: verian_svt_2026_sep_final
+    source: Väljarbarometern 4–10 september 2026
+    provider: Verian
+    dataset: SVT/Verian slutmätning, publicerad 11 september 2026
+    url: https://www.veriangroup.com/hubfs/SE/Valjarbarometern/Verian-Valjarbarometer_4-10-september-2026.pdf
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026-09-04–2026-09-10"
+    geography_version: NATIONAL
+    license: Verian-publikation; källa ska anges
+    raw_file: data/raw/polls/verian_valjarbarometer_4-10-september-2026.pdf
+    sha256: 61568dc987d114c5d7a31ee466b1fbbd0e8fad9f92e3bf61ead45ed23ddc97dc
+    notes: Primär PDF daterad 11 september. Exakt klockslag saknas; inkluderad som statiskt primärdokument.
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Verian
+      publication_date: "2026-09-11"
+      fieldwork_start: "2026-09-04"
+      fieldwork_end: "2026-09-10"
+      information_level: MARGINAL_ONLY
+      population: Allmänheten 18 år och äldre
+      sample_size: 3063
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Vägt på kön, ålder, utbildning och partival 2022
+      question_wording: Om det vore val till riksdagen i dag, vilket parti skulle du rösta på?
+      extraction_method: PDF_TABLE
+      page_or_table: Sidan 2, kolumn 2026 sep II
+      archive_status: PINNED_PDF
+
+  - id: novus_monthly_2026_sep
+    source: Novus väljarbarometer september 2026
+    provider: Novus
+    dataset: Novus månadsbarometer, publicerad 2 september 2026
+    url: https://novus.se/wp-content/uploads/2026/09/novusvaljarbarometerseptember2026h3q8v5.pdf
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026-08-24–2026-08-30"
+    geography_version: NATIONAL
+    license: Novus-publikation; källa ska anges
+    raw_file: data/raw/polls/novus_valjarbarometer_september_2026.pdf
+    sha256: 562989ffe94c6f477f8f1d286f772ff64611e5219499c7605c1b2867f398c31f
+    notes: Primär PDF. n=2984.
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Novus
+      publication_date: "2026-09-02"
+      fieldwork_start: "2026-08-24"
+      fieldwork_end: "2026-08-30"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade 18 år och uppåt
+      sample_size: 2984
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Efterstratifiering på kön, ålder, utbildning, region och partival 2022
+      question_wording: Hur skulle du rösta om det vore val till riksdagen idag?
+      extraction_method: PDF_TEXT
+      page_or_table: Sidorna 1–2
+      archive_status: PINNED_PDF
+
+  - id: novus_tv4_2026_09_09
+    source: TV4/Novus 6–8 september 2026
+    provider: Novus
+    dataset: TV4/Novus mätning publicerad 9 september 2026
+    url: https://www.tv4.se/artikel/6uiXoaoC9Mtryr1GbHjkgP/l-oever-spaerren-i-ny-novusmaetning-statistiskt-saekerstaellt
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026-09-06–2026-09-08"
+    geography_version: NATIONAL
+    license: TV4-artikel; källa ska anges
+    raw_file: data/raw/polls/tv4_novus_6-8-september-2026.html
+    sha256: bf88091cadbde5fa4ed1b3b8221880bc87722731d6c5cde6da025950a590a9dc
+    notes: Primär TV4-sida. Överlappas av senare Novus/TV4 7–10 september och exkluderas efter collapse.
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Novus
+      publication_date: "2026-09-09"
+      fieldwork_start: "2026-09-06"
+      fieldwork_end: "2026-09-08"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade 18 år och uppåt
+      sample_size: 2292
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Novus efterstratifiering
+      question_wording: Hur skulle du rösta om det vore val till riksdagen idag?
+      extraction_method: HTML_NEXT_DATA
+      page_or_table: Väljarbarometern 6-8 september
+      archive_status: PINNED_HTML
+
+  - id: novus_tv4_2026_09_11
+    source: TV4/Novus 7–10 september 2026
+    provider: Novus
+    dataset: TV4/Novus mätning publicerad 11 september 2026 14:59 CEST
+    url: https://www.tv4.se/artikel/4lEtVYL5pNdnv2SXu42Fk9/efter-bensinbeskedet-mp-rasar-i-opinionen
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026-09-07–2026-09-10"
+    geography_version: NATIONAL
+    license: TV4-artikel; källa ska anges
+    raw_file: data/raw/polls/tv4_novus_7-10-september-2026.html
+    sha256: 2f14ccc01acde06825e0e75d043c66a4ccf25abf6f8275bb7e11e183b79e60a0
+    notes: Publicerad 14:59 CEST, uppdaterad 19:01, före cutoff 22:29. n=5928.
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Novus
+      publication_date: "2026-09-11"
+      fieldwork_start: "2026-09-07"
+      fieldwork_end: "2026-09-10"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade 18 år och uppåt
+      sample_size: 5928
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Novus efterstratifiering
+      question_wording: Hur skulle du rösta om det vore val till riksdagen idag?
+      extraction_method: HTML_NEXT_DATA
+      page_or_table: Väljarbarometern 7-10 september
+      archive_status: PINNED_HTML
+
+  - id: dn_ipsos_2026_09_11
+    source: DN/Ipsos sista mätning före valet
+    provider: Ipsos
+    dataset: DN/Ipsos 7–10 september 2026, paywallad primärsida
+    url: https://www.dn.se/sverige/dn-ipsos-dott-lopp-mellan-blocken-valrysare-vantar-pa-sondag/
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026-09-07–2026-09-10"
+    geography_version: NATIONAL
+    license: DN; prenumeration krävs
+    raw_file: data/raw/polls/dn_ipsos_11-september-2026.html
+    sha256: 902e35505476ccd1b7ce52c8cd6a8825daf3b6a20d60333d1e177a4c12ee4a89
+    notes: >
+      Beställande originalpublicering. Offentlig HTML är paywallad och saknar
+      partital. Korskontroll mot Omni-tabell och Expressen för n, fält, L och block.
+    status: paywall
+    usage: forecast_2026_poll_support
+
+  - id: indikator_sr_2026_09_11
+    source: Indikator Opinion för Ekot
+    provider: Indikator Opinion
+    dataset: Indikator/Ekot 2–10 september 2026, primärsida med diagram
+    url: https://www.indikator.org/opinion-sr/
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026-09-02–2026-09-10"
+    geography_version: NATIONAL
+    license: Indikator Opinion; källa ska anges
+    raw_file: data/raw/polls/indikator_opinion_sr_11-september-2026.html
+    sha256: bf3583585232da0404485d0ad0e54db08397e18808892f2100e6d6cf1424619c
+    notes: >
+      n=2189, fält 2026-09-02–2026-09-10. Diagram renderas i JS utan
+      pinningsbara 2026-bild-URL:er. Metod- och fältkorskontroll till Expressen-tabellen.
+    status: verified_download_incomplete
+    usage: forecast_2026_poll_support
+
+  - id: demoskop_2026_sep_early_html
+    source: Väljarbarometer september 2026
+    provider: Demoskop
+    dataset: Demoskop/Aftonbladet/SvD 25 augusti–1 september 2026, institutsida
+    url: https://demoskop.se/valjarbarometer-september-2026/
+    retrieved_at: "2026-09-11T20:35:00+00:00"
+    reference_period: "2026-08-25–2026-09-01"
+    geography_version: NATIONAL
+    license: Demoskop-publikation; källa ska anges
+    raw_file: data/raw/polls/demoskop_valjarbarometer_september_2026.html
+    sha256: 64ea4051938820817ee00739aa840649cc04f1d0e9da1cd3919dc6e1c14fd047
+    notes: Institutsida. Komplett vektor finns i det inbäddade primärdiagrammet, inte i HTML-texten.
+    status: verified_download
+    usage: forecast_2026_poll_support
+    poll:
+      election_cycle: 2026
+      pollster: Demoskop
+      publication_date: "2026-09-03"
+      fieldwork_start: "2026-08-25"
+      fieldwork_end: "2026-09-01"
+      information_level: MARGINAL_ONLY
+      population: Allmänheten 18 år och uppåt
+      sample_size: 1998
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Iniziopanelen, vägd på kön, ålder och region
+      question_wording: Vilket parti skulle du rösta på om det var riksdagsval idag?
+      extraction_method: HTML_PAGE
+      page_or_table: Institutsida 3 september
+      archive_status: PINNED_HTML
+
+  - id: demoskop_2026_sep_early
+    source: Demoskop väljarbarometer september 2026, primärdiagram
+    provider: Demoskop
+    dataset: Demoskop/Aftonbladet/SvD 25 augusti–1 september 2026, Bild1
+    url: https://demoskop.se/wp-content/uploads/2026/09/Bild1.jpg
+    retrieved_at: "2026-09-11T20:55:00+00:00"
+    reference_period: "2026-08-25–2026-09-01"
+    geography_version: NATIONAL
+    license: Demoskop-publikation; källa ska anges
+    raw_file: data/raw/polls/images/demoskop_sep_early_bild1.jpg
+    sha256: 5bf1d6a851ed28589a64fe5dab6934fecac6f926aa5a4cee84293655ac587fb1
+    notes: Primärdiagram med komplett partivektor inklusive Övriga 2,1. n=1998.
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Demoskop
+      publication_date: "2026-09-03"
+      fieldwork_start: "2026-08-25"
+      fieldwork_end: "2026-09-01"
+      information_level: MARGINAL_ONLY
+      population: Allmänheten 18 år och uppåt
+      sample_size: 1998
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Iniziopanelen, vägd på kön, ålder och region
+      question_wording: Vilket parti skulle du rösta på om det var riksdagsval idag?
+      extraction_method: PINNED_CHART_IMAGE
+      page_or_table: Bild1.jpg
+      archive_status: PINNED_IMAGE
+
+  - id: indikator_sr_2026_09_11_omni
+    source: Omni-återpublicering av Ekot/Indikator 11 september 2026
+    provider: Omni
+    dataset: Sekundär komplett partivektor för Indikator/Ekot 2–10 september
+    url: https://omni.se/l-ledaren-om-upphamtningen-ska-spurta-in-i-riksdagen/a/oEQWLB
+    retrieved_at: "2026-09-11T20:55:00+00:00"
+    reference_period: "2026-09-02–2026-09-10"
+    geography_version: NATIONAL
+    license: Omni-artikel; källa ska anges
+    raw_file: data/raw/polls/omni_indikator_11-september-2026.html
+    sha256: 5f31ae5611bb33bd11a451c162d5acd2244c3d389034e47994f54fa4c16c153d
+    notes: >
+      Komplett Omni-tabell inklusive ÖVR 1,6. Productionstabellen är Expressen.
+      Omni-posten parsas i inventeringen men exkluderas som secondary_source.
+    status: verified_download_secondary
+    usage: forecast_2026_inventory_only
+    poll:
+      election_cycle: 2026
+      pollster: Indikator Opinion
+      publication_date: "2026-09-11"
+      fieldwork_start: "2026-09-02"
+      fieldwork_end: "2026-09-10"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade 18 år och uppåt
+      sample_size: 2189
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Vägt på kön, ålder och partival 2022
+      question_wording: Vilket parti kommer du att rösta på i riksdagsvalet den 13:e september?
+      extraction_method: HTML_TABLE
+      page_or_table: Omni resultattabell
+      archive_status: PINNED_HTML
+
+  - id: dn_ipsos_2026_09_11_omni
+    source: Omni-återpublicering av DN/Ipsos 11 september 2026
+    provider: Omni
+    dataset: Sekundär namngiven partivektor utan OTHER
+    url: https://omni.se/dn-ipsos-dott-lopp-mellan-blocken-tva-dagar-innan-valet/a/Wv12vK
+    retrieved_at: "2026-09-11T20:55:00+00:00"
+    reference_period: "2026-09-07–2026-09-10"
+    geography_version: NATIONAL
+    license: Omni-artikel; källa ska anges
+    raw_file: data/raw/polls/omni_dn_ipsos_11-september-2026.html
+    sha256: 0971a50ab5aff8ba9859c8566daadbafdfbe146c6addbe945f512caad57f08db
+    notes: >
+      Pinnad tabell med åtta namngivna partier. OTHER 1,6 härleds som
+      DERIVED_RESIDUAL. Korskontrollerad mot DN (beställare) och Expressen (n, fält, L, block).
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Ipsos
+      publication_date: "2026-09-11"
+      fieldwork_start: "2026-09-07"
+      fieldwork_end: "2026-09-10"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade 18 år och uppåt
+      sample_size: 1800
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Ipsos
+      question_wording: Partisympati, DN/Ipsos
+      extraction_method: HTML_TABLE
+      page_or_table: Omni namngiven tabell
+      archive_status: PINNED_HTML
+
+  - id: demoskop_2026_09_11_omni
+    source: Omni-återpublicering av Aftonbladet/SvD/Demoskop 11 september 2026
+    provider: Omni
+    dataset: Sekundär namngiven partivektor utan OTHER
+    url: https://omni.se/gapet-nere-pa-2-5-procent-enligt-ny-matning-rysare/a/pBvOgR
+    retrieved_at: "2026-09-11T20:55:00+00:00"
+    reference_period: "2026-09-07–2026-09-11"
+    geography_version: NATIONAL
+    license: Omni-artikel; källa ska anges
+    raw_file: data/raw/polls/omni_demoskop_11-september-2026.html
+    sha256: 90351a2ed318347f1b24ee46bbc2a57a3be0eb9177e473bc43c82f4ddc3927d4
+    notes: >
+      Omni bekräftar n=1 419 och fält 7–11 september. Tabellen för production
+      läses från Placera. OTHER 1,5 är DERIVED_RESIDUAL.
+    status: verified_download
+    usage: forecast_2026_poll_support
+
+  - id: svd_demoskop_2026_09_11
+    source: SvD/Demoskop 11 september 2026
+    provider: Svenska Dagbladet
+    dataset: Beställande medieartikel, paywallad
+    url: https://www.svd.se/a/y5pXjJ/liberalerna-over-riksdagssparren-enligt-demoskop
+    retrieved_at: "2026-09-11T20:55:00+00:00"
+    reference_period: "2026-09-07–2026-09-11"
+    geography_version: NATIONAL
+    license: SvD; prenumeration krävs
+    raw_file: data/raw/polls/svd_demoskop_11-september-2026.html
+    sha256: b46f39be3de78fbe3e5bfa64750e535f6ad44af84baca3e468cd8355353b156e
+    notes: Beställande medie. Offentlig HTML ger L 4,7 men inte hela vektorn.
+    status: paywall
+    usage: forecast_2026_inventory_only
+
+  - id: aftonbladet_demoskop_2026_09_11
+    source: Aftonbladet-kolumn om Demoskop 11 september 2026
+    provider: Aftonbladet
+    dataset: Beställande mediekolumn, ofullständig vektor
+    url: https://www.aftonbladet.se/nyheter/kolumnister/a/7pwQ23/l-klart-over-sparren-i-aftonbladet-demoskop
+    retrieved_at: "2026-09-11T20:55:00+00:00"
+    reference_period: "2026-09-07–2026-09-11"
+    geography_version: NATIONAL
+    license: Aftonbladet; källa ska anges
+    raw_file: data/raw/polls/aftonbladet_demoskop_11-september-2026.html
+    sha256: 822e6841dedb85f89b1782ed02421aa25a398b8404903326081dbb85d0bf1dd9
+    notes: >
+      Beställande originalpublicering. Korskontroll av S 29,7, L 4,7 och block 50,5.
+      Komplett namngiven tabell läses från Placera/Direkt.
+    status: verified_download_incomplete
+    usage: forecast_2026_poll_support
+
+  - id: placera_demoskop_2026_09_11
+    source: Nyhetsbyrån Direkt via Placera, Demoskop 7–11 september
+    provider: Placera/Direkt
+    dataset: Sekundärt telegram med åtta namngivna partier
+    url: https://www.placera.se/telegram/valbarometer-gapet-krymper-s-vander-upp-mp-ned--demoskop-20260911
+    retrieved_at: "2026-09-11T20:55:00+00:00"
+    reference_period: "2026-09-07–2026-09-11"
+    geography_version: NATIONAL
+    license: Nyhetsbyrån Direkt/Placera
+    raw_file: data/raw/polls/placera_demoskop_11-september-2026.html
+    sha256: 5cc4942b05f620b42e318c6b50ae17db6447e3e7ee28ed3cfe1665ab799df88b
+    notes: >
+      Pinnad Direkt-tabell med åtta namngivna partier. OTHER 1,5 härleds som
+      DERIVED_RESIDUAL. Korskontrollerad mot Aftonbladet (S, L, block) och Omni (n, fält).
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Demoskop
+      publication_date: "2026-09-11"
+      fieldwork_start: "2026-09-07"
+      fieldwork_end: "2026-09-11"
+      information_level: MARGINAL_ONLY
+      population: Allmänheten 18 år och uppåt
+      sample_size: 1419
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Iniziopanelen
+      question_wording: Vilket parti skulle du rösta på om det var riksdagsval idag?
+      extraction_method: HTML_TABLE
+      page_or_table: Placera/Direkt septemberrad
+      archive_status: PINNED_HTML
+
+  - id: expressen_dn_ipsos_2026_09_11
+    source: Expressen korskontroll av DN/Ipsos 11 september 2026
+    provider: Expressen
+    dataset: Korskontroll av n, fältperiod, L och blocktal
+    url: https://www.expressen.se/nyheter/sverige/nya-matningen-rysarval-vantar/
+    retrieved_at: "2026-09-11T21:05:00+00:00"
+    reference_period: "2026-09-07–2026-09-10"
+    geography_version: NATIONAL
+    license: Expressen; källa ska anges
+    raw_file: data/raw/polls/expressen_dn_ipsos_11-september-2026.html
+    sha256: 33a1df048b19f8204a71c0b68ad3c04789bf20ac7e3d3dfb24e2942b78d50008
+    notes: >
+      Publicerad 11 sep 15.38. Bekräftar n=1 800, fält 7–10 september, L 5 procent
+      och block 49,3 mot 49,0. Inte den kompletta åttapartitabellen.
+    status: verified_download
+    usage: forecast_2026_poll_support
+
+  - id: expressen_indikator_2026_09_11
+    source: Expressen-tabell för Indikator/Ekot 11 september 2026
+    provider: Expressen
+    dataset: Komplett publicerad partivektor inklusive Övriga
+    url: https://www.expressen.se/nyheter/politik/l-klart-over-sparren-i-ny-matning-gapet-minskar-/
+    retrieved_at: "2026-09-11T21:05:00+00:00"
+    reference_period: "2026-09-02–2026-09-10"
+    geography_version: NATIONAL
+    license: Expressen; källa ska anges
+    raw_file: data/raw/polls/expressen_indikator_11-september-2026.html
+    sha256: 8c40621d24b1fc12bad9149bbc716d48666216f3c66590c23f0d139962867db5
+    notes: >
+      Publicerad 11 sep 08.20. Komplett vektor inklusive Övriga 1,6. Metod, n och
+      fältperiod korskontrolleras mot indikator.org/opinion-sr/.
+    status: verified_download
+    usage: forecast_2026_poll
+    poll:
+      election_cycle: 2026
+      pollster: Indikator Opinion
+      publication_date: "2026-09-11"
+      fieldwork_start: "2026-09-02"
+      fieldwork_end: "2026-09-10"
+      information_level: MARGINAL_ONLY
+      population: Röstberättigade 18 år och uppåt
+      sample_size: 2189
+      sample_size_basis: RESPONDENTS
+      effective_n: null
+      survey_weight_method: Vägt på kön, ålder och partival 2022
+      question_wording: Vilket parti kommer du att rösta på i riksdagsvalet den 13:e september?
+      extraction_method: HTML_TABLE
+      page_or_table: Expressen resultatrader
+      archive_status: PINNED_HTML
+

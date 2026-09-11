@@ -19,6 +19,10 @@ from valforecast.evaluation.milestone_four_c import (
 )
 from valforecast.evaluation.milestone_three import run_milestone_three
 from valforecast.evaluation.milestone_two import run_milestone_two
+from valforecast.forecast.contract import load_forecast_contract
+from valforecast.forecast.lock import load_input_lock, write_input_lock
+from valforecast.forecast.produce import run_forecast_2026
+from valforecast.forecast.snapshot import build_snapshot_document, write_snapshot
 from valforecast.ingest.fetch import fetch_source
 from valforecast.pipeline import run_initial_milestone
 from valforecast.polls.transition_corpus import build_survey_corpora
@@ -120,3 +124,44 @@ def lock_transitions_c_survey() -> None:
 def validate_transitions_c() -> None:
     summary = run_milestone_four_c(_root())
     typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))
+
+
+@app.command("lock-forecast-2026-inputs")
+def lock_forecast_2026_inputs() -> None:
+    path = write_input_lock(_root())
+    typer.echo(json.dumps({"lock_path": str(path)}, ensure_ascii=False, indent=2))
+
+
+@app.command("forecast-2026")
+def forecast_2026(
+    official: Annotated[bool, typer.Option("--official")] = False,
+    dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
+) -> None:
+    if official and dry_run:
+        raise typer.BadParameter("Use either --official or --dry-run, not both")
+    root = _root()
+    contract = load_forecast_contract(root / "config" / "forecast_2026.yaml")
+    lock = load_input_lock(root)
+    result = run_forecast_2026(root, contract)
+    document = build_snapshot_document(root, result)
+    payload: dict[str, object] = {
+        "included_polls": document["included_polls"],
+        "national": document["prediction"]["national"],
+        "poll_target": document["prediction"]["poll_target"],
+        "strict_sensitivity": {
+            "included_polls": document["strict_sensitivity_polls"],
+            "national": document["prediction"]["strict_sensitivity"]["national"],
+            "poll_target": document["prediction"]["strict_sensitivity"]["poll_target"],
+        },
+        "lock_stage": lock.get("stage"),
+        "git_commit": document["git_commit"],
+        "official": official,
+        "dry_run": dry_run,
+    }
+    if dry_run:
+        payload["snapshot"] = None
+        typer.echo(json.dumps(payload, ensure_ascii=False, indent=2))
+        return
+    path = write_snapshot(root, document, official=official)
+    payload["snapshot"] = str(path)
+    typer.echo(json.dumps(payload, ensure_ascii=False, indent=2))

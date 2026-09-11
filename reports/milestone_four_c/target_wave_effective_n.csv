@@ -1,0 +1,17 @@
+wave_id,region_id,n_eff,valid_cells,used_fallback,clip_applied,n_eff_label,is_kish_ess,base_capped,election_cycle
+scb_2018M05_regional_original,0180,887.323164000000,9,false,false,approximate_margin_inverted_not_kish,false,false,2018
+scb_2018M05_regional_original,SE01exkl0180,1326.273984000000,9,false,false,approximate_margin_inverted_not_kish,false,false,2018
+scb_2018M05_regional_original,SE06,952.307029333333,9,false,false,approximate_margin_inverted_not_kish,false,false,2018
+scb_2018M05_regional_original,SE07+SE08,952.748780020812,9,false,false,approximate_margin_inverted_not_kish,false,false,2018
+scb_2018M05_regional_original,SE09,888.591630769231,9,false,false,approximate_margin_inverted_not_kish,false,false,2018
+scb_2018M05_regional_original,SE0A,1898.886968047337,9,false,false,approximate_margin_inverted_not_kish,false,false,2018
+scb_2018M05_regional_original,SE12,2086.626851211073,9,false,false,approximate_margin_inverted_not_kish,false,false,2018
+scb_2018M05_regional_original,SE2,1451.122643478261,9,false,false,approximate_margin_inverted_not_kish,false,false,2018
+scb_2022M05_regional_original,0180,344.328754560000,9,false,false,approximate_margin_inverted_not_kish,false,false,2022
+scb_2022M05_regional_original,SE01exkl0180,437.219377777778,9,false,false,approximate_margin_inverted_not_kish,false,false,2022
+scb_2022M05_regional_original,SE06,333.536110377982,8,false,false,approximate_margin_inverted_not_kish,false,false,2022
+scb_2022M05_regional_original,SE07+SE08,339.686264189439,8,false,false,approximate_margin_inverted_not_kish,false,false,2022
+scb_2022M05_regional_original,SE09,362.695550000000,8,false,false,approximate_margin_inverted_not_kish,false,false,2022
+scb_2022M05_regional_original,SE0A,807.865882352941,9,false,false,approximate_margin_inverted_not_kish,false,false,2022
+scb_2022M05_regional_original,SE12,640.092392899408,9,false,false,approximate_margin_inverted_not_kish,false,false,2022
+scb_2022M05_regional_original,SE2,504.501947888162,9,false,false,approximate_margin_inverted_not_kish,false,false,2022

@@ -1,0 +1,13 @@
+election_cycle,analysis,comparison,mean_delta_mae,interval_low,interval_high,draws
+2018,independent_joint_draws_labeled_dependence_approximation,regional_value,0.002345319095,0.001601199744,0.003230270613,2000
+2018,independent_joint_draws_labeled_dependence_approximation,transition_value,-0.000546697273,-0.000754913604,-0.000304061105,2000
+2018,region_draws_fixed_transition,regional_value,0.002319343907,0.001571225393,0.003180123639,2000
+2018,region_draws_fixed_transition,transition_value,0.000232208040,-0.000515910474,0.001092987773,2000
+2018,transition_draws_fixed_region_margins,regional_value,0.001479817477,0.001338016590,0.001640971915,2000
+2018,transition_draws_fixed_region_margins,transition_value,-0.000607318390,-0.000749119277,-0.000446163952,2000
+2022,independent_joint_draws_labeled_dependence_approximation,regional_value,0.003896396327,0.002430698452,0.005584114261,2000
+2022,independent_joint_draws_labeled_dependence_approximation,transition_value,0.000023411782,-0.000338307001,0.000393163410,2000
+2022,region_draws_fixed_transition,regional_value,0.003874427898,0.002422628524,0.005563691630,2000
+2022,region_draws_fixed_transition,transition_value,0.001839865009,0.000388065635,0.003529128741,2000
+2022,transition_draws_fixed_region_margins,regional_value,0.001952870392,0.001812702646,0.002102091672,2000
+2022,transition_draws_fixed_region_margins,transition_value,-0.000081692497,-0.000221860243,0.000067528783,2000

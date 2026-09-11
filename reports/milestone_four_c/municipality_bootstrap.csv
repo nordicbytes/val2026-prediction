@@ -1,0 +1,5 @@
+transition_id,comparison,reference_model,observed_delta_mae,ci_low,ci_high,draws,cluster_unit
+2014_2018,regional_value,T_nat,0.001452820191,0.000447266198,0.002228015647,2000,municipality
+2014_2018,transition_value,B2_region,-0.000634315676,-0.000913255224,-0.000345331506,2000,municipality
+2018_2022,regional_value,T_nat,0.001929657126,0.001289058869,0.002651718309,2000,municipality
+2018_2022,transition_value,B2_region,-0.000104905763,-0.000686166596,0.000554633566,2000,municipality

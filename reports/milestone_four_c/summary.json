@@ -1,0 +1,11 @@
+{
+  "verdict": "NOT_SUPPORTED",
+  "primary_estimator": "R1_region_transition",
+  "cycles": [
+    2018,
+    2022
+  ],
+  "draws": 2000,
+  "seed": 20260911,
+  "four_b_sha256": "16da240fe08876646fd97a60c53f5b01ac7d87e042b3b492051324a17533e7f7"
+}

@@ -32,7 +32,6 @@ from valforecast.models.regional_transition import (
     posterior_mean_regional_predictions,
     previous_region_vectors,
     score_prepared_regional_matrices,
-    score_region_margin_draws,
 )
 from valforecast.models.transition_matrix import build_poll_state_proportional_predictions
 from valforecast.polls.region_condition import (
@@ -64,6 +63,20 @@ GATE_INTERVALS = {
     COMPARISON_REGIONAL: "region_draws_fixed_transition",
     COMPARISON_TRANSITION: "transition_draws_fixed_region_margins",
 }
+PREDICTION_COLUMNS = [
+    "transition_id",
+    "district_id",
+    "municipality_id",
+    "county_id",
+    "region_id",
+    "party",
+    "model",
+    "actual_share",
+    "predicted_share",
+    "previous_share",
+    "valid_votes",
+    "previous_valid_votes",
+]
 
 
 def lock_region_estimators(root: Path) -> dict[str, object]:
@@ -339,12 +352,15 @@ def run_milestone_four_c(root: Path) -> dict[str, object]:
             model=SUPPRESSION_ZERO_MODEL,
         )
         cycle_predictions = [
-            national_baseline,
-            national_transition,
-            regional_baseline,
-            primary,
-            published_point,
-            suppression_zero,
+            _ensure_region_id(frame, canonical)
+            for frame in (
+                national_baseline,
+                national_transition,
+                regional_baseline,
+                primary,
+                published_point,
+                suppression_zero,
+            )
         ]
         predictions.extend(cycle_predictions)
         transition_vs_t = score_prepared_regional_matrices(
@@ -359,19 +375,22 @@ def run_milestone_four_c(root: Path) -> dict[str, object]:
             regional_baseline,
             comparison_name=COMPARISON_TRANSITION,
         )
-        region_vs_t = score_region_margin_draws(
+        region_matrices = np.empty_like(r1_matrices)
+        for draw_index, regional_targets in enumerate(reconciled_draws.draws):
+            region_matrices[draw_index] = calibrate_region_transition_matrices(
+                t_mean,
+                previous_by_region,
+                regional_targets,
+            )
+        region_vs_t = score_prepared_regional_matrices(
             canonical,
-            t_mean,
-            previous_by_region,
-            reconciled_draws.draws,
+            region_matrices,
             national_transition,
             comparison_name=COMPARISON_REGIONAL,
         )
-        region_vs_b2 = score_region_margin_draws(
+        region_vs_b2 = score_prepared_regional_matrices(
             canonical,
-            t_mean,
-            previous_by_region,
-            reconciled_draws.draws,
+            region_matrices,
             regional_baseline,
             comparison_name=COMPARISON_TRANSITION,
         )
@@ -459,8 +478,10 @@ def run_milestone_four_c(root: Path) -> dict[str, object]:
         frame.write_csv(output / name, float_precision=12)
     _write_four_c_report(
         root / "reports" / "milestone_4c_regional_conditioning.md",
+        metrics,
         comparison,
         intervals,
+        artifacts["target_wave_effective_n.csv"],
         artifacts["eval_region_coverage.csv"],
         robustness,
         municipality_bootstrap,
@@ -707,6 +728,13 @@ def _matrix_from_long(frame: pl.DataFrame, value_column: str) -> np.ndarray:
     return matrix
 
 
+def _ensure_region_id(predictions: pl.DataFrame, canonical: pl.DataFrame) -> pl.DataFrame:
+    frame = predictions if "region_id" in predictions.columns else _with_regions(
+        predictions, canonical
+    )
+    return frame.select(PREDICTION_COLUMNS)
+
+
 def _with_regions(predictions: pl.DataFrame, canonical: pl.DataFrame) -> pl.DataFrame:
     if "region_id" in predictions.columns and predictions["region_id"].null_count() == 0:
         return predictions
@@ -816,17 +844,29 @@ def _four_c_municipality_bootstrap(
 
 def _write_four_c_report(
     path: Path,
+    metrics: pl.DataFrame,
     comparison: pl.DataFrame,
     intervals: pl.DataFrame,
+    effective_n: pl.DataFrame,
     coverage: pl.DataFrame,
     robustness: pl.DataFrame,
     municipality_bootstrap: pl.DataFrame,
     verdict: str,
 ) -> None:
+    metric_rows = "\n".join(
+        "| {cycle} | {model} | {mae:.3f} |".format(
+            cycle=int(row["election_cycle"]),
+            model=row["model"],
+            mae=100 * float(row["district_weighted_mae"]),
+        )
+        for row in metrics.iter_rows(named=True)
+    )
     point_rows = "\n".join(
-        "| {cycle} | {comparison} | {delta:+.3f} |".format(
+        "| {cycle} | {comparison} | {model:.3f} | {reference:.3f} | {delta:+.3f} |".format(
             cycle=int(row["election_cycle"]),
             comparison=row["comparison"],
+            model=100 * float(row["model_mae"]),
+            reference=100 * float(row["reference_mae"]),
             delta=100 * float(row["delta_mae"]),
         )
         for row in comparison.iter_rows(named=True)
@@ -842,6 +882,15 @@ def _write_four_c_report(
         )
         for row in intervals.iter_rows(named=True)
     )
+    ess_rows = "\n".join(
+        "| {cycle} | {region} | {n_eff:.1f} | {valid} |".format(
+            cycle=int(row["election_cycle"]),
+            region=row["region_id"],
+            n_eff=float(row["n_eff"]),
+            valid=int(row["valid_cells"]),
+        )
+        for row in effective_n.iter_rows(named=True)
+    )
     coverage_rows = "\n".join(
         "| {cycle} | {region} | {coverage:.1%} |".format(
             cycle=int(row["election_cycle"]),
@@ -850,67 +899,142 @@ def _write_four_c_report(
         )
         for row in coverage.iter_rows(named=True)
     )
+    robustness_rows = "\n".join(
+        "| {transition} | {model} | {reference} | {won}/{total} | "
+        "{coverage:.1%} | {delta:+.3f} |".format(
+            transition=row["transition_id"],
+            model=row["model"],
+            reference=row["reference_model"],
+            won=int(row["counties_won"]),
+            total=int(row["counties_total"]),
+            coverage=float(row["winning_vote_coverage"]),
+            delta=100 * float(row["median_county_delta"]),
+        )
+        for row in robustness.filter(pl.col("model") == PRIMARY_MODEL).iter_rows(named=True)
+    )
+    bootstrap_rows = "\n".join(
+        "| {transition} | {comparison} | {delta:+.3f} | [{low:+.3f}, {high:+.3f}] |".format(
+            transition=row["transition_id"],
+            comparison=row["comparison"],
+            delta=100 * float(row["observed_delta_mae"]),
+            low=100 * float(row["ci_low"]),
+            high=100 * float(row["ci_high"]),
+        )
+        for row in municipality_bootstrap.iter_rows(named=True)
+    )
+    if robustness.height == 0:
+        raise ValueError("Geographic robustness is empty")
     path.write_text(
         f"""# Milestone 4C — Regional conditioning
 
-Public PSU data has no `previous_party × current_party × region` table. 4C
-therefore does not estimate an observed three-way joint. It keeps the locked
-national 4B kernel and calibrates region-specific copies to vintage-correct
-Vid12 current-vote margins.
+## Status
 
-`R1 − T_nat` is the value of regional current-state information.
-`R1 − B2_region` is the value of the voter-flow kernel given the same
-regional polls. A win only against national B2 is not evidence of regional
-transition structure. Secondary pooling is omitted.
-
-## Locked gate
+Milestone 4B remains byte-for-byte frozen as **SUPPORTED**. Its report SHA-256
+is `{FROZEN_FOUR_B_REPORT}`. This is a separate 4C result and does not revise
+4A or 4B.
 
 Verdict: **{verdict}**
 
-| Cycle | Comparison | Point ΔMAE (pp) |
-|---|---|---|
+## What 4C can test
+
+Public PSU data has no `previous_party × current_party × region` table. 4C
+therefore does not estimate an observed three-way joint. It keeps the locked
+national 4B kernel `T1_no_point_shrinkage_raked` and calibrates region-specific
+copies to vintage-correct Vid12 current-vote margins.
+
+`R1 − T_nat` is the value of regional current-state information. `R1 −
+B2_region` is the value of the voter-flow kernel given the same regional
+polls. A win only against national B2 is not evidence of regional transition
+structure. Secondary pooling is omitted because no vintage-correct historical
+regional val-idag series is available for both holdouts.
+
+## Survey-only lock
+
+All regional estimator choices were committed before election scoring. The
+2018 margins come from the original 2018-06-05 news table, not live revised
+`Vid12` `2018M05`. The 2022 margins come from the 2022-06-02 news table and
+match the pinned Vid12 extract. Region weights are full-Sweden
+previous-election valid votes. The eight-group codebook is county-nested
+except Stockholm municipality.
+
+Approximate regional n_eff is the median margin-inverted cell size. It is not
+Kish ESS, and it is not capped when the public regional base is missing.
+
+| Cycle | Region | Approx. n_eff | Valid cells |
+|---:|---|---:|---:|
+{ess_rows}
+
+## Locked point backtest
+
+MAE is vote-weighted over district-party cells on the unchanged 4A/4B
+populations. Negative ΔMAE is improvement.
+
+| Election | Model | Weighted MAE (pp) |
+|---:|---|---:|
+{metric_rows}
+
+| Election | Comparison | R1 MAE (pp) | Reference MAE (pp) | ΔMAE (pp) |
+|---:|---|---:|---:|---:|
 {point_rows}
+
+R1 is worse than the national 4B kernel in both years: +0.145 pp in 2018 and
++0.193 pp in 2022. That fails the regional-value gate on the point comparison
+alone, so the locked verdict is NOT_SUPPORTED. R1 is slightly better than
+regional proportional swing on the point estimate, but that cannot rescue the
+gate. R1 is also worse than national B2. The published-point and
+zero-suppression sensitivities stay close to the primary and do not change
+the comparison.
+
+## Survey-draw intervals
+
+`regional_value` uses region-draw intervals with the national kernel fixed.
+`transition_value` uses transition-draw intervals with regional margins
+fixed. Joint intervals are a dependence approximation: both tables come from
+the same PSU respondents and no public covariance is published.
 
 | Cycle | Analysis | Comparison | Mean ΔMAE (pp) | 95% interval |
 |---|---|---|---|---|
 {interval_rows}
 
-SUPPORTED requires a negative point ΔMAE and a negative survey-interval upper
-bound for both `regional_value` and `transition_value` in both 2018 and 2022.
-`regional_value` uses region-draw intervals with the national kernel fixed.
-`transition_value` uses transition-draw intervals with regional margins fixed.
-Joint intervals are a dependence approximation: both tables come from the same
-PSU respondents and no public covariance is published.
+The region-draw intervals for `regional_value` lie entirely above zero in
+both years. The transition-draw interval for `transition_value` is negative
+in 2018 and crosses zero in 2022. None of this is used to choose a different
+estimator after seeing the scores.
 
 ## Evaluation coverage
 
 The frozen eval populations are 4,631 districts in 2018 and 4,164 in 2022.
-Region weights are full-Sweden previous-election valid votes. Eval-population
-coverage is reported separately and does not select the model.
+Region weights remain full-Sweden previous-election valid votes.
+Eval-population coverage is reported separately and does not select the
+model.
 
 | Cycle | Region | Eval coverage of previous votes |
 |---|---|---|
 {coverage_rows}
 
-Municipality-cluster bootstrap and county splits are diagnostics only.
+## Geographic diagnostics
+
+County splits and municipality-cluster bootstrap are diagnostics only.
+
+| Transition | Model | Reference | Counties won | Winning vote coverage | Median county ΔMAE (pp) |
+|---|---|---|---|---|---|
+{robustness_rows}
 
 | Transition | Comparison | Observed ΔMAE (pp) | Bootstrap 95% |
 |---|---|---|---|
-{chr(10).join(
-    "| {transition} | {comparison} | {delta:+.3f} | [{low:+.3f}, {high:+.3f}] |".format(
-        transition=row["transition_id"],
-        comparison=row["comparison"],
-        delta=100 * float(row["observed_delta_mae"]),
-        low=100 * float(row["ci_low"]),
-        high=100 * float(row["ci_high"]),
-    )
-    for row in municipality_bootstrap.iter_rows(named=True)
-)}
+{bootstrap_rows}
+
+## What this does not say
+
+4C does not overturn 4B. The national stated-party kernel still beats
+national proportional swing. What fails here is the added regional
+current-state step: grafting SCB's eight published val-idag margins onto that
+kernel makes the district forecast worse on the locked holdouts. 4C also does
+not estimate a directly observed regional voter-flow interaction, and it does
+not implement demographic MRP.
 """,
         encoding="utf-8",
     )
-    if robustness.height == 0:
-        raise ValueError("Geographic robustness is empty")
 
 
 def _sha256(path: Path) -> str:

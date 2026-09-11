@@ -5,6 +5,21 @@ Modell: `T1_no_point_shrinkage_raked` (Milestone 4B, SUPPORTED). Ingen 4C. Ingen
 
 Endast `forecast_snapshots/official_forecast_2026.json` bär officiell status, och filen får aldrig skrivas över. Den skrivs i två steg: först commit:as kontrakt, kod, input-lås och rapporter, därefter körs `valforecast forecast-2026 --official` så att snapshotens `git_commit` pekar på produktionskoden. Det tidigare timestampade utkastet, som pekade på HEAD före produktionskoden, är borttaget.
 
+## Officiell snapshot
+
+| Fält | Värde |
+|---|---|
+| Fil | `forecast_snapshots/official_forecast_2026.json` |
+| SHA-256 | `48702a6de161f9605c833f4ae1337697d7ffee2fb8207fd57af12d084c9da6f7` |
+| Skriven | 2026-09-11T21:26:34.995071+00:00 |
+| `git_commit` | `a46bb2bc5a5b8eaacb39e658e2de8796ac4c9e8d` |
+| `contract_sha256` | `11b248e06ff0eb7ecd92ad2ce7c9458e5cf483d17bc0173ed48915151c1360a4` |
+| `input_lock_sha256` | `660634e35cee2bd1f10e151ce54acf199d4dafff6a3361cd84110a2192f7640d` |
+| `source_manifest_hash` | `2362f165518a4bb730679d403efd7a1f16b48b384503f3747a95baeb7d449005` |
+| Frö / drag | 20260911 / 2 000 |
+
+Snapshoten innehåller 6 312 distrikt samt kommun-, läns- och valkretsaggregat. Ett nytt anrop av `--official` avbryts med fel; det är verifierat.
+
 ## Nationell punkt (all-verifiable productionstarget)
 
 Vikten är röstberättigade 2026-08-14. Inga mandat. Productionstarget är senaste verifierade mätning per institut: Verian final, Novus/TV4 final, Ipsos final, Indikator final och Demoskop final.

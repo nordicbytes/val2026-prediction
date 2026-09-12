@@ -599,3 +599,78 @@ sources:
     notes: Nivå B. 2 358 intervjuer 6–8 september. Inte produktionsandel.
     status: verified_download
     usage: poll_calibration_sample_size
+
+  - id: rf_1974_152_kap3_6_7
+    source: Regeringsformen
+    provider: Sveriges riksdag
+    dataset: 3 kap. 6–7 §§ regeringsformen (1974:152)
+    url: https://lagen.nu/1974:152#K3
+    retrieved_at: "2026-09-12T11:30:00+00:00"
+    reference_period: "1974–2026"
+    geography_version: NATIONAL
+    license: Offentlig rätt
+    raw_file: null
+    sha256: null
+    notes: 349 mandat, 310 fasta, 39 utjämningsmandat. Största restmetoden för fasta mandat per valkrets. Inte produktionsinput.
+    status: verified_catalogue
+    usage: seat_allocation_research
+
+  - id: vallagen_2005_837_kap4_3_kap14_3_6
+    source: Vallagen
+    provider: Sveriges riksdag
+    dataset: 4 kap. 3 § och 14 kap. 3–6 §§ vallagen (2005:837)
+    url: https://lagen.nu/2005:837#K14
+    retrieved_at: "2026-09-12T11:30:00+00:00"
+    reference_period: "2005–2026"
+    geography_version: NATIONAL
+    license: Offentlig rätt
+    raw_file: null
+    sha256: null
+    notes: Fasta mandat, spärrar, jämkade uddatalsmetoden, totalfördelning och utjämning. 14 kap. 6 § (utjämning ut på valkrets) implementeras inte. Inte produktionsinput.
+    status: verified_catalogue
+    usage: seat_allocation_research
+
+  - id: val_manual_mandatfordelning_v785_05
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Manual för mandatfördelning VAL V785 05
+    url: https://www.val.se/download/18.162047b519a91d05331183a9/1761747515752/manual-mandatfordelning-val-v785-05.pdf
+    retrieved_at: "2026-09-12T11:33:00+00:00"
+    reference_period: "2018–2026"
+    geography_version: NATIONAL
+    license: Se Valmyndighetens villkor
+    raw_file: data/raw/valmyndigheten/seats/manual-mandatfordelning-val-v785-05.pdf
+    sha256: e3a7661a58bf97abc4c0386a1cb93a5d170e9027f3dabd819d5931dfafa7e34f
+    notes: Räkneexempel för Hamilton och jämkade uddatalsmetoden. Första delningstal 1,2. Inte produktionsinput.
+    status: verified_download
+    usage: seat_allocation_research
+
+  - id: val_fasta_mandat_2022_2026
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Mandat i respektive valkrets och valområde i valen 2022 och 2026
+    url: https://www.val.se/download/18.3eba56b819e04244a687ae/1778508116907/fordelning-av-mandat-2022-och-2026.xlsx
+    retrieved_at: "2026-09-12T11:33:00+00:00"
+    reference_period: "2022-04-08–2026-05-11"
+    geography_version: RIKSDAGSVALKRETS
+    license: Se Valmyndighetens villkor för öppna data
+    raw_file: data/raw/valmyndigheten/seats/fordelning-av-mandat-2022-och-2026.xlsx
+    sha256: 90e8e25f1359bb996f5ec51fee85ef96a62c0b000309e30ac06e7d59322a6c16
+    notes: Officiella fasta mandat 2022 är indata till 2022-valideringen. Kolumnen 2026 är Valmyndighetens beslut 2026-05-11 enligt 4 kap. 3 § vallagen på röstberättigade 1 mars 2026 och är indata till 2026-simuleringen. En Hamilton-beräkning på röstberättigade 2026-08-14 behålls bara som känslighetskontroll. Inte produktionsinput.
+    status: verified_download
+    usage: seat_allocation_research
+
+  - id: val_2022_riksdag_beslut_med_bilagor
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Beslut resultat i val till riksdagen 2022 med bilagor
+    url: https://www.val.se/download/18.162047b519a91d05331146ae/1663951746642/Riksdag%20val%202022%20Beslut%20med%20bilagor%20-%20med%20r%C3%A4ttelse%20enligt%20FL.pdf
+    retrieved_at: "2026-09-12T11:33:00+00:00"
+    reference_period: "2022-09-11"
+    geography_version: RIKSDAGSVALKRETS
+    license: Se Valmyndighetens villkor
+    raw_file: data/raw/valmyndigheten/2022/riksdag_val_2022_beslut_med_bilagor.pdf
+    sha256: c61debeead81dd2951dcde7e7913fe906d49fbfca810dd3de8aedc464f21020d
+    notes: Facit för partimandat 2022 (S 107, SD 73, M 68, V 24, C 24, KD 19, MP 18, L 16) och fasta mandat per parti. Inte produktionsinput.
+    status: verified_download
+    usage: seat_allocation_research

@@ -27,6 +27,8 @@ from valforecast.forecast.snapshot import build_snapshot_document, write_snapsho
 from valforecast.ingest.fetch import fetch_source
 from valforecast.pipeline import run_initial_milestone
 from valforecast.polls.transition_corpus import build_survey_corpora
+from valforecast.seats.produce import SEATS_JSON, run_seat_simulation
+from valforecast.site import build_site
 
 app = typer.Typer(no_args_is_help=True)
 sources_app = typer.Typer(no_args_is_help=True)
@@ -158,6 +160,12 @@ def calibrate_poll_history() -> None:
     )
 
 
+@app.command("build-site")
+def build_site_command() -> None:
+    path = build_site(_root())
+    typer.echo(json.dumps({"written": str(path)}, ensure_ascii=False, indent=2))
+
+
 @app.command("lock-forecast-2026-inputs")
 def lock_forecast_2026_inputs() -> None:
     path = write_input_lock(_root())
@@ -197,3 +205,24 @@ def forecast_2026(
     path = write_snapshot(root, document, official=official)
     payload["snapshot"] = str(path)
     typer.echo(json.dumps(payload, ensure_ascii=False, indent=2))
+
+
+@app.command("simulate-seats-2026")
+def simulate_seats_2026() -> None:
+    document = run_seat_simulation(_root())
+    typer.echo(
+        json.dumps(
+            {
+                "point_seats": document["point_seats"],
+                "median_seats": document["median_seats"],
+                "low_seats": document["low_seats"],
+                "high_seats": document["high_seats"],
+                "p_below_threshold": document["p_below_threshold"],
+                "coalition_majority": document["diagnostics"]["coalition_majority"],
+                "n_draws": document["n_draws"],
+                "path": str(SEATS_JSON),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )

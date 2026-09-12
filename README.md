@@ -54,6 +54,21 @@ som innehåller kontrakt, kod och input-lås. `.gitignore` ignorerar
 timestampade JSON-utkast men undantar den officiella filen så att den
 kan committas.
 
+Experimentet med mottagna förtidsröster körs helt separat från
+produktionsprognosen:
+
+```bash
+uv run valforecast sources fetch-experimental
+uv run valforecast backtest-advance-voting
+```
+
+Design och gate finns i `config/advance_voting.yaml`. Kommandot använder
+officiella lokalfiler för 2010–2022 och skriver rapporten till
+`reports/experiments/advance_voting/report.md`. Mottagningsplats är inte samma
+sak som väljarens hemkommun. Experimentet får därför aldrig ändra den frysta
+2026-prognosen; den nuvarande 2026-filen är dessutom hämtad efter datastoppet
+och är uttryckligen exkluderad.
+
 ## Datapolicy
 
 - `data/raw` innehåller oförändrade originalfiler och committas inte.

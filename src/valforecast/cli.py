@@ -20,6 +20,7 @@ from valforecast.evaluation.milestone_four_c import (
 )
 from valforecast.evaluation.milestone_three import run_milestone_three
 from valforecast.evaluation.milestone_two import run_milestone_two
+from valforecast.experiments.advance_voting import run_advance_voting_backtest
 from valforecast.forecast.contract import load_forecast_contract
 from valforecast.forecast.lock import load_input_lock, write_input_lock
 from valforecast.forecast.produce import run_forecast_2026
@@ -49,6 +50,7 @@ def validate_sources() -> None:
     manifests = (
         root / "config" / "sources.yaml",
         root / "config" / "sources_calibration.yaml",
+        root / "config" / "sources_experimental.yaml",
     )
     for path in manifests:
         sources = load_sources(path)
@@ -78,6 +80,21 @@ def fetch_sources(
     if not selected:
         raise typer.BadParameter("No downloadable sources selected")
 
+    for source in selected:
+        receipt = fetch_source(source, root)
+        typer.echo(json.dumps(asdict(receipt), ensure_ascii=False))
+
+
+@sources_app.command("fetch-experimental")
+def fetch_experimental_sources() -> None:
+    """Fetch historical experimental inputs, never the post-cutoff 2026 file."""
+    root = _root()
+    sources = load_sources(root / "config" / "sources_experimental.yaml")
+    selected = [
+        source
+        for source in sources
+        if source.raw_file is not None and source.status == "verified_download"
+    ]
     for source in selected:
         receipt = fetch_source(source, root)
         typer.echo(json.dumps(asdict(receipt), ensure_ascii=False))
@@ -164,6 +181,22 @@ def calibrate_poll_history() -> None:
 def build_site_command() -> None:
     path = build_site(_root())
     typer.echo(json.dumps({"written": str(path)}, ensure_ascii=False, indent=2))
+
+
+@app.command("backtest-advance-voting")
+def backtest_advance_voting() -> None:
+    summary = run_advance_voting_backtest(_root())
+    typer.echo(
+        json.dumps(
+            {
+                "gates": summary["gates"],
+                "forecast_2026": summary["forecast_2026"],
+                "report": "reports/experiments/advance_voting/report.md",
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
 
 @app.command("lock-forecast-2026-inputs")

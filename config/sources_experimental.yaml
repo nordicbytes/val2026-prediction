@@ -2,6 +2,7 @@ schema_version: 1
 role: experimental_only_not_production
 sources:
   - id: advance_votes_received_2010
+    source: Valmyndigheten
     provider: Valmyndigheten
     dataset: Mottagna förtidsröster per dag och röstningslokal 2010
     url: https://historik.val.se/val/val2010/rostmottagning/fortidsrostning/mottagna_fortidsroster.skv
@@ -9,10 +10,13 @@ sources:
     raw_file: data/raw/advance_voting/2010/mottagna_fortidsroster.skv
     sha256: e98df728adf0e8b285c45082aecc13f165f9885cac08f23b5ddc9d162a750e71
     reference_period: "2010-09-01/2010-09-19"
-    geography: reception_location
+    geography_version: RECEPTION_LOCATION_2010
+    license: Fri användning med källangivelse
     status: verified_download
+    notes: Mottagningsplats, inte väljarens hemkommun eller hemvaldistrikt.
 
   - id: advance_votes_received_2014
+    source: Valmyndigheten
     provider: Valmyndigheten
     dataset: Mottagna förtidsröster per dag och röstningslokal 2014
     url: https://historik.val.se/val/val2014/rostmottagning/fortidsrostning/mottagna_fortidsroster.skv
@@ -20,10 +24,13 @@ sources:
     raw_file: data/raw/advance_voting/2014/mottagna_fortidsroster.skv
     sha256: b173dfa2009f325326d8251a113f92ffb6ca28445d6fd265783003098d33b83c
     reference_period: "2014-08-27/2014-09-14"
-    geography: reception_location
+    geography_version: RECEPTION_LOCATION_2014
+    license: Fri användning med källangivelse
     status: verified_download
+    notes: Mottagningsplats, inte väljarens hemkommun eller hemvaldistrikt.
 
   - id: advance_votes_received_2018
+    source: Valmyndigheten
     provider: Valmyndigheten
     dataset: Mottagna förtidsröster per dag och röstningslokal 2018
     url: https://historik.val.se/val/val2018/rostmottagning/fortidsrostning/mottagna_fortidsroster.skv
@@ -31,10 +38,13 @@ sources:
     raw_file: data/raw/advance_voting/2018/mottagna_fortidsroster.skv
     sha256: 20b9b442e07f95252ba894213bdea6bca1a112bcded476d4185d5bb602deaf77
     reference_period: "2018-08-22/2018-09-09"
-    geography: reception_location
+    geography_version: RECEPTION_LOCATION_2018
+    license: Fri användning med källangivelse
     status: verified_download
+    notes: Mottagningsplats, inte väljarens hemkommun eller hemvaldistrikt.
 
   - id: advance_votes_received_2022
+    source: Valmyndigheten
     provider: Valmyndigheten
     dataset: Mottagna förtidsröster per dag och röstningslokal 2022
     url: https://data.val.se/filer/val2022/rostmottagning/fortidsroster.csv
@@ -42,10 +52,13 @@ sources:
     raw_file: data/raw/advance_voting/2022/fortidsroster.csv
     sha256: c7ba3acd0bcb456c6cc4cca412cbc30ddc0a1b03a3ac8e2da3728e202d5122d8
     reference_period: "2022-08-24/2022-09-11"
-    geography: reception_location
+    geography_version: RECEPTION_LOCATION_2022
+    license: Fri användning med källangivelse
     status: verified_download
+    notes: Mottagningsplats, inte väljarens hemkommun eller hemvaldistrikt.
 
   - id: advance_votes_received_2026_current_ineligible
+    source: Valmyndigheten
     provider: Valmyndigheten
     dataset: Mottagna förtidsröster per dag och röstningslokal 2026
     url: https://data.val.se/filer/val2026/rostmottagning/mottagna-fortidsroster-val2026.csv
@@ -53,7 +66,8 @@ sources:
     raw_file: data/raw/advance_voting/2026/mottagna-fortidsroster-current-ineligible.csv
     sha256: e976e5ac49d6997304f918331bd7ea41666734dbff03cfbbb611db866caa18f5
     reference_period: "2026-08-26/2026-09-13"
-    geography: reception_location
+    geography_version: RECEPTION_LOCATION_2026
+    license: Fri användning med källangivelse
     status: excluded_post_cutoff
     notes: >
       Retrieved after the production cutoff 2026-09-11 22:29 CEST and already

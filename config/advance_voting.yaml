@@ -30,12 +30,13 @@ geography:
   target: municipality_of_final_count
 
 features:
-  - reception_rate_d2
-  - delta_reception_rate_d2
-  - early_share_d7_of_d2
-  - delta_early_share_d7_of_d2
-  - active_locations_per_10000_d2
-  - delta_active_locations_per_10000_d2
+  columns:
+    - reception_rate_d2
+    - delta_reception_rate_d2
+    - early_share_d7_of_d2
+    - delta_early_share_d7_of_d2
+    - active_locations_per_10000_d2
+    - delta_active_locations_per_10000_d2
   standardization: z_score_within_target_election
 
 models:

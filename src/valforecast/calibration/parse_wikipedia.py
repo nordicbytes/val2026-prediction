@@ -18,6 +18,15 @@ from valforecast.calibration.names import (
 from valforecast.ingest.fetch import sha256_file
 
 WINDOW_DAYS = 30
+# Sweden has at most about ten national houses. The densest correctly
+# dated 30-day window on these pages is 2022, where Sifo, Novus and
+# SKOP published almost daily (66 polls). The 2002 TEMO compilation
+# has 59. A cap of 80 sits above those observed maxima but well below
+# a second August/September block leaking into the election year —
+# the 2014 year-bleed added 22 such rows to a 23-row cycle.
+MAX_WINDOW_POLLS_PER_CYCLE = 80
+_YEAR_CELL = re.compile(r"^20\d{2}$")
+_ARCHIVE_STAMP = re.compile(r"web\.archive\.org/web/(\d{4})(\d{2})(\d{2})")
 SV_2010_TABLE_FAMILIES = (
     "Demoskop",
     "Novus",
@@ -77,6 +86,84 @@ def _within_window(end: date, election: date) -> bool:
     return 1 <= days <= WINDOW_DAYS
 
 
+def _divider_year(row: list[str]) -> int | None:
+    if len(row) != 1:
+        return None
+    token = row[0].strip()
+    if _YEAR_CELL.fullmatch(token):
+        return int(token)
+    return None
+
+
+def assign_wikipedia_block_years(
+    table: list[list[str]],
+    *,
+    election_year: int,
+) -> list[int | None]:
+    """Assign a default year to each table row.
+
+    English Wikipedia year-divider rows mark the block *above* them.
+    After the last divider the remaining rows belong to that year minus
+    one. Files without dividers (2018, 2022) already print the year in
+    the date cell; those rows fall back to ``election_year``.
+    """
+    dividers = [
+        (index, year)
+        for index, row in enumerate(table)
+        if (year := _divider_year(row)) is not None
+    ]
+    assigned: list[int | None] = []
+    if not dividers:
+        return [election_year for _ in table]
+    last_year = dividers[-1][1]
+    for index, row in enumerate(table):
+        if _divider_year(row) is not None:
+            assigned.append(None)
+            continue
+        next_div = next((year for div_index, year in dividers if div_index > index), None)
+        if next_div is not None:
+            assigned.append(next_div)
+        else:
+            assigned.append(last_year - 1)
+    return assigned
+
+
+def archive_snapshot_date(url: str) -> date | None:
+    match = _ARCHIVE_STAMP.search(url)
+    if match is None:
+        return None
+    try:
+        return date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
+    except ValueError:
+        return None
+
+
+def row_citation_urls(row: dict[str, object]) -> list[str]:
+    raw = row.get("citation_urls")
+    if not isinstance(raw, list):
+        return []
+    return [str(item) for item in raw]
+
+
+def impossible_archive_citations(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Snapshots cannot predate the poll they document. Late archives are fine."""
+    violations: list[dict[str, object]] = []
+    for row in rows:
+        end = date.fromisoformat(str(row["fieldwork_end"]))
+        for url in row_citation_urls(row):
+            snapshot = archive_snapshot_date(url)
+            if snapshot is not None and snapshot < end:
+                violations.append(
+                    {
+                        "poll_id": row["poll_id"],
+                        "fieldwork_end": row["fieldwork_end"],
+                        "snapshot": snapshot.isoformat(),
+                        "url": url,
+                    }
+                )
+    return violations
+
+
 def parse_en_wikipedia(
     path: Path,
     *,
@@ -104,9 +191,11 @@ def parse_en_wikipedia(
     n_idx = next((i for i, h in enumerate(headers) if "sample" in h), None)
     meta = _source_meta(path, url, retrieved_at)
     election = ELECTION_DATES[cycle]
+    block_years = assign_wikipedia_block_years(table, election_year=cycle)
     rows: list[dict[str, object]] = []
     seen = 0
-    for row in table[header_index + 1 :]:
+    for offset, row in enumerate(table[header_index + 1 :]):
+        index = header_index + 1 + offset
         if len(row) < 6:
             continue
         raw_firm = row[firm_idx] if firm_idx < len(row) else ""
@@ -126,7 +215,10 @@ def parse_en_wikipedia(
             "",
             row[date_idx] if date_idx < len(row) else "",
         )
-        fieldwork = parse_fieldwork(date_text, election)
+        default_year = block_years[index]
+        if default_year is None:
+            continue
+        fieldwork = parse_fieldwork(date_text, election, default_year=default_year)
         if fieldwork is None:
             continue
         start, end = fieldwork

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections import Counter
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -12,6 +14,13 @@ from valforecast.calibration.corpus import POLL_GOLD, build_poll_corpus, last_po
 from valforecast.calibration.elections import RESULT_GOLD, load_official_national_results
 from valforecast.calibration.estimate import HOUSE_PRIOR_STRENGTH, estimate_house_effects
 from valforecast.calibration.gate import GATE_RULE, run_house_effect_gate
+from valforecast.calibration.html_tables import parse_tables
+from valforecast.calibration.names import parse_fieldwork
+from valforecast.calibration.parse_wikipedia import (
+    MAX_WINDOW_POLLS_PER_CYCLE,
+    assign_wikipedia_block_years,
+    impossible_archive_citations,
+)
 from valforecast.config import load_sources
 from valforecast.forecast.contract import load_forecast_contract
 from valforecast.forecast.lock import build_input_lock
@@ -154,6 +163,7 @@ def test_production_cannot_reach_calibration_history() -> None:
     for source in production:
         assert source.usage != "poll_calibration_history"
         assert source.usage != "poll_calibration_audit"
+        assert source.usage != "poll_calibration_sample_size"
         if source.raw_file:
             assert not str(source.raw_file).startswith("data/raw/polls/history/")
     contract = load_forecast_contract(ROOT / "config" / "forecast_2026.yaml")
@@ -173,6 +183,66 @@ def test_production_cannot_reach_calibration_history() -> None:
     }
     assert calibration_files
     assert calibration_files.isdisjoint(set(parsed.values()))
+
+
+def test_parse_fieldwork_wraps_december_into_previous_year() -> None:
+    election = date(2014, 9, 14)
+    parsed = parse_fieldwork("9 Dec–7 Jan", election, default_year=2014)
+    assert parsed == (date(2013, 12, 9), date(2014, 1, 7))
+    same_year = parse_fieldwork("25 Aug–6 Sep", election, default_year=2014)
+    assert same_year == (date(2014, 8, 25), date(2014, 9, 6))
+    older_block = parse_fieldwork("3–13 Sep", election, default_year=2012)
+    assert older_block == (date(2012, 9, 3), date(2012, 9, 13))
+
+
+def test_2014_year_dividers_mark_the_block_above() -> None:
+    path = ROOT / "data/raw/polls/history/wikipedia_en_polling_2014.html"
+    if not path.exists():
+        pytest.skip("Pinned historical poll files are absent")
+    table = parse_tables(path.read_text(encoding="utf-8", errors="replace"))[0]
+    years = assign_wikipedia_block_years(table, election_year=2014)
+    assert years[10] == 2014
+    assert years[87] == 2014
+    assert years[88] is None
+    assert years[89] == 2013
+    assert years[163] == 2013
+    assert years[164] is None
+    assert years[165] == 2012
+    assert years[244] is None
+    assert years[245] == 2011
+    assert years[325] is None
+    assert years[326] == 2010
+
+
+@pytest.mark.skipif(not HISTORY.exists(), reason="Pinned historical poll files are absent")
+def test_2014_sifo_last_poll_is_the_real_final() -> None:
+    lasts = last_polls(build_poll_corpus(ROOT))
+    sifo = next(
+        row
+        for row in lasts
+        if int(row["election_cycle"]) == 2014 and row["institute_family"] == "Sifo/Verian"
+    )
+    assert sifo["fieldwork_end"] == "2014-09-11"
+    assert abs(float(sifo["shares"]["S"]) - 0.310) < 0.002
+
+
+@pytest.mark.skipif(not HISTORY.exists(), reason="Pinned historical poll files are absent")
+def test_archive_snapshot_is_not_before_fieldwork_end() -> None:
+    rows = build_poll_corpus(ROOT)
+    assert impossible_archive_citations(rows) == []
+
+
+@pytest.mark.skipif(not HISTORY.exists(), reason="Pinned historical poll files are absent")
+def test_window_poll_counts_stay_below_campaign_ceiling() -> None:
+    rows = build_poll_corpus(ROOT)
+    counts = Counter(int(row["election_cycle"]) for row in rows)
+    assert counts
+    assert MAX_WINDOW_POLLS_PER_CYCLE == 80
+    for cycle, n_rows in sorted(counts.items()):
+        assert n_rows <= MAX_WINDOW_POLLS_PER_CYCLE, (
+            f"{cycle} has {n_rows} polls in the 30-day window; "
+            f"the cap is {MAX_WINDOW_POLLS_PER_CYCLE}"
+        )
 
 
 def test_calibration_lock_records_method_choices() -> None:

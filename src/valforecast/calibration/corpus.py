@@ -5,6 +5,10 @@ from typing import Any
 
 from valforecast.calibration.parse_temo import parse_temo_archive
 from valforecast.calibration.parse_wikipedia import parse_en_wikipedia, parse_sv_2010_wikipedia
+from valforecast.calibration.sample_sizes import (
+    apply_sample_size_overrides,
+    load_sample_size_overrides,
+)
 
 RETRIEVED_AT = "2026-09-12T08:15:00+00:00"
 HISTORY = Path("data/raw/polls/history")
@@ -87,6 +91,8 @@ def build_poll_corpus(root: Path) -> list[dict[str, Any]]:
             retrieved_at=RETRIEVED_AT,
         )
     )
+    overrides = load_sample_size_overrides(root)
+    apply_sample_size_overrides(rows, overrides)
     _assert_gold_rows(rows)
     return rows
 

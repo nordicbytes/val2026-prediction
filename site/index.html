@@ -363,11 +363,12 @@
         Mätningarna ligger samlade strax över spärren, och därför ser L:s smala intervall tryggt ut.
         Men vi har mätt hur mycket svenska slutmätningar historiskt missar valresultatet, och den
         missen är större än samlingen mellan instituten. Räknar man in den blir L 5,1 med intervallet
-        3,3–7,0, alltså under spärren i nedre kanten.
+        3,2–7,0, alltså under spärren i nedre kanten.
       </p>
       <p>
-        Punkten flyttar sig inte. Det som ändras är slutsatsen: prognosen kan inte säga att L
-        klarar riksdagen, bara att L ligger strax över i mätningarna.
+        I <b>87 %</b> av våra simuleringar klarar L fyraprocentspärren. Ungefär en gång på åtta
+        gör de det inte. Punkten flyttar sig inte — det som ändras är slutsatsen: prognosen kan
+        inte säga att L klarar riksdagen, bara att de ligger strax över i mätningarna.
       </p>
     </div>
   </div>
@@ -377,14 +378,30 @@
   <div class="wrap">
     <h2>Blocken</h2>
     <p class="section-note">
-      Summan av partierna på varje sida. Prognosen ger vänster-mitten ett litet försprång, men
-      marginalen är liten nog att de fem mätningarna inte är eniga om den.
+      Summan av partierna på varje sida. Prognosen ger vänster-mitten ett försprång på omkring tre
+      procentenheter, men försprånget är mindre än vad mätningar brukar missa med.
     </p>
     <div class="blocks" id="blocks"></div>
     <p class="caption">
-      Enhet: procent av giltiga röster. S+V+C+MP mot M+SD+KD+L. I 98,9 % av simuleringarna är
-      S+V+C+MP störst. Det är ett mått på hur mycket mätningarna skiljer sig, inte en valchans.
+      Enhet: procent av giltiga röster. S+V+C+MP mot M+SD+KD+L. Intervallen är spridningen mellan
+      instituten.
     </p>
+
+    <div class="note">
+      <h3>Ungefär fyra chanser på fem</h3>
+      <p>
+        I <b>77 %</b> av simuleringarna får S+V+C+MP fler röster än M+SD+KD+L. Räknar man bara på
+        hur eniga de fem mätningarna är blir siffran 99 %, men det svarar på frågan om instituten
+        säger samma sak — inte på frågan vem som vinner. När vi lägger till hur mycket
+        slutmätningar historiskt missat faller den till 77 %.
+      </p>
+      <p>
+        Det här gäller röstandelar, inte riksdagsplatser. Skulle L hamna under spärren fördelas
+        deras mandat om till de andra partierna, och det slår hårdare mot M+SD+KD+L än vad
+        röstsiffrorna visar. Vi räknar ingen mandatfördelning och säger därför ingenting om vem
+        som kan bilda regering.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -611,15 +628,15 @@
   const SCALE = 32;
 
   const parties = [
-    { key: "S",  name: "Socialdemokraterna", color: "var(--s)",     point: 28.34, low: 27.35, high: 29.48, calLow: 25.50, calHigh: 31.17 },
-    { key: "SD", name: "Sverigedemokraterna", color: "var(--sd)",   point: 18.71, low: 17.89, high: 19.63, calLow: 15.50, calHigh: 21.78, light: true },
-    { key: "M",  name: "Moderaterna",        color: "var(--m)",     point: 17.08, low: 16.02, high: 18.20, calLow: 13.65, calHigh: 20.68, light: true },
-    { key: "C",  name: "Centerpartiet",      color: "var(--c)",     point:  8.07, low:  7.35, high:  8.85, calLow:  6.48, calHigh:  9.60 },
-    { key: "V",  name: "Vänsterpartiet",     color: "var(--v)",     point:  7.44, low:  6.77, high:  8.06, calLow:  6.04, calHigh:  8.82 },
-    { key: "MP", name: "Miljöpartiet",       color: "var(--mp)",    point:  6.81, low:  5.92, high:  7.63, calLow:  4.63, calHigh:  8.99, light: true },
-    { key: "KD", name: "Kristdemokraterna",  color: "var(--kd)",    point:  6.68, low:  5.91, high:  7.48, calLow:  5.00, calHigh:  8.29 },
-    { key: "L",  name: "Liberalerna",        color: "var(--l)",     point:  5.08, low:  4.57, high:  5.59, calLow:  3.25, calHigh:  6.98 },
-    { key: "Ö",  name: "Övriga",             color: "var(--other)", point:  1.78, low:  1.34, high:  2.28, calLow:  0.00, calHigh:  4.03 }
+    { key: "S",  name: "Socialdemokraterna", color: "var(--s)",     point: 28.34, low: 27.35, high: 29.48, calLow: 25.39, calHigh: 31.23 },
+    { key: "SD", name: "Sverigedemokraterna", color: "var(--sd)",   point: 18.71, low: 17.89, high: 19.63, calLow: 15.70, calHigh: 21.75, light: true },
+    { key: "M",  name: "Moderaterna",        color: "var(--m)",     point: 17.08, low: 16.02, high: 18.20, calLow: 13.20, calHigh: 20.91, light: true },
+    { key: "C",  name: "Centerpartiet",      color: "var(--c)",     point:  8.07, low:  7.35, high:  8.85, calLow:  6.43, calHigh:  9.72 },
+    { key: "V",  name: "Vänsterpartiet",     color: "var(--v)",     point:  7.44, low:  6.77, high:  8.06, calLow:  6.05, calHigh:  8.82 },
+    { key: "MP", name: "Miljöpartiet",       color: "var(--mp)",    point:  6.81, low:  5.92, high:  7.63, calLow:  4.65, calHigh:  8.95, light: true },
+    { key: "KD", name: "Kristdemokraterna",  color: "var(--kd)",    point:  6.68, low:  5.91, high:  7.48, calLow:  4.95, calHigh:  8.43 },
+    { key: "L",  name: "Liberalerna",        color: "var(--l)",     point:  5.08, low:  4.57, high:  5.59, calLow:  3.18, calHigh:  6.96 },
+    { key: "Ö",  name: "Övriga",             color: "var(--other)", point:  1.78, low:  1.34, high:  2.28, calLow:  0.00, calHigh:  4.12 }
   ];
 
   const nf = (value, digits = 1) =>

@@ -31,11 +31,13 @@ from valforecast.calibration.gate import (
 )
 from valforecast.calibration.intervals import overlay_election_day_error
 from valforecast.calibration.lock import file_checksums, write_calibration_lock
+from valforecast.calibration.probabilities import overlay_probabilities
 from valforecast.calibration.quality import house_effect_source_quality, unverified_share
 from valforecast.features.election_history import PARTIES
 from valforecast.forecast.aggregator import aggregate_polls
 from valforecast.forecast.contract import load_forecast_contract
 from valforecast.forecast.polls import load_forecast_polls
+from valforecast.forecast.produce import run_forecast_2026
 
 HISTORY_FILES = [
     "data/raw/polls/history/wikipedia_en_polling_2022.html",
@@ -49,6 +51,16 @@ HISTORY_FILES = [
     "data/raw/polls/history/val_national_2014.html",
     "data/raw/polls/history/val_national_2010.html",
     "data/raw/polls/history/val_national_2006.html",
+    "data/raw/polls/history/sample_sizes/mansmeg_swedishpolls.csv",
+    "data/raw/polls/history/sample_sizes/inizio_2018_8_sep.html",
+    "data/raw/polls/history/sample_sizes/yougov_2018_sista.html",
+    "data/raw/polls/history/sample_sizes/yougov_2018_metro.pdf",
+    "data/raw/polls/history/sample_sizes/ipsos_2018_augusti.pdf",
+    "data/raw/polls/history/sample_sizes/novus_2018_30_aug.html",
+    "data/raw/polls/history/sample_sizes/svd_2018_demoskop.html",
+    "data/raw/polls/history/sample_sizes/aftonbladet_2018_skop.html",
+    "data/raw/polls/history/sample_sizes/aftonbladet_2018_sifo.html",
+    "data/raw/polls/history/sample_sizes/omni_2022_sifo.html",
 ]
 
 
@@ -143,10 +155,20 @@ def run_poll_calibration(root: Path) -> dict[str, Any]:
     audit = audit_level_c_rows(root, sampled)
     gate = run_house_effect_gate(lasts, results)
     gate["diagnostics"] = _gate_diagnostics(lasts, results, gate, audit)
+    forecast = run_forecast_2026(root, contract)
+    base = forecast.national_draws
     intervals = overlay_election_day_error(
         root,
+        base,
         {"sigma": naive["sigma"]},
         production,
+    )
+    probabilities = overlay_probabilities(
+        base,
+        forecast.national_point,
+        np.asarray(naive["sigma"], dtype=float),
+        np.asarray(production["sigma"], dtype=float),
+        seed=20260912,
     )
     recency = recency_curve(rows, results)
     document: dict[str, Any] = {
@@ -187,6 +209,7 @@ def run_poll_calibration(root: Path) -> dict[str, Any]:
         "recency_curve": recency,
         "gate": gate,
         "intervals_2026_overlay": intervals,
+        "probabilities_2026": probabilities,
         "raw_sha256": file_checksums(root, HISTORY_FILES),
         "suggested_contract_diff": [
             "poll_aggregation.house_effects: none -> empirical_partial_pool_if_gate_supported",

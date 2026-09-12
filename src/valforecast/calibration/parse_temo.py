@@ -43,7 +43,9 @@ def parse_temo_archive(
         (i for i, h in enumerate(headers) if "intervju" in h or "period" in h),
         None,
     )
-    n_idx = next((i for i, h in enumerate(headers) if "antal" in h or "intervju" in h), None)
+    # Prefer "antal" only. "intervju" also matches the fieldwork column
+    # ("Intervju-period"), which previously hid the n column.
+    n_idx = next((i for i, h in enumerate(headers) if "antal" in h), None)
     comm_idx = next((i for i, h in enumerate(headers) if "uppdrag" in h), None)
     meta = _source_meta(path, url, retrieved_at)
     election = ELECTION_DATES[cycle]

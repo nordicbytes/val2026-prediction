@@ -6,10 +6,9 @@ from typing import Any
 
 import numpy as np
 
+from valforecast.calibration.probabilities import ERROR_DRAWS_PER_BASE, apply_overlay
 from valforecast.features.election_history import PARTIES
-from valforecast.forecast.aggregator import aggregate_polls, draw_poll_targets
 from valforecast.forecast.contract import load_forecast_contract
-from valforecast.forecast.polls import load_forecast_polls
 from valforecast.forecast.snapshot import official_snapshot_path
 
 
@@ -25,27 +24,21 @@ def load_official_national(root: Path) -> dict[str, Any]:
 
 
 def _apply_overlay(
-    current: np.ndarray,
+    base: np.ndarray,
     sigma: np.ndarray,
     official_point: np.ndarray,
     *,
-    n_draws: int,
     seed: int,
     level: float,
+    replicates: int,
 ) -> tuple[np.ndarray, np.ndarray]:
-    rng = np.random.default_rng(seed)
-    election_error = rng.multivariate_normal(
-        mean=np.zeros(len(PARTIES)),
-        cov=sigma,
-        size=n_draws,
+    combined = apply_overlay(
+        base,
+        sigma,
+        official_point,
+        seed=seed,
+        replicates=replicates,
     )
-    combined = current + election_error
-    combined = np.clip(combined, 1e-8, None)
-    combined = combined / combined.sum(axis=1, keepdims=True)
-    combined = combined - combined.mean(axis=0, keepdims=True) + official_point
-    combined = np.clip(combined, 1e-8, None)
-    combined = combined / combined.sum(axis=1, keepdims=True)
-    combined = combined - combined.mean(axis=0, keepdims=True) + official_point
     tail = (1.0 - level) / 2.0
     return np.quantile(combined, tail, axis=0), np.quantile(combined, 1.0 - tail, axis=0)
 
@@ -81,41 +74,36 @@ def _party_record(
 
 def overlay_election_day_error(
     root: Path,
+    base: np.ndarray,
     naive_covariance: dict[str, Any],
     decomposed_covariance: dict[str, Any],
     *,
-    n_draws: int = 2000,
     seed: int = 20260912,
+    replicates: int = ERROR_DRAWS_PER_BASE,
 ) -> dict[str, Any]:
     official = load_official_national(root)
     contract = load_forecast_contract(root / "config" / "forecast_2026.yaml")
-    polls = load_forecast_polls(root, contract)
-    aggregated = aggregate_polls(polls, contract, variant="production")
-    current = draw_poll_targets(
-        aggregated,
-        n_draws=n_draws,
-        seed=contract.random_seed + 17,
-        bootstrap=contract.pollster_bootstrap,
-    )
     official_point = np.array([float(official[party]["point"]) for party in PARTIES])
     naive_low, naive_high = _apply_overlay(
-        current,
+        base,
         np.asarray(naive_covariance["sigma"], dtype=float),
         official_point,
-        n_draws=n_draws,
         seed=seed,
         level=contract.confidence_level,
+        replicates=replicates,
     )
     decomposed_low, decomposed_high = _apply_overlay(
-        current,
+        base,
         np.asarray(decomposed_covariance["sigma"], dtype=float),
         official_point,
-        n_draws=n_draws,
-        seed=seed,
+        seed=seed + 1,
         level=contract.confidence_level,
+        replicates=replicates,
     )
     return {
-        "n_draws": n_draws,
+        "base": "official_national_draws",
+        "base_draws": int(base.shape[0]),
+        "replicates": replicates,
         "seed": seed,
         "point_unchanged": True,
         "defensible": "decomposed",

@@ -1,0 +1,185 @@
+schema_version: 1
+notes: >
+  Explicit sample-size overrides for last polls in the historical
+  calibration corpus. Applied after parsing. Does not change shares,
+  dates or institute family.
+overrides:
+  - poll_id: temo_2002_demoskop_2002-09-11_5
+    sample_size: 1002
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fältslut och S=36,3 som i TEMO-arkivet. n från SwedishPolls.csv,
+      rad Demoskop 6–11 sep 2002.
+
+  - poll_id: temo_2002_ipsos_2002-09-12_3
+    sample_size: 1668
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fältslut och S=36,5. n från SwedishPolls.csv, rad TEMO
+      11–12 sep 2002.
+
+  - poll_id: temo_2002_sifo_verian_2002-09-12_2
+    sample_size: 1917
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fältslut och S=37,1. n från SwedishPolls.csv, rad Sifo
+      11–12 sep 2002.
+
+  - poll_id: wiki_sv_2010_ipsos_2010-08-25_6
+    sample_size: 2041
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fältslut och S=29,2. Wikipedia-cellen är ett datum;
+      SwedishPolls.csv har fält 12–25 aug 2010, n=2041.
+
+  - poll_id: wiki_sv_2010_novus_2010-08-25_1
+    sample_size: 2000
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Wikipedia-perioden är 25 aug 2010, S=30,3. SwedishPolls.csv har
+      Novus 17–23 aug, publicerad 25 aug, samma S, n=2000.
+
+  - poll_id: wiki_sv_2010_sifo_verian_2010-09-16_5
+    sample_size: 1941
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fält 15–16 sep 2010 och S=30,3. n från SwedishPolls.csv.
+
+  - poll_id: "wiki_sv_2010_united minds_2010-08-31_7"
+    sample_size: 1062
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Parsern läste månaden augusti 2010. S=29,6 matchar United Minds
+      2–22 aug 2010 i SwedishPolls.csv, n=1062.
+
+  - poll_id: wiki_en_2014_demoskop_2014-09-11_4
+    sample_size: 2001
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Wikipedia 6–11 sep, S=29,2. SwedishPolls.csv har 6–12 sep, samma S,
+      n=2001. En dags skillnad i fältslut.
+
+  - poll_id: wiki_en_2014_ipsos_2014-09-01_16
+    sample_size: 1463
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fält 22 aug–1 sep 2014 och S=29,7. n från SwedishPolls.csv.
+
+  - poll_id: wiki_en_2014_skop_2014-09-12_1
+    sample_size: 1200
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Wikipedia 5–12 sep, S=31,2. SwedishPolls.csv har 5–13 sep, samma S,
+      n=1200. En dags skillnad i fältslut.
+
+  - poll_id: wiki_en_2014_sentio_2014-09-08_8
+    sample_size: 1042
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fält 2–8 sep 2014 och S=29,1. n från SwedishPolls.csv.
+
+  - poll_id: "wiki_en_2014_united minds_2014-09-11_3"
+    sample_size: 1343
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fält 8–11 sep 2014 och S=31,1. n från SwedishPolls.csv.
+
+  - poll_id: wiki_en_2014_yougov_2014-09-10_5
+    sample_size: 1517
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fält 8–10 sep 2014 och S=29,5. n från SwedishPolls.csv.
+
+  - poll_id: wiki_en_2018_demoskop_2018-09-06_3
+    sample_size: 1673
+    source_url: https://www.svd.se/a/Mgrnv0/nara-dott-lopp-mellan-blocken
+    source_level: B
+    note: >
+      SvD återger Expressen/Demoskop 1–6 sep 2018, 1 673 svarande. S=26,5
+      matchar korpusraden.
+
+  - poll_id: wiki_en_2018_inizio_2018-09-07_1
+    sample_size: 1661
+    source_url: https://inizio.se/valjarbarometer/valjarbarometer-8-september-2018/
+    source_level: A
+    note: >
+      Inizios egen sida. 1 661 intervjuer 3–7 sep 2018. S=24,6 matchar
+      korpusraden.
+
+  - poll_id: wiki_en_2018_ipsos_2018-08-16_25
+    sample_size: 1883
+    source_url: https://www.ipsos.com/sites/default/files/ct/news/documents/2018-08/dn_ipsos_politisk_barometer_hemsida_20180820_1.pdf
+    source_level: A
+    note: >
+      Ipsos egen PDF. 1 883 intervjuer 7–16 aug 2018. S=24,9 matchar
+      korpusraden.
+
+  - poll_id: wiki_en_2018_novus_2018-08-28_18
+    sample_size: 1611
+    source_url: https://novus.se/valjarbarometer-arkiv/novus-svt-30-aug-kd-okar-over-4-och-c-tappar/
+    source_level: A
+    note: >
+      Novus egen arkivsida. 1 611 intervjuer 22–28 aug 2018. S=24,3
+      matchar korpusraden.
+
+  - poll_id: wiki_en_2018_skop_2018-09-07_2
+    sample_size: 2487
+    source_url: https://www.aftonbladet.se/nyheter/a/L0E4wJ/skop-ledning-for-rodgrona-blocket
+    source_level: B
+    note: >
+      Aftonbladet återger SKOP 2–7 sep 2018, 2 487 svarande. S=25,9
+      matchar korpusraden.
+
+  - poll_id: wiki_en_2018_sentio_2018-08-30_14
+    sample_size: 807
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Wikipedia-fält slutar 30 aug, S=22,1. SwedishPolls.csv har Sentio
+      20–28 aug, publicerad 31 aug, samma S, n=807.
+
+  - poll_id: wiki_en_2018_sifo_verian_2018-08-16_23
+    sample_size: 3486
+    source_url: https://www.aftonbladet.se/nyheter/a/0EAxqE/sifo-smapartierna-over-riksdagssparren
+    source_level: B
+    note: >
+      Aftonbladet återger Sifo 13–16 aug 2018, 3 486 intervjuer. S=25,2
+      matchar korpusraden.
+
+  - poll_id: wiki_en_2018_yougov_2018-09-01_11
+    sample_size: 1511
+    source_url: https://yougov.com/articles/21496-sista-matningen-infor-valet
+    source_level: A
+    note: >
+      YouGovs egen sida. 1 511 intervjuer 30 aug–1 sep 2018. S=23,8
+      matchar korpusraden.
+
+  - poll_id: wiki_en_2022_sentio_2022-08-29_33
+    sample_size: 1016
+    source_url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    source_level: C
+    note: >
+      Samma fält 25–29 aug 2022 och S=24,1. n från SwedishPolls.csv.
+      Nyheter Idags plusartikel och Document.no anger inte n.
+
+  - poll_id: wiki_en_2022_sifo_verian_2022-09-09_1
+    sample_size: 2358
+    source_url: https://omni.se/60-000-roster-skiljer-i-svds-sista-opinionsmatning/a/rlA2gR
+    source_level: B
+    note: >
+      Omni återger sista SvD/Sifo, publicerad 9 sep 2022. Wikipedia
+      sätter fältslut till publiceringsdagen. Omni anger 2 358
+      intervjuer 6–8 sep. S=29,0 och övriga andelar matchar.

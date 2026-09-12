@@ -179,7 +179,26 @@ def _parse_slash_date(text: str, default_year: int) -> date | None:
         return None
 
 
-def parse_fieldwork(text: str, election_date: date) -> tuple[date, date] | None:
+def _apply_year_wrap(start: date, end: date) -> tuple[date, date]:
+    """Treat the end date's year as authoritative for the block.
+
+    A cell like ``9 Dec–7 Jan`` in year Y is December Y-1 through January Y.
+    """
+    if start.month > end.month:
+        try:
+            start = date(end.year - 1, start.month, start.day)
+        except ValueError:
+            return start, end
+    return start, end
+
+
+def parse_fieldwork(
+    text: str,
+    election_date: date,
+    *,
+    default_year: int | None = None,
+) -> tuple[date, date] | None:
+    year = election_date.year if default_year is None else default_year
     if re.search(r"\b(20:00|19:30|16:00|exit)\b", text, flags=re.I):
         return None
     cleaned = text.replace("–", "-").replace("—", "-")
@@ -189,45 +208,45 @@ def parse_fieldwork(text: str, election_date: date) -> tuple[date, date] | None:
         cleaned,
     )
     if slash_range is not None:
-        year = int(slash_range.group(3) or election_date.year)
-        start = _parse_slash_date(slash_range.group(1), year)
-        end = _parse_slash_date(slash_range.group(2), year)
+        range_year = int(slash_range.group(3) or year)
+        start = _parse_slash_date(slash_range.group(1), range_year)
+        end = _parse_slash_date(slash_range.group(2), range_year)
         if start is not None and end is not None:
-            return start, end
+            return _apply_year_wrap(start, end)
     month_only = re.fullmatch(
         r"([a-zåäö]+)\s+(\d{4})",
         cleaned.lower(),
     )
     if month_only is not None:
         month = MONTHS.get(month_only.group(1))
-        year = int(month_only.group(2))
+        month_year = int(month_only.group(2))
         if month is None:
             return None
-        start = date(year, month, 1)
+        start = date(month_year, month, 1)
         end = (
-            date(year, 12, 31)
+            date(month_year, 12, 31)
             if month == 12
-            else date(year, month + 1, 1) - timedelta(days=1)
+            else date(month_year, month + 1, 1) - timedelta(days=1)
         )
         if end >= election_date:
             end = election_date - timedelta(days=1)
         return start, end
     parts = re.split(r"\s*-\s*", cleaned, maxsplit=1)
     if len(parts) == 1:
-        parsed = _parse_one_date(parts[0], election_date.year)
+        parsed = _parse_one_date(parts[0], year)
         if parsed is None:
             compact = re.match(r"(\d{1,2})/(\d{1,2})\s*-?\s*(\d{1,2})/(\d{1,2})\s+(\d{4})", cleaned)
             if compact is None:
                 return None
-            year = int(compact.group(5))
-            start = date(year, int(compact.group(2)), int(compact.group(1)))
-            end = date(year, int(compact.group(4)), int(compact.group(3)))
-            return start, end
+            compact_year = int(compact.group(5))
+            start = date(compact_year, int(compact.group(2)), int(compact.group(1)))
+            end = date(compact_year, int(compact.group(4)), int(compact.group(3)))
+            return _apply_year_wrap(start, end)
         return parsed, parsed
-    end = _parse_one_date(parts[1], election_date.year)
+    end = _parse_one_date(parts[1], year)
     if end is None:
         return None
-    start = _parse_one_date(parts[0] + " " + parts[1], election_date.year)
+    start = _parse_one_date(parts[0] + " " + parts[1], year)
     if start is None:
         start_match = re.search(r"(\d{1,2})", parts[0])
         if start_match is None:
@@ -236,7 +255,7 @@ def parse_fieldwork(text: str, election_date: date) -> tuple[date, date] | None:
             start = date(end.year, end.month, int(start_match.group(1)))
         except ValueError:
             return None
-    return start, end
+    return _apply_year_wrap(start, end)
 
 
 def shares_from_row(

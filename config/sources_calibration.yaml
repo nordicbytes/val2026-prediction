@@ -449,3 +449,153 @@ sources:
     notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
     status: verified_download
     usage: poll_calibration_audit
+
+  - id: sample_size_mansmeg_swedishpolls
+    source: SwedishPolls
+    provider: MansMeg/SwedishPolls
+    dataset: Historisk sammanställning av svenska väljarbarometrar
+    url: https://github.com/MansMeg/SwedishPolls/blob/master/Data/Polls.csv
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2002-09-06–2022-09-09"
+    geography_version: NATIONAL
+    license: Se SwedishPolls-repositoriet
+    raw_file: data/raw/polls/history/sample_sizes/mansmeg_swedishpolls.csv
+    sha256: 2577ffae3686392f0b63411438e939565e694e9907e5eda6e1473ec9155736ad
+    notes: Nivå C. Bara n för historisk kalibrering, inte 2026-produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_inizio_2018_8_sep
+    source: Inizio
+    provider: Inizio
+    dataset: Väljarbarometer 8 september 2018
+    url: https://web.archive.org/web/20200813000611/https://inizio.se/valjarbarometer/valjarbarometer-8-september-2018/
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2018-09-03–2018-09-07"
+    geography_version: NATIONAL
+    license: Inizio via Wayback Machine
+    raw_file: data/raw/polls/history/sample_sizes/inizio_2018_8_sep.html
+    sha256: e282bca3e81c72bc043674bfd6bf0d47d61f64c544a8129e330ff2af6c981129
+    notes: Nivå A. 1 661 intervjuer. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_yougov_2018_sista
+    source: YouGov
+    provider: YouGov
+    dataset: Sista mätningen inför valet 2018
+    url: https://yougov.com/articles/21496-sista-matningen-infor-valet
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2018-08-30–2018-09-01"
+    geography_version: NATIONAL
+    license: YouGov
+    raw_file: data/raw/polls/history/sample_sizes/yougov_2018_sista.html
+    sha256: 54b250cde1f4178430475ccc52657f2979af8cf4c1c67daed2fdc633b40bd40f
+    notes: Nivå A. 1 511 intervjuer. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_yougov_2018_metro_pdf
+    source: YouGov
+    provider: YouGov
+    dataset: Rapport Metro Politik september 2018
+    url: https://d3nkl3psvxxpe9.cloudfront.net/documents/Opinion_Metro_YouGov_Sep2018.pdf
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2018-08-30–2018-09-01"
+    geography_version: NATIONAL
+    license: YouGov
+    raw_file: data/raw/polls/history/sample_sizes/yougov_2018_metro.pdf
+    sha256: f4ba05243509c417c9b46caa470cf5947b73b6c0c8b014895d27d46021123e14
+    notes: Nivå A. PDF-stöd för 1 511 intervjuer. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_ipsos_2018_augusti
+    source: Ipsos
+    provider: Ipsos
+    dataset: DN/Ipsos väljarbarometer augusti 2018
+    url: https://www.ipsos.com/sites/default/files/ct/news/documents/2018-08/dn_ipsos_politisk_barometer_hemsida_20180820_1.pdf
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2018-08-07–2018-08-16"
+    geography_version: NATIONAL
+    license: Ipsos
+    raw_file: data/raw/polls/history/sample_sizes/ipsos_2018_augusti.pdf
+    sha256: d064dc26a6dbc9bfb74775939a34e06a3fec4361f8e6018ad52a068cc7d62689
+    notes: Nivå A. 1 883 intervjuer. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_novus_2018_30_aug
+    source: Novus
+    provider: Novus
+    dataset: Novus/SVT 30 augusti 2018
+    url: https://novus.se/valjarbarometer-arkiv/novus-svt-30-aug-kd-okar-over-4-och-c-tappar/
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2018-08-22–2018-08-28"
+    geography_version: NATIONAL
+    license: Novus
+    raw_file: data/raw/polls/history/sample_sizes/novus_2018_30_aug.html
+    sha256: c416572f7475d77df9747d3122c9d6b250b3ef71990466be1e7c26eb8da2c9d3
+    notes: Nivå A. 1 611 intervjuer. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_svd_2018_demoskop
+    source: Svenska Dagbladet
+    provider: SvD
+    dataset: Expressen/Demoskop sista väljarbarometer 2018
+    url: https://www.svd.se/a/Mgrnv0/nara-dott-lopp-mellan-blocken
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2018-09-01–2018-09-06"
+    geography_version: NATIONAL
+    license: SvD
+    raw_file: data/raw/polls/history/sample_sizes/svd_2018_demoskop.html
+    sha256: 7c6fe8e01fdc8f8701921b25690a9192e55c5ebfcf354fef5a5eb512b6c4555a
+    notes: Nivå B. 1 673 svarande. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_aftonbladet_2018_skop
+    source: Aftonbladet
+    provider: Aftonbladet
+    dataset: SKOP väljarbarometer 2–7 september 2018
+    url: https://www.aftonbladet.se/nyheter/a/L0E4wJ/skop-ledning-for-rodgrona-blocket
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2018-09-02–2018-09-07"
+    geography_version: NATIONAL
+    license: Aftonbladet
+    raw_file: data/raw/polls/history/sample_sizes/aftonbladet_2018_skop.html
+    sha256: bc1ea51a9100337066acca0cb9d67ae3d86527081eae4fdbaf7e5fc462078b76
+    notes: Nivå B. 2 487 svarande. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_aftonbladet_2018_sifo
+    source: Aftonbladet
+    provider: Aftonbladet
+    dataset: Sifo 13–16 augusti 2018
+    url: https://www.aftonbladet.se/nyheter/a/0EAxqE/sifo-smapartierna-over-riksdagssparren
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2018-08-13–2018-08-16"
+    geography_version: NATIONAL
+    license: Aftonbladet
+    raw_file: data/raw/polls/history/sample_sizes/aftonbladet_2018_sifo.html
+    sha256: 2635698e8d1552cb3e4cf6162e81b91d3f96bd72f9cb04450eb8b0e1d5c02403
+    notes: Nivå B. 3 486 intervjuer. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size
+
+  - id: sample_size_omni_2022_sifo
+    source: Omni
+    provider: Omni
+    dataset: Sista SvD/Sifo före valet 2022
+    url: https://omni.se/60-000-roster-skiljer-i-svds-sista-opinionsmatning/a/rlA2gR
+    retrieved_at: "2026-09-12T10:15:00+00:00"
+    reference_period: "2022-09-06–2022-09-09"
+    geography_version: NATIONAL
+    license: Omni
+    raw_file: data/raw/polls/history/sample_sizes/omni_2022_sifo.html
+    sha256: b6b8092584958cefcd4ef2f3332a8642fa08dcc680509e2c99d87a46e708f605
+    notes: Nivå B. 2 358 intervjuer 6–8 september. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_sample_size

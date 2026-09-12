@@ -144,6 +144,12 @@ def calibrate_poll_history() -> None:
                 "n_rows": document["coverage"]["n_rows"],
                 "levels": document["coverage"]["levels"],
                 "gate_verdict": document["gate"]["verdict"],
+                "p_left_bloc_largest": document["probabilities_2026"]["sets"]["decomposed"][
+                    "bloc"
+                ]["p_left_largest"],
+                "p_l_above_threshold": document["probabilities_2026"]["sets"]["decomposed"][
+                    "threshold"
+                ]["L"]["p_above"],
                 "lock_path": "reports/poll_calibration/estimator_lock.json",
             },
             ensure_ascii=False,

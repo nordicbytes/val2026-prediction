@@ -1,0 +1,84 @@
+schema_version: 1
+role: experimental_only_not_production
+registered_before_backtest: true
+
+question: >
+  Does the pace of advance votes received in a municipality contain a
+  reproducible spatial signal for final turnout or party shares after the
+  previous result and the target election's national swing are accounted for?
+
+cycles:
+  feature_years: [2010, 2014, 2018, 2022]
+  scored_target_years: [2014, 2018, 2022]
+  validation: leave_one_election_out
+
+cutoff:
+  days_before_election: 2
+  reason: >
+    This matches the 2026 forecast cutoff on the Friday before a Sunday
+    election. Only receipt-date columns through D-2 may be features.
+  caveat: >
+    Historical files are final wide files. Delayed registrations may have
+    been backfilled into earlier receipt-date columns, so this reconstructs
+    when votes were received, not perfectly what an analyst knew at the time.
+
+geography:
+  unit: reception_municipality
+  warning: >
+    Public data says where a vote was received, not where the voter lives.
+    Counts must not be interpreted as home-district advance turnout.
+  target: municipality_of_final_count
+
+features:
+  - reception_rate_d2
+  - delta_reception_rate_d2
+  - early_share_d7_of_d2
+  - delta_early_share_d7_of_d2
+  - active_locations_per_10000_d2
+  - delta_active_locations_per_10000_d2
+  standardization: z_score_within_target_election
+
+models:
+  baseline_party: previous_municipality_result_with_oracle_national_proportional_swing
+  baseline_turnout: previous_municipality_turnout_plus_oracle_national_turnout_delta
+  candidate: ridge_residual_correction
+  ridge_alpha: 10.0
+  fit: other_target_elections_only
+  notes: >
+    Oracle national movement makes this a strict test of incremental spatial
+    information. It is not itself a deployable national forecast; for 2026,
+    the locked poll target would replace the oracle national result.
+
+metrics:
+  primary: valid_vote_weighted_mae_named_party_share
+  secondary:
+    - municipality_unweighted_mae_named_party_share
+    - eligible_weighted_mae_turnout
+    - municipality_unweighted_mae_turnout
+
+gate:
+  party_signal:
+    require_improvement_in_every_held_out_election: true
+    minimum_pooled_relative_mae_improvement: 0.005
+  turnout_signal:
+    require_improvement_in_every_held_out_election: true
+    minimum_pooled_relative_mae_improvement: 0.005
+  forecast_2026_rule: >
+    Produce a 2026 sensitivity only if at least one gate passes and a complete
+    official 2026 file vintage retrieved no later than 2026-09-11 22:29 CEST
+    is independently preserved with timestamp and SHA-256.
+
+forbidden:
+  - 2026_election_results
+  - valu
+  - exit_polls
+  - post_cutoff_2026_advance_vote_file
+  - treating_reception_location_as_voter_home
+  - changing_any_frozen_forecast_artifact
+
+outputs:
+  directory: reports/experiments/advance_voting
+  summary: summary.json
+  report: report.md
+  fold_metrics: fold_metrics.csv
+  municipality_predictions: municipality_predictions.parquet

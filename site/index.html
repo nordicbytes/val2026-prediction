@@ -172,6 +172,14 @@
     border-top: 2px solid rgba(20, 22, 26, 0.28);
   }
 
+  .ci.cal {
+    height: 20px;
+    border-left-color: rgba(20, 22, 26, 0.22);
+    border-right-color: rgba(20, 22, 26, 0.22);
+  }
+
+  .ci.cal::after { border-top-color: rgba(20, 22, 26, 0.14); }
+
   .threshold {
     position: absolute;
     top: -6px;
@@ -240,7 +248,7 @@
 
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
 
-  .scroll { overflow-x: auto; }
+  .scroll { overflow-x: auto; max-width: 100%; }
 
   /* ---------- steps ---------- */
 
@@ -300,6 +308,10 @@
   footer { padding: 44px 0 72px; font-size: 13.5px; color: var(--ink-faint); }
   footer a { color: var(--ink-soft); }
 
+  @media (max-width: 380px) {
+    .wrap { padding: 0 16px; }
+  }
+
   @media (max-width: 700px) {
     .row { grid-template-columns: 74px 1fr 84px; gap: 12px; }
     .party-name { display: none; }
@@ -333,15 +345,31 @@
   <div class="wrap">
     <h2>Prognos per parti</h2>
     <p class="section-note">
-      Staplarna visar prognosens mittvärde i procent av giltiga röster. Det tunna strecket visar
-      hur mycket siffran rör sig när mätningarna får variera — mer om det längre ned.
+      Staplarna visar prognosens mittvärde i procent av giltiga röster. Siffran under varje värde är
+      det bredare intervallet: där resultatet kan hamna när man också räknar in hur mycket
+      slutmätningar historiskt missar ett valresultat.
     </p>
     <div class="chart" id="chart"></div>
     <div class="axis"><span>0 %</span><span>8 %</span><span>16 %</span><span>24 %</span><span>32 %</span></div>
     <p class="caption">
-      Enhet: procent av giltiga röster. Streckad linje = 4 % riksdagsspärr. Skala 0–32 %.
+      Enhet: procent av giltiga röster. Mörkt streck = spridning mellan instituten. Ljust streck =
+      med historiskt valdagsfel inräknat. Streckad linje = 4 % riksdagsspärr. Skala 0–32 %.
       Källa: egen prognos, fem mätningar med fältarbete 2–11 september 2026.
     </p>
+
+    <div class="note">
+      <h3>Liberalerna är inte avgjorda</h3>
+      <p>
+        Mätningarna ligger samlade strax över spärren, och därför ser L:s smala intervall tryggt ut.
+        Men vi har mätt hur mycket svenska slutmätningar historiskt missar valresultatet, och den
+        missen är större än samlingen mellan instituten. Räknar man in den blir L 5,1 med intervallet
+        3,3–7,0, alltså under spärren i nedre kanten.
+      </p>
+      <p>
+        Punkten flyttar sig inte. Det som ändras är slutsatsen: prognosen kan inte säga att L
+        klarar riksdagen, bara att L ligger strax över i mätningarna.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -444,22 +472,35 @@
         <b>Gör om det 2 000 gånger</b>
         <p>
           Hela kedjan körs 2 000 gånger. Varje gång dras nya mätningar och nya flyttmönster inom sin
-          osäkerhet. Spridningen mellan körningarna blir intervallen i diagrammet.
+          osäkerhet. Spridningen mellan körningarna blir det smala intervallet i diagrammet.
         </p>
       </li>
     </ol>
 
     <div class="note">
-      <h3>Vad intervallen betyder — och inte betyder</h3>
+      <h3>Två slags osäkerhet</h3>
       <p>
-        Intervallen visar hur mycket prognosen svänger när instituten får variera: vi drar om vilka
-        institut som hamnar i underlaget och lägger till vanligt urvalsfel inom varje mätning.
+        Det smala, mörka strecket i diagrammet är spridningen mellan instituten: vi drar om vilka
+        institut som hamnar i underlaget och lägger till vanligt urvalsfel inom varje mätning. Det
+        säger hur eniga mätningarna är, inte hur rätt de har.
       </p>
       <p>
-        De är <b>inte</b> ett fullständigt felintervall för valresultatet. Tre saker saknas: hur
-        mycket mätningar historiskt brukar missa ett valresultat, opinionsrörelser under de sista
-        dygnen, och osäkerhet om hur många som faktiskt röstar. Verkligt utfall kan alltså ligga
-        utanför intervallet.
+        Det breda, ljusa strecket lägger till hur mycket svenska slutmätningar faktiskt har missat
+        valresultatet. Vi har byggt en historisk databas över mätningar från 2002 till 2022 och
+        jämfört varje slutmätning med det verkliga utfallet. Missen är tydligt större än oenigheten
+        mellan instituten, och den är systematisk: instituten har underskattat S med omkring två
+        procentenheter och överskattat V och MP.
+      </p>
+      <p>
+        Vi har delat upp den historiska missen i tre delar — det som alla institut missar
+        tillsammans i ett val, det som skiljer institut från institut, och vanligt urvalsfel — och
+        lägger bara på de delar som inte redan finns i modellen. Annars hade intervallet blivit för
+        brett.
+      </p>
+      <p>
+        Två saker saknas fortfarande: opinionsrörelser under de sista dygnen efter datastoppet, och
+        osäkerhet om hur många som faktiskt röstar. Utfallet kan alltså ligga utanför även det breda
+        intervallet.
       </p>
     </div>
   </div>
@@ -537,8 +578,10 @@
       <li>Material publicerat efter 11 september 22:29.</li>
       <li>Regionala flyttmönster. Vi testade dem separat och de höll inte, så modellen använder
         nationella mönster.</li>
-      <li>Institutspecifika korrigeringar. Sådana kräver en historisk databas över mätningar mot
-        faktiska valresultat, som vi inte har låst.</li>
+      <li>Institutspecifika korrigeringar av siffrorna. Vi har byggt den historiska databasen och ser
+        tydliga mönster, men de flesta gamla mätningarna kunde vi bara hitta hos
+        sammanställningssajter, inte hos instituten själva. Vi använder därför databasen till
+        osäkerheten, inte till att flytta någon partisiffra.</li>
       <li>Mandatfördelning. Prognosen gäller röstandelar, inte antal riksdagsplatser.</li>
       <li>Egna partiloggor. Vi använder partibeteckning och partifärg i stället, eftersom loggorna
         är skyddade av upphovsrätt.</li>
@@ -568,15 +611,15 @@
   const SCALE = 32;
 
   const parties = [
-    { key: "S",  name: "Socialdemokraterna", color: "var(--s)",     point: 28.34, low: 27.35, high: 29.48 },
-    { key: "SD", name: "Sverigedemokraterna", color: "var(--sd)",   point: 18.71, low: 17.89, high: 19.63, light: true },
-    { key: "M",  name: "Moderaterna",        color: "var(--m)",     point: 17.08, low: 16.02, high: 18.20, light: true },
-    { key: "C",  name: "Centerpartiet",      color: "var(--c)",     point:  8.07, low:  7.35, high:  8.85 },
-    { key: "V",  name: "Vänsterpartiet",     color: "var(--v)",     point:  7.44, low:  6.77, high:  8.06 },
-    { key: "MP", name: "Miljöpartiet",       color: "var(--mp)",    point:  6.81, low:  5.92, high:  7.63, light: true },
-    { key: "KD", name: "Kristdemokraterna",  color: "var(--kd)",    point:  6.68, low:  5.91, high:  7.48 },
-    { key: "L",  name: "Liberalerna",        color: "var(--l)",     point:  5.08, low:  4.57, high:  5.59 },
-    { key: "Ö",  name: "Övriga",             color: "var(--other)", point:  1.78, low:  1.34, high:  2.28 }
+    { key: "S",  name: "Socialdemokraterna", color: "var(--s)",     point: 28.34, low: 27.35, high: 29.48, calLow: 25.50, calHigh: 31.17 },
+    { key: "SD", name: "Sverigedemokraterna", color: "var(--sd)",   point: 18.71, low: 17.89, high: 19.63, calLow: 15.50, calHigh: 21.78, light: true },
+    { key: "M",  name: "Moderaterna",        color: "var(--m)",     point: 17.08, low: 16.02, high: 18.20, calLow: 13.65, calHigh: 20.68, light: true },
+    { key: "C",  name: "Centerpartiet",      color: "var(--c)",     point:  8.07, low:  7.35, high:  8.85, calLow:  6.48, calHigh:  9.60 },
+    { key: "V",  name: "Vänsterpartiet",     color: "var(--v)",     point:  7.44, low:  6.77, high:  8.06, calLow:  6.04, calHigh:  8.82 },
+    { key: "MP", name: "Miljöpartiet",       color: "var(--mp)",    point:  6.81, low:  5.92, high:  7.63, calLow:  4.63, calHigh:  8.99, light: true },
+    { key: "KD", name: "Kristdemokraterna",  color: "var(--kd)",    point:  6.68, low:  5.91, high:  7.48, calLow:  5.00, calHigh:  8.29 },
+    { key: "L",  name: "Liberalerna",        color: "var(--l)",     point:  5.08, low:  4.57, high:  5.59, calLow:  3.25, calHigh:  6.98 },
+    { key: "Ö",  name: "Övriga",             color: "var(--other)", point:  1.78, low:  1.34, high:  2.28, calLow:  0.00, calHigh:  4.03 }
   ];
 
   const nf = (value, digits = 1) =>
@@ -593,11 +636,12 @@
       <div class="track">
         <div class="bar" style="width:${pct(party.point)}%;background:${party.color}"></div>
         <div class="threshold" style="left:${pct(4)}%"></div>
+        <div class="ci cal" style="left:${pct(party.calLow)}%;width:${pct(party.calHigh - party.calLow)}%"></div>
         <div class="ci" style="left:${pct(party.low)}%;width:${pct(party.high - party.low)}%"></div>
       </div>
       <div class="value">
         <span class="pt">${nf(party.point)} %</span>
-        <span class="rng">${nf(party.low)}–${nf(party.high)}</span>
+        <span class="rng">${nf(party.calLow)}–${nf(party.calHigh)}</span>
       </div>
     </div>
   `).join("");

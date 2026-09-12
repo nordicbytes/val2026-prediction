@@ -10,6 +10,10 @@ def test_project_source_manifest_is_valid() -> None:
     sources = load_sources(root / "config" / "sources.yaml")
     assert sources
     assert len({source.id for source in sources}) == len(sources)
+    calibration = load_sources(root / "config" / "sources_calibration.yaml")
+    assert calibration
+    assert len({source.id for source in calibration}) == len(calibration)
+    assert {source.id for source in sources}.isdisjoint({source.id for source in calibration})
 
 
 def test_manifest_rejects_missing_fields(tmp_path: Path) -> None:

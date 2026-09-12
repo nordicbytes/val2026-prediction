@@ -7,6 +7,7 @@ from typing import Annotated
 
 import typer
 
+from valforecast.calibration.produce import run_poll_calibration
 from valforecast.config import load_sources
 from valforecast.evaluation.milestone_four_a import run_milestone_four_a
 from valforecast.evaluation.milestone_four_b import (
@@ -42,9 +43,17 @@ def _root() -> Path:
 
 @sources_app.command("validate")
 def validate_sources() -> None:
-    sources = load_sources(_root() / "config" / "sources.yaml")
-    downloadable = sum(source.raw_file is not None for source in sources)
-    typer.echo(f"Validated {len(sources)} sources ({downloadable} downloadable).")
+    root = _root()
+    manifests = (
+        root / "config" / "sources.yaml",
+        root / "config" / "sources_calibration.yaml",
+    )
+    for path in manifests:
+        sources = load_sources(path)
+        downloadable = sum(source.raw_file is not None for source in sources)
+        typer.echo(
+            f"{path.name}: validated {len(sources)} sources ({downloadable} downloadable)."
+        )
 
 
 @sources_app.command("fetch")
@@ -124,6 +133,23 @@ def lock_transitions_c_survey() -> None:
 def validate_transitions_c() -> None:
     summary = run_milestone_four_c(_root())
     typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))
+
+
+@app.command("calibrate-poll-history")
+def calibrate_poll_history() -> None:
+    document = run_poll_calibration(_root())
+    typer.echo(
+        json.dumps(
+            {
+                "n_rows": document["coverage"]["n_rows"],
+                "levels": document["coverage"]["levels"],
+                "gate_verdict": document["gate"]["verdict"],
+                "lock_path": "reports/poll_calibration/estimator_lock.json",
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
 
 @app.command("lock-forecast-2026-inputs")

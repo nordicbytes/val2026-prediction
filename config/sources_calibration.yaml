@@ -1,0 +1,451 @@
+schema_version: 1
+sources:
+  - id: wikipedia_en_polling_2022
+    source: Wikipedia
+    provider: Wikipedia
+    dataset: Opinion polling for the 2022 Swedish general election
+    url: https://en.wikipedia.org/wiki/Opinion_polling_for_the_2022_Swedish_general_election
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2022-08-12–2022-09-11"
+    geography_version: NATIONAL
+    license: CC BY-SA
+    raw_file: data/raw/polls/history/wikipedia_en_polling_2022.html
+    sha256: 33d57d084d71e4bf834dd13243414ba1f2b329e440674807d4f17219708cd117
+    notes: Nivå C. Bara historisk kalibrering, inte 2026-produktionsinput.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: wikipedia_en_polling_2018
+    source: Wikipedia
+    provider: Wikipedia
+    dataset: Opinion polling for the 2018 Swedish general election
+    url: https://en.wikipedia.org/wiki/Opinion_polling_for_the_2018_Swedish_general_election
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2018-08-10–2018-09-09"
+    geography_version: NATIONAL
+    license: CC BY-SA
+    raw_file: data/raw/polls/history/wikipedia_en_polling_2018.html
+    sha256: 366418fe01803bb551e3dcbe884efeddd587c4059ede79d28dbda201e76e80c7
+    notes: Nivå C. Bara historisk kalibrering, inte 2026-produktionsinput.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: wikipedia_en_polling_2014
+    source: Wikipedia
+    provider: Wikipedia
+    dataset: Opinion polling for the 2014 Swedish general election
+    url: https://en.wikipedia.org/wiki/Opinion_polling_for_the_2014_Swedish_general_election
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2014-08-15–2014-09-14"
+    geography_version: NATIONAL
+    license: CC BY-SA
+    raw_file: data/raw/polls/history/wikipedia_en_polling_2014.html
+    sha256: cf892dc29145f23b948830dc8dac16db3096b12e7642f0f014c9c21c64af8a36
+    notes: Nivå C. Vallokal- och valdagsrader exkluderas av parsern.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: wikipedia_sv_polling_2010
+    source: Wikipedia
+    provider: Wikipedia
+    dataset: Opinionsundersökningar inför riksdagsvalet i Sverige 2010
+    url: https://sv.wikipedia.org/wiki/Opinionsundersökningar_inför_riksdagsvalet_i_Sverige_2010
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2010-08-20–2010-09-19"
+    geography_version: NATIONAL
+    license: CC BY-SA
+    raw_file: data/raw/polls/history/wikipedia_sv_polling_2010.html
+    sha256: 6d466b7976bbf1c3a3b4fde0f907ce959589880f6f3279998c4cbc1283e7eaee
+    notes: Nivå C. SVT Valu exkluderas. Täckningen i 30-dagarsfönstret är gles.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: temo_valjarbarometer_2006
+    source: TEMO/Synovate webbarkiv
+    provider: TEMO
+    dataset: Samtliga publicerade väljarbarometrar fram till 13 september 2006
+    url: https://web.archive.org/web/20060913105523/www.temo.se/upload/326/valjbsamtliga.htm
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2006-08-18–2006-09-13"
+    geography_version: NATIONAL
+    license: TEMO-arkiv via Wayback Machine
+    raw_file: data/raw/polls/history/temo_valjarbarometer_2006.html
+    sha256: fd05c0627d81c74937f15b2b5c1f41e9b798baffadd871e9ddc203062764c835
+    notes: TEMO-egna rader nivå A. Övriga institut på samma sida är tredjepart, nivå C.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: temo_valjarbarometer_2002
+    source: TEMO webbarkiv 2000–2002
+    provider: TEMO
+    dataset: Publicerade väljarbarometrar fram till valet 2002
+    url: https://web.archive.org/web/20060430024635/http://www.temo.se/upload/326/valjbsamtliga2000_sep2002.htm
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2002-08-16–2002-09-15"
+    geography_version: NATIONAL
+    license: TEMO-arkiv via Wayback Machine
+    raw_file: data/raw/polls/history/temo_valjarbarometer_2002.html
+    sha256: 3b1b26c7f76685d90c6d4373f55f21937939a9eef247bf6739ef550f7586de2c
+    notes: TEMO-egna rader nivå A. Övriga institut på samma sida är tredjepart, nivå C.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: val_national_2022_html
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Officiellt nationellt riksdagsresultat 2022
+    url: https://www.val.se/valresultat/riksdag-region-och-kommun/2022/valresultat.html
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2022-09-11"
+    geography_version: NATIONAL
+    license: Se Valmyndighetens villkor för öppna data
+    raw_file: data/raw/polls/history/val_national_2022.html
+    sha256: c510d9cea1fb317226e96ea6fe7470d7e423eb04e12cecc286688cfdf06c8308
+    notes: Gold-cell för S 30,33 och SD 20,54. Nationella andelar beräknas ur pinnad distriktsfil.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: val_national_2018_html
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Officiellt nationellt riksdagsresultat 2018
+    url: https://historik.val.se/val/val2018/slutresultat/R/rike/index.html
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2018-09-09"
+    geography_version: NATIONAL
+    license: Se Valmyndighetens villkor för öppna data
+    raw_file: data/raw/polls/history/val_national_2018.html
+    sha256: 3fdc30494a1c3c0889e3fa23f32969354adb92a9d34333257ea5d3c1db45badc
+    notes: Gold-cell för S 28,26.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: val_national_2014_html
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Officiellt nationellt riksdagsresultat 2014
+    url: https://historik.val.se/val/val2014/slutresultat/R/rike/index.html
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2014-09-14"
+    geography_version: NATIONAL
+    license: Se Valmyndighetens villkor för öppna data
+    raw_file: data/raw/polls/history/val_national_2014.html
+    sha256: 0afde894066694dfdeb583c539dd0ad2f0fd81893d893410202930632888de57
+    notes: Gold-cell för S 31,01.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: val_national_2010_html
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Officiellt nationellt riksdagsresultat 2010
+    url: https://historik.val.se/val/val2010/slutresultat/R/rike/index.html
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2010-09-19"
+    geography_version: NATIONAL
+    license: Se Valmyndighetens villkor för öppna data
+    raw_file: data/raw/polls/history/val_national_2010.html
+    sha256: 9c107b43c0af80281746f947b93856e9d3148320e599a12beba4096df2373103
+    notes: Gold-cell för S 30,66.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: val_national_2006_html
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Officiellt nationellt riksdagsresultat 2006 och 2002
+    url: https://historik.val.se/val/val2006/slutlig/R/rike/roster.html
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2002-09-15–2006-09-17"
+    geography_version: NATIONAL
+    license: Se Valmyndighetens villkor för öppna data
+    raw_file: data/raw/polls/history/val_national_2006.html
+    sha256: 2bc2213db0803770e1881b157431ec1224c036174dc1f3d5a8cdaad76b33c8c7
+    notes: Sidan redovisar både 2006 och 2002. SD särredovisas inte; OTHER inkluderar SD.
+    status: verified_download
+    usage: poll_calibration_history
+
+  - id: wikipedia_sv_polling_2006
+    source: Wikipedia/Valmyndigheten
+    provider: Support
+    dataset: Oanvänd supportfil för historisk pollkalibrering
+    url: https://sv.wikipedia.org/wiki/Opinionsundersökningar_inför_riksdagsvalet_i_Sverige_2006
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2006-08-18–2006-09-17"
+    geography_version: NATIONAL
+    license: CC BY-SA eller Valmyndigheten
+    raw_file: data/raw/polls/history/wikipedia_sv_polling_2006.html
+    sha256: 04bbafba3f692cd614ca3f32374fb6086554d1d1551d32c3e8a3a732032500c0
+    notes: Nedladdad men inte inkopplad i parsern. Supportfil.
+    status: verified_download
+    usage: poll_calibration_support_unused
+
+  - id: wikipedia_sv_polling_2014
+    source: Wikipedia/Valmyndigheten
+    provider: Support
+    dataset: Oanvänd supportfil för historisk pollkalibrering
+    url: https://sv.wikipedia.org/wiki/Opinionsundersökningar_inför_riksdagsvalet_i_Sverige_2014
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2014-08-15–2014-09-14"
+    geography_version: NATIONAL
+    license: CC BY-SA eller Valmyndigheten
+    raw_file: data/raw/polls/history/wikipedia_sv_polling_2014.html
+    sha256: d96f8e043115bdd4a3f900415ff65900ad46b7525c36740ded94cc165995adb2
+    notes: Nedladdad men inte inkopplad i parsern. Supportfil.
+    status: verified_download
+    usage: poll_calibration_support_unused
+
+  - id: wikipedia_sv_polling_2018
+    source: Wikipedia/Valmyndigheten
+    provider: Support
+    dataset: Oanvänd supportfil för historisk pollkalibrering
+    url: https://sv.wikipedia.org/wiki/Opinionsundersökningar_inför_riksdagsvalet_i_Sverige_2018
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2018-08-10–2018-09-09"
+    geography_version: NATIONAL
+    license: CC BY-SA eller Valmyndigheten
+    raw_file: data/raw/polls/history/wikipedia_sv_polling_2018.html
+    sha256: ef82d6b86e83b237d8fe7d87e6d7c2d0f6d40a114211394eda7ea704410ee469
+    notes: Nedladdad men inte inkopplad i parsern. Supportfil.
+    status: verified_download
+    usage: poll_calibration_support_unused
+
+  - id: wikipedia_sv_polling_2022
+    source: Wikipedia/Valmyndigheten
+    provider: Support
+    dataset: Oanvänd supportfil för historisk pollkalibrering
+    url: https://sv.wikipedia.org/wiki/Opinionsundersökningar_inför_riksdagsvalet_i_Sverige_2022
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2022-08-12–2022-09-11"
+    geography_version: NATIONAL
+    license: CC BY-SA eller Valmyndigheten
+    raw_file: data/raw/polls/history/wikipedia_sv_polling_2022.html
+    sha256: 91e46ce093b68aab0aa372929357b5eb0e8ada57aa36b799dcd5ae12155cfe95
+    notes: Nedladdad men inte inkopplad i parsern. Supportfil.
+    status: verified_download
+    usage: poll_calibration_support_unused
+
+  - id: val_tidigare_resultat
+    source: Wikipedia/Valmyndigheten
+    provider: Support
+    dataset: Oanvänd supportfil för historisk pollkalibrering
+    url: https://www.val.se/valresultat/riksdag-region-och-kommun/valresultat-over-tid.html
+    retrieved_at: "2026-09-12T08:15:00+00:00"
+    reference_period: "2002-09-15–2022-09-11"
+    geography_version: NATIONAL
+    license: CC BY-SA eller Valmyndigheten
+    raw_file: data/raw/polls/history/val_tidigare_resultat.html
+    sha256: 97594ce0da0613a1f8de8da2bab0327b90622158dce5bfc0d7a581b344568bd1
+    notes: Valmyndighetens översiktssida. Supportfil, inte parserinput.
+    status: verified_download
+    usage: poll_calibration_support_unused
+
+  - id: audit_novus_se_valjaropinionen_svtnovus_valjarbarometer_2018_2
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/novus_se_valjaropinionen_svtnovus-valjarbarometer_2018-2.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/novus_se_valjaropinionen_svtnovus-valjarbarometer_2018-2.txt
+    sha256: 7f525f17140d3167e0f69f99fcfd4fa47d3c221e84b3aa52468412aa81a6f5b6
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_skop_se_main_wp_content_uploads_2022_08_SKOPs_Valjarbarometer_30_augusti_2022_pd
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/skop_se_main_wp-content_uploads_2022_08_SKOPs-Valjarbarometer-30-augusti-2022.pdf.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/skop_se_main_wp-content_uploads_2022_08_SKOPs-Valjarbarometer-30-augusti-2022.pdf.txt
+    sha256: fd3eb624a490505570e792fe385f04676b58bbb79fc15d13b9ba8e5eda9a6c04
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_t_co_rsoqcYChNY
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/t_co_rsoqcYChNY.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/t_co_rsoqcYChNY.txt
+    sha256: d18746ca3b373ce8d3288d9842ab6a2b4445c80a25016c0d8a0f644d96ba77e9
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_web_archive_org_web_20121002233427_http__tns_sifo_se_media_414478_vb_aug_2012_sv
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/web_archive_org_web_20121002233427_http__tns-sifo.se_media_414478_vb_aug_2012_svd.pdf.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/web_archive_org_web_20121002233427_http__tns-sifo.se_media_414478_vb_aug_2012_svd.pdf.txt
+    sha256: 21511ea7c008334fb221a87f702229b0b39d923024ff5dfbdf53b3bf97aa8cee
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_web_archive_org_web_20130902195407_http__www_unitedminds_se_sites_unitedminds_se
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/web_archive_org_web_20130902195407_http__www.unitedminds.se_sites_unitedminds.se_files_attachment_UnitedMinds_Aftonblade.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/web_archive_org_web_20130902195407_http__www.unitedminds.se_sites_unitedminds.se_files_attachment_UnitedMinds_Aftonblade.txt
+    sha256: 399efef2a0540b71d312806ba35aa33c698174917bf4f55d2bb5af1e244dd14f
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_web_archive_org_web_20140606223919_http__www_synovate_se_uploads_VC3A4ljarbarome
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/web_archive_org_web_20140606223919_http__www.synovate.se_uploads_VC3A4ljarbarometrar_110825.pdf.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/web_archive_org_web_20140606223919_http__www.synovate.se_uploads_VC3A4ljarbarometrar_110825.pdf.txt
+    sha256: f6713a9b831972e0c84e572b7603497cdb17363a2714e29647bf4058849a71f5
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_web_archive_org_web_20180831183122_http__inizio_se_wp_content_uploads_2018_08_Va
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/web_archive_org_web_20180831183122_http__inizio.se_wp-content_uploads_2018_08_VaCC88ljarbarometer-31-augusti-2018.pdf.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/web_archive_org_web_20180831183122_http__inizio.se_wp-content_uploads_2018_08_VaCC88ljarbarometer-31-augusti-2018.pdf.txt
+    sha256: 3f601698932f5e77fc70b1cbad51a251d60c3ecb96d3cf02963a971159fe83c5
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_web_archive_org_web_20190403053819_https__novus_se_valjaropinionen_svtnovus_valj
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/web_archive_org_web_20190403053819_https__novus.se_valjaropinionen_svtnovus-valjarbarometer_2018-2.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/web_archive_org_web_20190403053819_https__novus.se_valjaropinionen_svtnovus-valjarbarometer_2018-2.txt
+    sha256: 930fb9404ce00f6d7bf20b1397d98986103e8487baac5bd8df8c87ebafda0240
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_web_archive_org_web_20201011154203_https__skop_se_main_wp_content_uploads_2018_0
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/web_archive_org_web_20201011154203_https__skop.se_main_wp-content_uploads_2018_08_SKOPs-Valjarbarometer-29-augusti-2018..txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/web_archive_org_web_20201011154203_https__skop.se_main_wp-content_uploads_2018_08_SKOPs-Valjarbarometer-29-augusti-2018..txt
+    sha256: 5d6f1f3cd4067bbff0dbba5ab61e620ef3410cb6e4bcf624370ec3d0c2eb8c4f
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_web_archive_org_web_20220908083204_https__twitter_com_EuropeElects_status_156779
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/web_archive_org_web_20220908083204_https__twitter.com_EuropeElects_status_1567792676535246849.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/web_archive_org_web_20220908083204_https__twitter.com_EuropeElects_status_1567792676535246849.txt
+    sha256: 1dbb4c33ae5521f6b1cfae6abd48973bea91c4dc7209f8a705d7901ecaae6bbb
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_web_archive_org_web_20220909003628_https__twitter_com_europeelects_status_156741
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/web_archive_org_web_20220909003628_https__twitter.com_europeelects_status_1567417139388194817.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/web_archive_org_web_20220909003628_https__twitter.com_europeelects_status_1567417139388194817.txt
+    sha256: 81320c8926f997767112ff56f89fba2b21db086158791e380d2b13eef031abf6
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_www_dn_se_sverige_dn_ipsos_moderaterna_tappar_stort_sd_nast_storst
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/www_dn_se_sverige_dn-ipsos-moderaterna-tappar-stort-sd-nast-storst.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/www_dn_se_sverige_dn-ipsos-moderaterna-tappar-stort-sd-nast-storst.txt
+    sha256: 304ed102be048c51724571bf8bbf5c69699af57a7d1c0d214311046c6ddc4b0f
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_www_novus_se_media_3167_novus_v_ljarbarometer_29_augusti_2012_pdf
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/www_novus_se_media_3167_novus_v_ljarbarometer_29_augusti_2012.pdf.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/www_novus_se_media_3167_novus_v_ljarbarometer_29_augusti_2012.pdf.txt
+    sha256: 11e8a3e910f8093060850f4b661ef641e0776c5666eb785b22fca9ba934633c7
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit
+
+  - id: audit_www_svd_se_a_34Wzee_opinionen_just_nu_dagliga_valjarbarometrar_fran_svd_sifo_inf
+    source: A/B-revision
+    provider: Audit
+    dataset: Pinnad A/B-text för nivå-C-revision
+    url: https://local.audit/www_svd_se_a_34Wzee_opinionen-just-nu-dagliga-valjarbarometrar-fran-svd-sifo-infor-riksdagsvalet-2022.txt
+    retrieved_at: "2026-09-12T10:00:00+00:00"
+    reference_period: "2010-08-20–2022-09-11"
+    geography_version: NATIONAL
+    license: Ursprunglig publicist
+    raw_file: data/raw/polls/history/audit/www_svd_se_a_34Wzee_opinionen-just-nu-dagliga-valjarbarometrar-fran-svd-sifo-infor-riksdagsvalet-2022.txt
+    sha256: 283a98432923ab559dcba4c441a0ddd02a7097a8ac25aba639dac7c521f5f958
+    notes: Pinnad A/B-extrakt för revision av nivå C. Inte produktionsandel.
+    status: verified_download
+    usage: poll_calibration_audit

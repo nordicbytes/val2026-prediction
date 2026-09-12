@@ -520,6 +520,34 @@
         intervallet.
       </p>
     </div>
+
+    <div class="note">
+      <h3>Hur vi kontrollerar vår egen data</h3>
+      <p>
+        Den historiska databasen byggde vi själva, och den innehöll ett fel. Wikipedias listor över
+        gamla mätningar skriver bara dag och månad i datumkolumnen, aldrig årtalet — det står i en
+        rubrikrad längre upp. Vår inläsning missade rubrikraden och stämplade därför gamla
+        mätningar med valårets årtal. Tjugotvå mätningar från 2011 till 2013 hamnade så i 2014 års
+        siffror.
+      </p>
+      <p>
+        En av dem var värre än de andra: Sifos mätning från september 2012 låg som Sifos
+        <i>slutmätning</i> inför valet 2014, med 33,3 procent för S. Sifos riktiga slutmätning det
+        året sa 31,0, vilket var exakt vad valet gav. Vi hade alltså tillskrivit Sifo ett stort
+        misstag de aldrig gjorde.
+      </p>
+      <p>
+        Vi hittade det genom en enkel regel: en webbsida kan inte ha sparats i ett arkiv innan
+        mätningen den beskriver gjordes. Den kontrollen körs nu automatiskt varje gång databasen
+        byggs om, och den ger noll träffar.
+      </p>
+      <p>
+        Tre gamla mätningar saknar fortfarande uppgift om hur många som svarat. Där får vi anta ett
+        tal, och ett antagande kan bli fel. Vi räknade därför om alltihop med två olika antaganden
+        för att se om det spelade roll. Ingen siffra på den här sidan rörde sig mer än en hundradels
+        procentenhet, så det gör det inte.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -596,7 +624,7 @@
       <li>Regionala flyttmönster. Vi testade dem separat och de höll inte, så modellen använder
         nationella mönster.</li>
       <li>Institutspecifika korrigeringar av siffrorna. Vi har byggt den historiska databasen och ser
-        tydliga mönster, men de flesta gamla mätningarna kunde vi bara hitta hos
+        tydliga mönster, men 179 av 203 gamla mätningar kunde vi bara hitta hos
         sammanställningssajter, inte hos instituten själva. Vi använder därför databasen till
         osäkerheten, inte till att flytta någon partisiffra.</li>
       <li>Mandatfördelning. Prognosen gäller röstandelar, inte antal riksdagsplatser.</li>
@@ -628,10 +656,10 @@
   const SCALE = 32;
 
   const parties = [
-    { key: "S",  name: "Socialdemokraterna", color: "var(--s)",     point: 28.34, low: 27.35, high: 29.48, calLow: 25.39, calHigh: 31.23 },
-    { key: "SD", name: "Sverigedemokraterna", color: "var(--sd)",   point: 18.71, low: 17.89, high: 19.63, calLow: 15.70, calHigh: 21.75, light: true },
+    { key: "S",  name: "Socialdemokraterna", color: "var(--s)",     point: 28.34, low: 27.35, high: 29.48, calLow: 25.38, calHigh: 31.24 },
+    { key: "SD", name: "Sverigedemokraterna", color: "var(--sd)",   point: 18.71, low: 17.89, high: 19.63, calLow: 15.69, calHigh: 21.76, light: true },
     { key: "M",  name: "Moderaterna",        color: "var(--m)",     point: 17.08, low: 16.02, high: 18.20, calLow: 13.20, calHigh: 20.91, light: true },
-    { key: "C",  name: "Centerpartiet",      color: "var(--c)",     point:  8.07, low:  7.35, high:  8.85, calLow:  6.43, calHigh:  9.72 },
+    { key: "C",  name: "Centerpartiet",      color: "var(--c)",     point:  8.07, low:  7.35, high:  8.85, calLow:  6.42, calHigh:  9.72 },
     { key: "V",  name: "Vänsterpartiet",     color: "var(--v)",     point:  7.44, low:  6.77, high:  8.06, calLow:  6.05, calHigh:  8.82 },
     { key: "MP", name: "Miljöpartiet",       color: "var(--mp)",    point:  6.81, low:  5.92, high:  7.63, calLow:  4.65, calHigh:  8.95, light: true },
     { key: "KD", name: "Kristdemokraterna",  color: "var(--kd)",    point:  6.68, low:  5.91, high:  7.48, calLow:  4.95, calHigh:  8.43 },

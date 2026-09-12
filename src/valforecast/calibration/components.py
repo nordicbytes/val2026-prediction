@@ -11,10 +11,34 @@ MISSING_N_FALLBACK = 1000
 SMALL_SAMPLE_CYCLES = 6
 
 
-def sampling_variance(share: float, sample_size: int | None) -> float:
-    size = float(sample_size if sample_size is not None else MISSING_N_FALLBACK)
+def sampling_variance(
+    share: float,
+    sample_size: int | None,
+    *,
+    fallback: int = MISSING_N_FALLBACK,
+) -> float:
+    size = float(sample_size if sample_size is not None else fallback)
     bounded = min(max(float(share), 1e-8), 1.0 - 1e-8)
     return DESIGN_EFFECT * bounded * (1.0 - bounded) / size
+
+
+def institute_median_sample_sizes(rows: list[dict[str, Any]]) -> dict[str, int]:
+    """Median published n per institute, used to replace the flat fallback.
+
+    This is an imputation, not a source. It exists because the flat fallback of
+    1000 is demonstrably below what these institutes actually field, which
+    overstates their sampling error and pushes the institute component down.
+    """
+    by_family: dict[str, list[int]] = {}
+    for row in rows:
+        size = row.get("sample_size")
+        if size is None:
+            continue
+        by_family.setdefault(str(row["institute_family"]), []).append(int(size))
+    return {
+        family: int(np.median(np.array(sizes, dtype=float)))
+        for family, sizes in sorted(by_family.items())
+    }
 
 
 def kish_effective_institutes(weights: np.ndarray) -> float:
@@ -30,12 +54,18 @@ def _residual_vector(row: dict[str, Any]) -> np.ndarray:
     return np.array([float(row["error"][party]) for party in PARTIES], dtype=float)
 
 
-def _sampling_vector(row: dict[str, Any]) -> np.ndarray:
+def _sampling_vector(
+    row: dict[str, Any],
+    fallback_sizes: dict[str, int] | None,
+) -> np.ndarray:
     shares = row["shares"]
     sample = row.get("sample_size")
     size = int(sample) if sample is not None else None
+    fallback = MISSING_N_FALLBACK
+    if size is None and fallback_sizes is not None:
+        fallback = int(fallback_sizes.get(str(row["institute_family"]), MISSING_N_FALLBACK))
     return np.array(
-        [sampling_variance(float(shares[party]), size) for party in PARTIES],
+        [sampling_variance(float(shares[party]), size, fallback=fallback) for party in PARTIES],
         dtype=float,
     )
 
@@ -64,7 +94,11 @@ def _sd_pp(matrix: np.ndarray) -> dict[str, float]:
     }
 
 
-def decompose_error_components(errors: list[dict[str, Any]]) -> dict[str, Any]:
+def decompose_error_components(
+    errors: list[dict[str, Any]],
+    *,
+    fallback_sizes: dict[str, int] | None = None,
+) -> dict[str, Any]:
     by_cycle: dict[int, list[dict[str, Any]]] = {}
     for row in errors:
         by_cycle.setdefault(int(row["election_cycle"]), []).append(row)
@@ -77,11 +111,18 @@ def decompose_error_components(errors: list[dict[str, Any]]) -> dict[str, Any]:
     within_centered: list[np.ndarray] = []
     within_sampling: list[np.ndarray] = []
     missing_n = 0
+    imputed: dict[str, int] = {}
     for cycle in cycles:
         rows = by_cycle[cycle]
         vectors = np.array([_residual_vector(row) for row in rows], dtype=float)
-        sampling = np.array([_sampling_vector(row) for row in rows], dtype=float)
+        sampling = np.array([_sampling_vector(row, fallback_sizes) for row in rows], dtype=float)
         missing_n += sum(1 for row in rows if row.get("sample_size") is None)
+        for row in rows:
+            if row.get("sample_size") is None:
+                family = str(row["institute_family"])
+                imputed[f"{cycle}:{family}"] = (
+                    int((fallback_sizes or {}).get(family, MISSING_N_FALLBACK))
+                )
         mean = vectors.mean(axis=0)
         cycle_means.append(mean)
         cycle_sampling.append(sampling.mean(axis=0))
@@ -115,6 +156,8 @@ def decompose_error_components(errors: list[dict[str, Any]]) -> dict[str, Any]:
         "n_within": n_within,
         "missing_n_fallback": MISSING_N_FALLBACK,
         "missing_n_count": missing_n,
+        "fallback_mode": "institute_median" if fallback_sizes else "flat_1000",
+        "imputed_sample_sizes": imputed,
         "design_effect": DESIGN_EFFECT,
         "small_sample_caveat": (
             f"The common component is estimated from {n_cycles} cycle-mean "

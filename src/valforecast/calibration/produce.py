@@ -8,6 +8,7 @@ import numpy as np
 from valforecast.calibration.audit import audit_level_c_rows, sample_level_c_rows
 from valforecast.calibration.components import (
     decompose_error_components,
+    institute_median_sample_sizes,
     production_overlay_covariance,
 )
 from valforecast.calibration.corpus import (
@@ -146,11 +147,14 @@ def run_poll_calibration(root: Path) -> dict[str, Any]:
     errors = last_poll_errors(lasts, results)
     houses = estimate_house_effects(errors)
     naive = error_covariance(errors)
-    components = decompose_error_components(errors)
+    median_sizes = institute_median_sample_sizes(rows)
+    components = decompose_error_components(errors, fallback_sizes=median_sizes)
+    flat_components = decompose_error_components(errors)
     contract = load_forecast_contract(root / "config" / "forecast_2026.yaml")
     polls = load_forecast_polls(root, contract)
     aggregated = aggregate_polls(polls, contract, variant="production")
     production = production_overlay_covariance(components, aggregated.weights)
+    flat_production = production_overlay_covariance(flat_components, aggregated.weights)
     sampled = sample_level_c_rows(rows)
     audit = audit_level_c_rows(root, sampled)
     gate = run_house_effect_gate(lasts, results)
@@ -168,6 +172,19 @@ def run_poll_calibration(root: Path) -> dict[str, Any]:
         forecast.national_point,
         np.asarray(naive["sigma"], dtype=float),
         np.asarray(production["sigma"], dtype=float),
+        seed=20260912,
+    )
+    flat_intervals = overlay_election_day_error(
+        root,
+        base,
+        {"sigma": naive["sigma"]},
+        flat_production,
+    )
+    flat_probabilities = overlay_probabilities(
+        base,
+        forecast.national_point,
+        np.asarray(naive["sigma"], dtype=float),
+        np.asarray(flat_production["sigma"], dtype=float),
         seed=20260912,
     )
     recency = recency_curve(rows, results)
@@ -210,6 +227,23 @@ def run_poll_calibration(root: Path) -> dict[str, Any]:
         "gate": gate,
         "intervals_2026_overlay": intervals,
         "probabilities_2026": probabilities,
+        "sensitivity_flat_fallback_n": {
+            "why": (
+                "Three of 34 last polls still publish no sample size. The "
+                "headline numbers impute each institute's own median n, "
+                "because the flat fallback of 1000 is below what SKOP, Novus "
+                "and Sifo actually field and therefore overstates their "
+                "sampling error. The imputation is an active choice and can "
+                "be wrong; this branch keeps the flat fallback so the effect "
+                "of that choice is visible."
+            ),
+            "imputed_sample_sizes": components["imputed_sample_sizes"],
+            "institute_medians": median_sizes,
+            "error_components": _serialize_components(flat_components),
+            "production_overlay_covariance": _serialize_production(flat_production),
+            "intervals_2026_overlay": flat_intervals,
+            "probabilities_2026": flat_probabilities,
+        },
         "raw_sha256": file_checksums(root, HISTORY_FILES),
         "suggested_contract_diff": [
             "poll_aggregation.house_effects: none -> empirical_partial_pool_if_gate_supported",

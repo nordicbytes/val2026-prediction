@@ -289,8 +289,6 @@ Institutkomponenten skattas från spridningen inom cykel.
 
 Urvalskomponenten är analytisk: `deff * p * (1-p) / n` per parti, med
 designeffekt 1. Inget annat är belagt. 31 av 34 slutmätningar har n.
-Tre saknar fortfarande n och använder 1000, samma fallback som
-produktionskontraktet.
 
 De tre som saknar n är SKOP 2002-09-13, Novus 2014-09-06 och
 Sifo/Verian 2014-09-11. SKOP 2002 har ingen n-kolumn i TEMO-arkivet
@@ -298,6 +296,45 @@ och NA i SwedishPolls. Novus 2014-PDF:en är i praktiken en bild.
 Sifo-raden är nu den riktiga slutmätningen 10-11 sep; Wikipedia-cellen
 har inget n, och jag har inte hittat på ett. Den feldaterade
 2014-09-13-raden med S=33,3 är borta.
+
+### Vilket n vi antar för de tre, och varför det inte spelar roll
+
+Den platta fallbacken 1000 är för låg för alla tre. SKOP ligger annars
+kring 1186 i median, Novus kring 1500 och Sifo kring 1921. Att räkna med
+1000 överskattar deras urvalsfel, och eftersom urvalsvariansen dras bort
+från institutkomponenten trycker det ner den komponenten.
+
+Huvudsiffrorna använder därför varje instituts egen median: SKOP 2002 får
+1186, Novus 2014 får 1500 och Sifo 2014 får 1921. **Det är ett aktivt val
+och en imputering, inte en källa.** De verkliga talen kan ha varit andra,
+och särskilt Novus 2014 hade ett ovanligt långt fältarbete, 25 augusti
+till 6 september, vilket talar för ett större urval än deras normala 1500.
+
+Vi körde hela kedjan med båda antagandena. Grenen med platt fallback
+ligger kvar i låsfilen under `sensitivity_flat_fallback_n`. Skillnaden är
+försumbar:
+
+| Storhet | Institutmedian | Platt 1000 |
+|---|---|---|
+| L uppdelat intervall | 3,18-6,96 | 3,18-6,96 |
+| S uppdelat intervall | 25,38-31,24 | 25,39-31,23 |
+| P(S+V+C+MP störst) | 77,33 % | 77,33 % |
+| P(L över 4%) | 86,78 % | 86,80 % |
+| Golvade institutkomponenter | V, S | V, S |
+
+Ingen intervallgräns rör sig mer än 0,01 procentenheter och ingen
+sannolikhet mer än 0,02 procentenheter, vilket är långt under Monte
+Carlo-felet på omkring 0,3. Valet av fallback behöver alltså inte
+försvaras, eftersom det inte påverkar någon slutsats.
+
+Det motbevisar samtidigt en gissning vi hade: att den låga fallbacken var
+en del av förklaringen till att V och S golvas till noll i
+institutkomponenten. De golvas lika mycket med de högre talen. Orsaken
+ligger någon annanstans, nämligen att spridningen mellan institut inom en
+och samma cykel faktiskt är mindre än det förväntade urvalsfelet för de
+två partierna. Instituten ligger närmare varandra på V och S än vad rena
+slumpurval skulle ge, vilket är vad man väntar sig när de väger mot
+liknande ramar.
 
 Urvalsvariansen dras bort från institutkomponenten. Golv vid noll.
 Det träffar nu V och S. Tidigare bara V. Gemensam komponent golvades

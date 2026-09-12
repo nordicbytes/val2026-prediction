@@ -9,7 +9,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from valforecast.calibration.components import kish_effective_institutes
+from valforecast.calibration.components import (
+    institute_median_sample_sizes,
+    kish_effective_institutes,
+    sampling_variance,
+)
 from valforecast.calibration.corpus import POLL_GOLD, build_poll_corpus, last_polls
 from valforecast.calibration.elections import RESULT_GOLD, load_official_national_results
 from valforecast.calibration.estimate import HOUSE_PRIOR_STRENGTH, estimate_house_effects
@@ -245,6 +249,23 @@ def test_window_poll_counts_stay_below_campaign_ceiling() -> None:
         )
 
 
+def test_institute_median_replaces_the_flat_fallback_only_where_n_is_missing() -> None:
+    rows = [
+        {"institute_family": "Novus", "sample_size": 1400},
+        {"institute_family": "Novus", "sample_size": 1500},
+        {"institute_family": "Novus", "sample_size": 2000},
+        {"institute_family": "SKOP", "sample_size": 1186},
+        {"institute_family": "Sentio", "sample_size": None},
+    ]
+    medians = institute_median_sample_sizes(rows)
+    assert medians == {"Novus": 1500, "SKOP": 1186}
+    assert "Sentio" not in medians
+    # A published n must win over the imputed median.
+    assert sampling_variance(0.3, 2000, fallback=1500) == sampling_variance(0.3, 2000)
+    # Only a missing n reaches the fallback, and a larger fallback means less variance.
+    assert sampling_variance(0.3, None, fallback=1500) < sampling_variance(0.3, None)
+
+
 def test_calibration_lock_records_method_choices() -> None:
     path = ROOT / "reports" / "poll_calibration" / "estimator_lock.json"
     if not path.exists():
@@ -255,3 +276,12 @@ def test_calibration_lock_records_method_choices() -> None:
     assert document["method"]["house_prior_strength"] == 3.0
     assert document["gate"]["verdict"] in {"SUPPORTED", "NOT_SUPPORTED"}
     assert document["intervals_2026_overlay"]["point_unchanged"] is True
+    assert document["error_components"]["fallback_mode"] == "institute_median"
+    sensitivity = document["sensitivity_flat_fallback_n"]
+    assert sensitivity["error_components"]["fallback_mode"] == "flat_1000"
+    # The imputation must not be load bearing: it may not move a bound by 0.1 pp.
+    headline = document["intervals_2026_overlay"]["parties"]
+    flat = sensitivity["intervals_2026_overlay"]["parties"]
+    for party, record in headline.items():
+        for bound in ("decomposed_low", "decomposed_high"):
+            assert abs(record[bound] - flat[party][bound]) < 0.001, party

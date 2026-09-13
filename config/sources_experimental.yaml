@@ -110,3 +110,71 @@ sources:
       6 264 fysiska valdistrikt; 314 uppsamlingsdistrikt rapporterades senare.
       Senare rättelser kan ha skrivit över ursprunglig tidsstämpel för två
       fysiska distrikt.
+
+  - id: valu_2010_report
+    source: SVT VALU och Göteborgs universitet
+    provider: Göteborgs universitet
+    dataset: Väljarnas röst – VALU 2010
+    url: https://www.gu.se/sites/default/files/2022-11/Holmberg_et_al_2012-VALU_Valjarnas_rost.pdf
+    retrieved_at: "2026-09-13T09:06:13Z"
+    reference_period: "2010-09-19"
+    geography_version: NATIONAL
+    license: Publicerad forskningsrapport; källan anges
+    raw_file: data/raw/valu/reference/valu_2010_report.pdf
+    sha256: 59b1d639865842ea13093e57608f187afd8a90d8eeb6d2743f292dcfa11c396d
+    status: verified_download
+    usage: historical_valu_topline_backtest
+    notes: >
+      Tabell 3.14, PDF-sida 36: viktad VALU-prognos som presenterades
+      på valkvällen samt slutligt valresultat.
+
+  - id: valu_2018_official
+    source: SVT VALU
+    provider: Sveriges Television
+    dataset: VALU riksdagsval 2018, viktad presentation
+    url: https://omoss.svt.se/download/18.2b162e85172e510106a44061/1595419616898/valuresultat_riksdagsval_pk_2018_vagda_0912.pdf
+    retrieved_at: "2026-09-13T09:06:13Z"
+    reference_period: "2018-09-09"
+    geography_version: NATIONAL
+    license: Publicerad SVT-rapport; källan anges
+    raw_file: data/raw/valu/reference/valu_2018_official.pdf
+    sha256: c2fa8047942f2551946b39f758fe16101420dfe3342ae29f3f675bab053507d4
+    status: verified_download
+    usage: historical_valu_topline_backtest
+    notes: >
+      PDF-sida 6, kolumnen Valu prognos. Övriga analystabeller i rapporten
+      kan vara viktade efter preliminärt valresultat och är inte 20:00-input.
+
+  - id: valu_2022_official
+    source: SVT VALU
+    provider: Sveriges Television
+    dataset: VALU riksdagsval 2022, viktad presentation
+    url: https://omoss.svt.se/download/18.69f812fb18327382298d3e8a/1663746207468/valu_riksdagsval_2022_viktat_0921_V3.pdf
+    retrieved_at: "2026-09-13T09:06:13Z"
+    reference_period: "2022-09-11"
+    geography_version: NATIONAL
+    license: Publicerad SVT-rapport; källan anges
+    raw_file: data/raw/valu/reference/valu_2022_official.pdf
+    sha256: de7666b4d94bea9f89ae9aa687dc5112b75424d84d3d45a6da0b04be444823c3
+    status: verified_download
+    usage: historical_valu_topline_backtest
+    notes: >
+      PDF-sida 6, kolumnen Valu prognos. Flödestabellerna i samma PDF
+      viktades senare och får inte behandlas som ursprunglig 20:00-matris.
+
+  - id: valu_2022_historical_report
+    source: SVT VALU och Göteborgs universitet
+    provider: Göteborgs universitet
+    dataset: Väljarna avgör – VALU 2022
+    url: https://www.gu.se/sites/default/files/2023-05/VALU2022.pdf
+    retrieved_at: "2026-09-13T09:06:13Z"
+    reference_period: "1991/2022"
+    geography_version: NATIONAL
+    license: Publicerad forskningsrapport; källan anges
+    raw_file: data/raw/valu/reference/VALU2022.pdf
+    sha256: 5a4d74472f7ee86eb856f56efd5cd6e481464f5e1c01b6fb11f89aa69105bff0
+    status: verified_download
+    usage: historical_valu_topline_crosscheck
+    notes: >
+      Tabell 3.3, tryckt sida 20, korsverifierar valkvällens viktade
+      prognoser. Retrospektiva flöden får inte användas som 20:00-input.

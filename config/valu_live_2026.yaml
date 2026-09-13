@@ -1,0 +1,54 @@
+schema_version: 1
+role: post_poll_close_live_forecast
+status: waiting_for_published_valu
+
+prior:
+  path: forecast_snapshots/official_forecast_2026.json
+  sha256: 48702a6de161f9605c833f4ae1337697d7ffee2fb8207fd57af12d084c9da6f7
+  immutable: true
+
+valu:
+  input_template: data/templates/valu_2026.template.json
+  earliest_publication: "2026-09-13T20:00:00+02:00"
+  estimator_lock: reports/experiments/valu/estimator_lock.json
+  correction: subtract_locked_shrunk_historical_error
+  required_topline_parties: [V, S, MP, C, L, M, KD, SD, OTHER]
+  transition:
+    optional: true
+    role: kernel_structure_only
+    national_constraint: corrected_valu_topline
+    method: minimum_kl_ipf
+
+election_night:
+  model: C2_reported_proportional_change
+  comparison: 2022_to_2026_official_district_mapping
+  blend:
+    coverage_axis: reported_district_share
+    valu_to_count: c / (c + 0.05)
+    count_to_raw: c^2 / (c^2 + (1 - c)^2)
+  note: >
+    At zero reports the live estimate is calibrated VALU. As comparable
+    districts report, the proportional-change estimate takes over. At high
+    coverage the observed raw result takes over.
+
+validation:
+  require_status: published
+  require_source_url: true
+  require_source_sha256: true
+  require_retrieved_at: true
+  require_published_at_not_before_earliest_publication: true
+  share_sum_tolerance: 0.002
+  transition_row_sum_tolerance: 0.01
+
+outputs:
+  directory: reports/live
+  valu_snapshot: valu_2026.json
+  filename_policy: never_overwrite_frozen_official_forecast
+
+forbidden:
+  - valu_before_2026_09_13_20_00_cest
+  - synthetic_2026_valu
+  - modifying_forecast_snapshots_official_forecast_2026_json
+  - modifying_reports_forecast_2026_input_lock_json
+  - independent_weight_for_topline_and_transition_from_same_sample
+  - unreported_2026_district_results

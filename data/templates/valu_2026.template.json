@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "election_year": 2026,
+  "status": "pending",
+  "published_at": null,
+  "retrieved_at": null,
+  "source_url": null,
+  "source_sha256": null,
+  "sample_size": null,
+  "topline": {
+    "V": null,
+    "S": null,
+    "MP": null,
+    "C": null,
+    "L": null,
+    "M": null,
+    "KD": null,
+    "SD": null,
+    "OTHER": null
+  },
+  "transition": null,
+  "notes": "Do not change status to published until the source is public and archived."
+}

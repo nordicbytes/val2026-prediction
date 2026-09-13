@@ -1,0 +1,91 @@
+schema_version: 1
+role: election_day_experiment_not_pre_election_forecast
+registered_before_backtest: true
+
+topline:
+  path: data/curated/valu_toplines.csv
+  cycles: [2010, 2014, 2018, 2022]
+  party_order: [V, S, MP, C, L, M, KD, SD, OTHER]
+  release: weighted_election_night_forecast_at_poll_close
+  canonicalization:
+    FP: L
+    FI: OTHER
+  warning: >
+    The 20:00 top line is distinct from later respondent distributions
+    reweighted to preliminary or final election results.
+
+calibration:
+  model: shrunk_historical_mean_error
+  error_definition: valu_minus_final
+  prior_strength_elections: 2.0
+  correction: subtract_shrunk_mean_error_then_project_simplex
+  primary_validation: expanding_window
+  scored_cycles: [2014, 2018, 2022]
+  diagnostic_validation: leave_one_election_out
+  live_2026_training_cycles: [2010, 2014, 2018, 2022]
+  uncertainty:
+    source: raw_historical_valu_errors
+    covariance: sample_covariance_shrunk_to_scaled_identity
+    note: >
+      Four elections are too few for a stable full 9x9 covariance. The
+      covariance is descriptive and must not be presented as exact coverage.
+
+metrics:
+  primary: mean_absolute_error_across_nine_party_categories
+  secondary:
+    - maximum_party_absolute_error
+    - threshold_classification_for_parties_near_four_percent
+    - largest_party_correct
+
+gate:
+  candidate: sequential_shrunk_correction
+  comparator: raw_valu
+  requirements:
+    lower_pooled_mae: true
+    minimum_cycles_won: 2
+    cycles_scored: 3
+
+historical_live_combination:
+  cycles: [2018, 2022]
+  count_estimate: C2_reported_proportional_change
+  coverage_axis: reported_district_share
+  valu_to_count_weight: coverage_divided_by_coverage_plus_0_05
+  count_to_raw_weight: symmetric_squared_logistic
+  formulas:
+    valu_to_count: c / (c + 0.05)
+    count_to_raw: c^2 / (c^2 + (1 - c)^2)
+  candidate: >
+    (1 - valu_to_count) * calibrated_valu
+    + valu_to_count * ((1 - count_to_raw) * proportional_count
+    + count_to_raw * raw_count)
+  window: "20:45/23:00"
+  gate:
+    lower_auc_than_raw_count_in_each_cycle: true
+    lower_auc_than_constant_calibrated_valu_in_each_cycle: true
+
+transition_tables:
+  historical_backtest: disabled
+  reason: >
+    Surviving public 2014, 2018 and 2022 flow tables were revised or weighted
+    after preliminary/final results became known and are not clean 20:00 inputs.
+  live_2026:
+    optional: true
+    role: kernel_structure_only
+    topline_role: single_raking_target
+    forbidden: independent_topline_and_transition_measurements
+
+forbidden:
+  - changing_the_frozen_pre_election_forecast
+  - adding_valu_to_pre_election_poll_calibration
+  - 2026_valu_before_publication
+  - post_result_weighted_flow_tables_as_election_night_inputs
+  - treating_topline_and_transitions_as_independent_samples
+  - final_votes_from_unreported_districts
+
+outputs:
+  directory: reports/experiments/valu
+  summary: summary.json
+  report: report.md
+  fold_metrics: fold_metrics.csv
+  estimator_lock: estimator_lock.json
+  combined_timeline: combined_timeline.csv

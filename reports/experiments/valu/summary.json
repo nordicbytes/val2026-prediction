@@ -1,0 +1,332 @@
+{
+  "role": "election_day_experiment_not_pre_election_forecast",
+  "registered_before_backtest": true,
+  "design_sha256": "39b711c7d2167303fb706cd5ebb78abec5dff9a0c3a2a062154e3410d1d7835c",
+  "data_sha256": "5fb5f5268b6e3602c648d69a3da2d07d607b0540ec833537413da35b274b576f",
+  "cycles": [
+    2010,
+    2014,
+    2018,
+    2022
+  ],
+  "topline_gate": {
+    "passed": true,
+    "cycles_won": 3,
+    "cycles_scored": 3,
+    "minimum_cycles_won": 2,
+    "raw_pooled_mae": 0.007289370071881422,
+    "corrected_pooled_mae": 0.006957827188036583,
+    "relative_improvement": 0.045483063773062944
+  },
+  "folds": [
+    {
+      "validation": "expanding_window",
+      "target_year": 2014,
+      "model": "raw_valu",
+      "training_years": "2010",
+      "mae": 0.007737323358537781,
+      "max_party_error": 0.023567538244356603,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "expanding_window",
+      "target_year": 2014,
+      "model": "sequential_shrunk_correction",
+      "training_years": "2010",
+      "mae": 0.006973045571270832,
+      "max_party_error": 0.019908323863953997,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "expanding_window",
+      "target_year": 2018,
+      "model": "raw_valu",
+      "training_years": "2010,2014",
+      "mae": 0.009579654669433835,
+      "max_party_error": 0.02060980665382578,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "expanding_window",
+      "target_year": 2018,
+      "model": "sequential_shrunk_correction",
+      "training_years": "2010,2014",
+      "mae": 0.00952044971367763,
+      "max_party_error": 0.02529659820007099,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "expanding_window",
+      "target_year": 2022,
+      "model": "raw_valu",
+      "training_years": "2010,2014,2018",
+      "mae": 0.004551132187672652,
+      "max_party_error": 0.010254568946753417,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "expanding_window",
+      "target_year": 2022,
+      "model": "sequential_shrunk_correction",
+      "training_years": "2010,2014,2018",
+      "mae": 0.004379986279161287,
+      "max_party_error": 0.007412675887678549,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "leave_one_election_out",
+      "target_year": 2010,
+      "model": "raw_valu",
+      "training_years": "2014,2018,2022",
+      "mae": 0.006546576751867396,
+      "max_party_error": 0.01660988979277929,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "leave_one_election_out",
+      "target_year": 2010,
+      "model": "loeo_shrunk_correction",
+      "training_years": "2014,2018,2022",
+      "mae": 0.004013868607033775,
+      "max_party_error": 0.015180789705048686,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "leave_one_election_out",
+      "target_year": 2014,
+      "model": "raw_valu",
+      "training_years": "2010,2018,2022",
+      "mae": 0.007737323358537781,
+      "max_party_error": 0.023567538244356603,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "leave_one_election_out",
+      "target_year": 2014,
+      "model": "loeo_shrunk_correction",
+      "training_years": "2010,2018,2022",
+      "mae": 0.007000029529565305,
+      "max_party_error": 0.02463178982741744,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "leave_one_election_out",
+      "target_year": 2018,
+      "model": "raw_valu",
+      "training_years": "2010,2014,2022",
+      "mae": 0.009579654669433835,
+      "max_party_error": 0.02060980665382578,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "leave_one_election_out",
+      "target_year": 2018,
+      "model": "loeo_shrunk_correction",
+      "training_years": "2010,2014,2022",
+      "mae": 0.009499318194037461,
+      "max_party_error": 0.02364161949022639,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "leave_one_election_out",
+      "target_year": 2022,
+      "model": "raw_valu",
+      "training_years": "2010,2014,2018",
+      "mae": 0.004551132187672652,
+      "max_party_error": 0.010254568946753417,
+      "largest_party_correct": true
+    },
+    {
+      "validation": "leave_one_election_out",
+      "target_year": 2022,
+      "model": "loeo_shrunk_correction",
+      "training_years": "2010,2014,2018",
+      "mae": 0.004379986279161287,
+      "max_party_error": 0.007412675887678549,
+      "largest_party_correct": true
+    }
+  ],
+  "combined_live_gate": {
+    "passed": true,
+    "window": "20:45/23:00",
+    "cycles": [
+      {
+        "election_year": 2018,
+        "raw_auc": 0.013771358180063815,
+        "valu_auc": 0.021421011855774663,
+        "combined_auc": 0.007633436340021343,
+        "improvement_vs_raw": 0.44570199683921297,
+        "improvement_vs_valu": 0.6436472566554541,
+        "beats_raw": true,
+        "beats_valu": true
+      },
+      {
+        "election_year": 2022,
+        "raw_auc": 0.01598751233778095,
+        "valu_auc": 0.009854969128112895,
+        "combined_auc": 0.005450863510976444,
+        "improvement_vs_raw": 0.6590549301347393,
+        "improvement_vs_valu": 0.4468918735192206,
+        "beats_raw": true,
+        "beats_valu": true
+      }
+    ]
+  },
+  "estimator": {
+    "schema_version": 1,
+    "role": "post_poll_close_valu_calibration",
+    "not_pre_election_input": true,
+    "training_cycles": [
+      2010,
+      2014,
+      2018,
+      2022
+    ],
+    "prior_strength_elections": 2.0,
+    "shrinkage": 0.6666666666666666,
+    "estimated_valu_minus_final_error": {
+      "V": 0.004376202133495563,
+      "S": -0.006103095992772848,
+      "MP": 0.0039592317052387326,
+      "C": 0.003680594381148076,
+      "L": 0.0013769890725289003,
+      "M": -0.007373130579543946,
+      "KD": 0.002453420588964426,
+      "SD": -0.003041046721508737,
+      "OTHER": 0.0006708354124498351
+    },
+    "raw_error_covariance": {
+      "n_obs": 4,
+      "shrinkage": 0.3076923076923077,
+      "sigma": [
+        [
+          4.837636554211108e-05,
+          -1.6317514725919747e-06,
+          -5.96466511950372e-06,
+          -3.063093367082578e-06,
+          7.593306184864739e-07,
+          -6.836409447554775e-06,
+          5.134809251758752e-06,
+          2.300417562991695e-06,
+          5.6710422954890914e-06
+        ],
+        [
+          -1.6317514725919747e-06,
+          6.926455347307497e-05,
+          8.218033374837978e-06,
+          8.461487406441822e-07,
+          6.1018720266323405e-06,
+          1.0198249100912604e-05,
+          -7.833009495322962e-06,
+          -4.6590217163913316e-05,
+          6.172167279830185e-06
+        ],
+        [
+          -5.96466511950372e-06,
+          8.218033374837978e-06,
+          6.478153392250865e-05,
+          3.2556393934097868e-06,
+          -6.610775477714285e-07,
+          1.0384772929279468e-05,
+          -9.681457554988265e-06,
+          -1.66214994674474e-05,
+          -8.965234066221132e-06
+        ],
+        [
+          -3.063093367082578e-06,
+          8.461487406441822e-07,
+          3.2556393934097868e-06,
+          4.764799384789824e-05,
+          -6.156111190378888e-07,
+          6.072501273510249e-06,
+          -4.2168810185419204e-06,
+          -5.112370985701761e-07,
+          -4.669414788125947e-06
+        ],
+        [
+          7.593306184864739e-07,
+          6.1018720266323405e-06,
+          -6.610775477714285e-07,
+          -6.156111190378888e-07,
+          4.6743531771115894e-05,
+          7.561819900808273e-07,
+          -4.268837060437354e-07,
+          -1.1631277687328553e-05,
+          3.7199795179700773e-06
+        ],
+        [
+          -6.836409447554775e-06,
+          1.0198249100912604e-05,
+          1.0384772929279468e-05,
+          6.072501273510249e-06,
+          7.561819900808273e-07,
+          6.045671263355443e-05,
+          -1.1336310403809494e-05,
+          -1.7352973872373846e-05,
+          -7.596678339495554e-06
+        ],
+        [
+          5.134809251758752e-06,
+          -7.833009495322962e-06,
+          -9.681457554988265e-06,
+          -4.2168810185419204e-06,
+          -4.268837060437354e-07,
+          -1.1336310403809494e-05,
+          5.3292435680574995e-05,
+          1.3825672487111438e-05,
+          5.9876706233652475e-06
+        ],
+        [
+          2.300417562991695e-06,
+          -4.6590217163913316e-05,
+          -1.66214994674474e-05,
+          -5.112370985701761e-07,
+          -1.1631277687328553e-05,
+          -1.7352973872373846e-05,
+          1.3825672487111438e-05,
+          0.00013401805856242787,
+          -1.2690897458793733e-05
+        ],
+        [
+          5.6710422954890914e-06,
+          6.172167279830185e-06,
+          -8.965234066221132e-06,
+          -4.669414788125947e-06,
+          3.7199795179700773e-06,
+          -7.596678339495554e-06,
+          5.9876706233652475e-06,
+          -1.2690897458793733e-05,
+          5.711741080008584e-05
+        ]
+      ],
+      "sd_percentage_points": {
+        "V": 0.6955312037724194,
+        "S": 0.8322532876058525,
+        "MP": 0.8048697653813854,
+        "C": 0.6902752628328661,
+        "L": 0.6836924145485007,
+        "M": 0.7775391477832768,
+        "KD": 0.7300166825530428,
+        "SD": 1.1576616887607012,
+        "OTHER": 0.7557606155396418
+      },
+      "mean_error": {
+        "V": 0.006564303200243345,
+        "S": -0.009154643989159272,
+        "MP": 0.005938847557858099,
+        "C": 0.005520891571722114,
+        "L": 0.0020654836087933507,
+        "M": -0.01105969586931592,
+        "KD": 0.003680130883446639,
+        "SD": -0.004561570082263105,
+        "OTHER": 0.0010062531186747527
+      }
+    },
+    "design_sha256": "39b711c7d2167303fb706cd5ebb78abec5dff9a0c3a2a062154e3410d1d7835c",
+    "data_sha256": "5fb5f5268b6e3602c648d69a3da2d07d607b0540ec833537413da35b274b576f"
+  },
+  "live_2026": {
+    "status": "waiting_for_published_valu",
+    "template": "data/templates/valu_2026.template.json"
+  }
+}

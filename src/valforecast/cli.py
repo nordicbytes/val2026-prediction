@@ -22,6 +22,7 @@ from valforecast.evaluation.milestone_three import run_milestone_three
 from valforecast.evaluation.milestone_two import run_milestone_two
 from valforecast.experiments.advance_voting import run_advance_voting_backtest
 from valforecast.experiments.election_night_nowcast import run_election_night_backtest
+from valforecast.experiments.valu import prepare_live_valu, run_valu_backtest
 from valforecast.forecast.contract import load_forecast_contract
 from valforecast.forecast.lock import load_input_lock, write_input_lock
 from valforecast.forecast.produce import run_forecast_2026
@@ -216,6 +217,35 @@ def backtest_election_night() -> None:
             indent=2,
         )
     )
+
+
+@app.command("backtest-valu")
+def backtest_valu() -> None:
+    summary = run_valu_backtest(_root())
+    typer.echo(
+        json.dumps(
+            {
+                "topline_gate": summary["topline_gate"],
+                "combined_live_gate": summary["combined_live_gate"],
+                "live_2026": summary["live_2026"],
+                "report": "reports/experiments/valu/report.md",
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
+@app.command("prepare-valu-live")
+def prepare_valu_live(
+    input_path: Annotated[
+        Path,
+        typer.Option("--input", exists=True, dir_okay=False, help="Published VALU JSON."),
+    ],
+    write: Annotated[bool, typer.Option("--write")] = False,
+) -> None:
+    result = prepare_live_valu(_root(), input_path, write=write)
+    typer.echo(json.dumps(result, ensure_ascii=False, indent=2))
 
 
 @app.command("lock-forecast-2026-inputs")

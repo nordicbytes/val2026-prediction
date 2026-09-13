@@ -81,6 +81,19 @@ Resultatet skrivs till
 `reports/experiments/election_night_nowcast/report.md`. Det är ett separat
 historiskt experiment och läser aldrig valresultat från 2026.
 
+VALU-kalibreringen och den förberedda liveingången körs separat:
+
+```bash
+uv run valforecast backtest-valu
+uv run valforecast prepare-valu-live \
+  --input data/templates/valu_2026.template.json
+```
+
+Före publicering svarar livekommandot endast att det väntar. Efter klockan 20
+kopieras mallen och fylls med VALU:s publicerade toppvärden, källtidsstämplar
+och kontrollsumma. `--write` skapar en separat fil under `reports/live` och
+kan inte ändra den frysta förvalsprognosen.
+
 ## Datapolicy
 
 - `data/raw` innehåller oförändrade originalfiler och committas inte.

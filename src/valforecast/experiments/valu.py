@@ -21,6 +21,7 @@ from valforecast.experiments.election_night_nowcast import (
 from valforecast.features.election_history import PARTIES
 from valforecast.models.baselines import project_simplex
 from valforecast.polls.transition_calibrate import calibrate_transition_matrix
+from valforecast.seats.simulate import point_seats_from_national
 
 
 @dataclass(frozen=True)
@@ -595,6 +596,10 @@ def prepare_live_valu(
             "additional_surveys_are_calibrated": False,
         },
         "election_night": election_night,
+        "seats": point_seats_from_national(
+            root,
+            {party: float(current_live[index]) for index, party in enumerate(PARTIES)},
+        ),
         "calibration_lock_sha256": sha256_file(lock_path),
         "transition": None,
         "official_forecast_unchanged": True,

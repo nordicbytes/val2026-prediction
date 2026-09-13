@@ -12,6 +12,7 @@ eligible-weighted national shares.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -20,7 +21,12 @@ from valforecast.calibration.probabilities import ERROR_DRAWS_PER_BASE, apply_ov
 from valforecast.features.election_history import PARTIES
 from valforecast.polls.transition_calibrate import calibrate_transition_matrix
 from valforecast.seats.allocate import SeatAllocation, allocate_riksdag
-from valforecast.seats.data import JSON_PARTIES, SnapshotConstituencies
+from valforecast.seats.data import (
+    JSON_PARTIES,
+    SnapshotConstituencies,
+    load_official_fixed_seats_2026,
+    load_snapshot_constituencies,
+)
 from valforecast.seats.method import (
     FIXED_CONSTITUENCY_SEATS,
     NATIONAL_THRESHOLD,
@@ -255,6 +261,42 @@ def run_point_allocation(
     eligible = eligible_vector(snapshot)
     raked = rake_constituency_shares(point_matrix, eligible, national_point)
     return allocation_from_share_matrix(raked, snapshot, eligible, fixed_seats)
+
+
+LEFT_BLOC = ("S", "V", "MP", "C")
+RIGHT_BLOC = ("M", "KD", "L", "SD")
+
+
+def point_seats_from_national(
+    root: Path,
+    national: Mapping[str, float],
+) -> dict[str, Any]:
+    """Allocate 349 seats from a national point using the locked 2026 rules."""
+    snapshot = load_snapshot_constituencies(root)
+    fixed = load_official_fixed_seats_2026(root)
+    vector = np.array([float(national[party]) for party in PARTIES], dtype=np.float64)
+    if vector.sum() <= 0:
+        raise ValueError("National point must be a positive share vector")
+    vector = vector / vector.sum()
+    allocation = run_point_allocation(snapshot, vector, fixed)
+    seats = {party: int(allocation.seats[party]) for party in JSON_PARTIES}
+    if sum(seats.values()) != TOTAL_RIKSDAG_SEATS:
+        raise ValueError("Live point seats do not sum to 349")
+    left = sum(seats[party] for party in LEFT_BLOC)
+    right = sum(seats[party] for party in RIGHT_BLOC)
+    return {
+        "method": "modified_sainte_lague_raked_official_2026_geography",
+        "total_seats": TOTAL_RIKSDAG_SEATS,
+        "majority": 175,
+        "point_seats": seats,
+        "blocs": {
+            "S+V+MP+C": left,
+            "M+KD+L+SD": right,
+        },
+        "excluded_below_national_threshold": list(
+            allocation.excluded_below_national_threshold
+        ),
+    }
 
 
 def compute_2026_fixed_seats(snapshot: SnapshotConstituencies) -> dict[str, int]:

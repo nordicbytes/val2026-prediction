@@ -148,6 +148,9 @@ def test_additional_survey_is_raw_and_sample_size_weighted(tmp_path: Path) -> No
     if result.get("election_night") and result["election_night"].get("proportional"):
         assert result["current_live"]["S"] != pytest.approx(expected_s)
         assert sum(result["current_live"].values()) == pytest.approx(1.0)
+    assert result["seats"]["total_seats"] == 349
+    assert sum(result["seats"]["point_seats"].values()) == 349
+    assert result["seats"]["blocs"]["S+V+MP+C"] + result["seats"]["blocs"]["M+KD+L+SD"] == 349
 
 
 def test_same_sample_transition_is_raked_once_to_calibrated_topline(

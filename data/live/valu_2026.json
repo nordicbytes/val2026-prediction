@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "election_year": 2026,
+  "status": "published",
+  "published_at": "2026-09-13T20:00:00+02:00",
+  "retrieved_at": "2026-09-13T20:10:00+02:00",
+  "source_url": "https://www.svt.se/nyheter/inrikes/senaste-nytt-om-val-2026?inlagg=e5875604c2e4cb9d29c52ed5a8bb9afd",
+  "source_sha256": "9ddd53ffaae9b51cf5507b8501698524376119db04156a39f734146c83e06a96",
+  "source_archive": "data/live/sources/svt_valu_2026_extract.txt",
+  "sample_size": 13709,
+  "topline": {
+    "V": 0.080,
+    "S": 0.284,
+    "MP": 0.074,
+    "C": 0.075,
+    "L": 0.054,
+    "M": 0.181,
+    "KD": 0.061,
+    "SD": 0.172,
+    "OTHER": 0.019
+  },
+  "transition": null,
+  "additional_surveys": [
+    {
+      "name": "TV4:s valdagsundersökning",
+      "provider": "TV4",
+      "status": "published",
+      "published_at": "2026-09-13T19:58:00+02:00",
+      "eligible_at": "2026-09-13T20:00:00+02:00",
+      "retrieved_at": "2026-09-13T20:10:00+02:00",
+      "source_url": "https://www.tv4.se/artikel/1l3Dd915TjRjgiTxOTZMi1/valdagsundersoekning-klar-majoritet-foer-de-roedgroena",
+      "source_sha256": "ce3303f52df94c6b3e631c6eaca8f19a8ed30b7c5b2a14e5314711ac5f63b8c9",
+      "source_archive": "data/live/sources/tv4_valdagsundersokning_2026_extract.txt",
+      "sample_size": 4045,
+      "topline": {
+        "V": 0.069,
+        "S": 0.284,
+        "MP": 0.070,
+        "C": 0.090,
+        "L": 0.050,
+        "M": 0.175,
+        "KD": 0.060,
+        "SD": 0.185,
+        "OTHER": 0.017
+      }
+    }
+  ],
+  "notes": "SVT VALU is historically calibrated. TV4 is included raw because no pre-registered TV4-specific historical correction exists."
+}

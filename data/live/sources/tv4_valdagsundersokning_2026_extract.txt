@@ -1,0 +1,21 @@
+Source: TV4, "Valdagsundersökning: Klar majoritet för de rödgröna"
+URL: https://www.tv4.se/artikel/1l3Dd915TjRjgiTxOTZMi1/valdagsundersoekning-klar-majoritet-foer-de-roedgroena
+Published: 2026-09-13T19:58:00+02:00
+Updated: 2026-09-13T20:09:00+02:00
+Retrieved: 2026-09-13T20:10:00+02:00
+
+TV4 valdagsundersökning 2026, national top line:
+V 6.9
+S 28.4
+MP 7.0
+C 9.0
+L 5.0
+M 17.5
+KD 6.0
+SD 18.5
+OTHER 1.7
+
+S+V+MP+C 51.3
+M+L+KD+SD 47.0
+Sample size 4,045.
+Reported margin of error between blocs: 2.9 percentage points.

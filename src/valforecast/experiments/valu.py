@@ -368,6 +368,36 @@ def validate_live_input(document: dict[str, Any], config: dict[str, Any]) -> Non
     transition = document.get("transition")
     if transition is not None:
         _transition_array(transition, config)
+    additional = document.get("additional_surveys", [])
+    if not isinstance(additional, list):
+        raise ValueError("additional_surveys must be a list")
+    earliest = datetime.fromisoformat(str(config["valu"]["earliest_publication"]))
+    for survey in additional:
+        if not isinstance(survey, dict):
+            raise ValueError("Each additional survey must be an object")
+        if survey.get("status") != "published":
+            raise ValueError("Additional survey is not published")
+        for field in ("name", "provider", "published_at", "retrieved_at", "source_url"):
+            if not isinstance(survey.get(field), str) or not survey[field]:
+                raise ValueError(f"Additional survey requires {field}")
+        published = datetime.fromisoformat(str(survey["published_at"]))
+        retrieved = datetime.fromisoformat(str(survey["retrieved_at"]))
+        if retrieved < published or retrieved < earliest:
+            raise ValueError("Additional survey was not retrieved after poll close")
+        if not str(survey["source_url"]).startswith("https://"):
+            raise ValueError("Additional survey source URL must use HTTPS")
+        if not re.fullmatch(r"[0-9a-f]{64}", str(survey.get("source_sha256", ""))):
+            raise ValueError("Additional survey source SHA-256 is invalid")
+        if not isinstance(survey.get("sample_size"), int) or survey["sample_size"] <= 0:
+            raise ValueError("Additional survey sample_size must be a positive integer")
+        survey_topline = survey.get("topline")
+        if not isinstance(survey_topline, dict) or set(survey_topline) != set(PARTIES):
+            raise ValueError("Additional survey top line must contain the canonical party set")
+        survey_values = np.array(
+            [float(survey_topline[party]) for party in PARTIES]
+        )
+        if np.any(survey_values < 0) or abs(float(survey_values.sum()) - 1.0) > tolerance:
+            raise ValueError("Additional survey shares do not sum to one")
 
 
 def _transition_array(transition: object, config: dict[str, Any]) -> np.ndarray:
@@ -406,6 +436,10 @@ def prepare_live_valu(
             "official_forecast_unchanged": True,
         }
     validate_live_input(document, config)
+    for source in [document, *document.get("additional_surveys", [])]:
+        archive = source.get("source_archive")
+        if archive and sha256_file(root / str(archive)) != source["source_sha256"]:
+            raise ValueError(f"Archived live source hash has changed: {archive}")
     lock_path = root / str(config["valu"]["estimator_lock"])
     lock: dict[str, Any] = json.loads(lock_path.read_text(encoding="utf-8"))
     raw = np.array([float(document["topline"][party]) for party in PARTIES])
@@ -413,6 +447,49 @@ def prepare_live_valu(
         [float(lock["estimated_valu_minus_final_error"][party]) for party in PARTIES]
     )
     corrected = corrected_valu(raw, estimated_error)
+    weighted = corrected * int(document["sample_size"])
+    total_sample = int(document["sample_size"])
+    additional_surveys: list[dict[str, Any]] = []
+    blend_inputs: list[dict[str, Any]] = [
+        {
+            "name": "SVT VALU, historiskt kalibrerad",
+            "sample_size": int(document["sample_size"]),
+            "weight": 0.0,
+        }
+    ]
+    for survey in document.get("additional_surveys", []):
+        survey_raw = np.array(
+            [float(survey["topline"][party]) for party in PARTIES]
+        )
+        sample_size = int(survey["sample_size"])
+        weighted += survey_raw * sample_size
+        total_sample += sample_size
+        additional_surveys.append(
+            {
+                "name": survey["name"],
+                "provider": survey["provider"],
+                "published_at": survey["published_at"],
+                "retrieved_at": survey["retrieved_at"],
+                "source_url": survey["source_url"],
+                "source_sha256": survey["source_sha256"],
+                "sample_size": sample_size,
+                "raw_topline": {
+                    party: float(survey_raw[index])
+                    for index, party in enumerate(PARTIES)
+                },
+                "correction": "none",
+            }
+        )
+        blend_inputs.append(
+            {
+                "name": survey["name"],
+                "sample_size": sample_size,
+                "weight": 0.0,
+            }
+        )
+    current_live = weighted / total_sample
+    for item in blend_inputs:
+        item["weight"] = int(item["sample_size"]) / total_sample
     prior_document = json.loads(prior_path.read_text(encoding="utf-8"))
     prior_national = prior_document["prediction"]["national"]
     result: dict[str, Any] = {
@@ -429,6 +506,17 @@ def prepare_live_valu(
         },
         "raw_valu": {party: float(raw[index]) for index, party in enumerate(PARTIES)},
         "calibrated_valu": {party: float(corrected[index]) for index, party in enumerate(PARTIES)},
+        "additional_surveys": additional_surveys,
+        "current_live": {
+            party: float(current_live[index]) for index, party in enumerate(PARTIES)
+        },
+        "survey_blend": {
+            "method": "sample_size_weighted_mean",
+            "inputs": blend_inputs,
+            "total_sample_size": total_sample,
+            "valu_is_calibrated": True,
+            "additional_surveys_are_calibrated": False,
+        },
         "calibration_lock_sha256": sha256_file(lock_path),
         "transition": None,
         "official_forecast_unchanged": True,
@@ -436,7 +524,7 @@ def prepare_live_valu(
     if document.get("transition") is not None:
         matrix = _transition_array(document["transition"], config)
         final_2022 = load_final_vectors(root, [2022])[2022]
-        calibrated = calibrate_transition_matrix(matrix, final_2022, corrected)
+        calibrated = calibrate_transition_matrix(matrix, final_2022, current_live)
         if not calibrated.converged:
             raise ValueError("VALU transition matrix did not rake to the top line")
         result["transition"] = {

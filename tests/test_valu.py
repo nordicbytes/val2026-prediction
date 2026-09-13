@@ -109,6 +109,44 @@ def test_published_live_input_is_calibrated_without_writing(tmp_path: Path) -> N
     assert "written" not in result
 
 
+def test_additional_survey_is_raw_and_sample_size_weighted(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[1]
+    document = _valid_published_input()
+    tv4 = {
+        "name": "TV4 test",
+        "provider": "TV4",
+        "status": "published",
+        "published_at": "2026-09-13T19:58:00+02:00",
+        "retrieved_at": "2026-09-13T20:02:00+02:00",
+        "source_url": "https://example.test/tv4",
+        "source_sha256": "b" * 64,
+        "sample_size": 4_000,
+        "topline": {
+            "V": 0.08,
+            "S": 0.28,
+            "MP": 0.07,
+            "C": 0.09,
+            "L": 0.05,
+            "M": 0.17,
+            "KD": 0.06,
+            "SD": 0.18,
+            "OTHER": 0.02,
+        },
+    }
+    document["additional_surveys"] = [tv4]
+    path = tmp_path / "two-surveys.json"
+    path.write_text(json.dumps(document), encoding="utf-8")
+
+    result = prepare_live_valu(root, path, write=False)
+
+    valu_weight = 11_000 / 15_000
+    tv4_weight = 4_000 / 15_000
+    expected_s = result["calibrated_valu"]["S"] * valu_weight + 0.28 * tv4_weight
+    assert result["current_live"]["S"] == pytest.approx(expected_s)
+    assert result["additional_surveys"][0]["correction"] == "none"
+    assert result["survey_blend"]["total_sample_size"] == 15_000
+
+
 def test_same_sample_transition_is_raked_once_to_calibrated_topline(
     tmp_path: Path,
 ) -> None:

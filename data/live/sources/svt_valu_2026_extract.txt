@@ -1,0 +1,18 @@
+Source: SVT Nyheter, "Senaste nytt om valet 2026"
+URL: https://www.svt.se/nyheter/inrikes/senaste-nytt-om-val-2026?inlagg=e5875604c2e4cb9d29c52ed5a8bb9afd
+Retrieved: 2026-09-13T20:10:00+02:00
+
+SVT VALU 2026, national top line:
+V 8.0
+S 28.4
+MP 7.4
+C 7.5
+L 5.4
+M 18.1
+KD 6.1
+SD 17.2
+OTHER 1.9
+
+S+MP+V+C 51.3
+M+KD+L+SD 46.8
+Sample size 13,709.

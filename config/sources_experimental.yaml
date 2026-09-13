@@ -178,3 +178,35 @@ sources:
     notes: >
       Tabell 3.3, tryckt sida 20, korsverifierar valkvällens viktade
       prognoser. Retrospektiva flöden får inte användas som 20:00-input.
+
+  - id: valu_2026_live
+    source: SVT VALU
+    provider: Sveriges Television
+    dataset: VALU 2026 nationell toppnivå
+    url: https://www.svt.se/nyheter/inrikes/senaste-nytt-om-val-2026?inlagg=e5875604c2e4cb9d29c52ed5a8bb9afd
+    retrieved_at: "2026-09-13T20:10:00+02:00"
+    reference_period: "2026-09-13T20:00:00+02:00"
+    geography_version: NATIONAL
+    license: Publicerad nyhetsrapportering; källan anges
+    raw_file: data/live/sources/svt_valu_2026_extract.txt
+    sha256: 9ddd53ffaae9b51cf5507b8501698524376119db04156a39f734146c83e06a96
+    status: verified_publication
+    usage: post_poll_close_live_forecast
+    notes: Nationell VALU-toppnivå och urvalsstorlek publicerade efter vallokalernas stängning.
+
+  - id: tv4_valdagsundersokning_2026_live
+    source: TV4:s valdagsundersökning
+    provider: TV4
+    dataset: TV4:s valdagsundersökning 2026, nationell toppnivå
+    url: https://www.tv4.se/artikel/1l3Dd915TjRjgiTxOTZMi1/valdagsundersoekning-klar-majoritet-foer-de-roedgroena
+    retrieved_at: "2026-09-13T20:10:00+02:00"
+    reference_period: "2026-09-13T20:00:00+02:00"
+    geography_version: NATIONAL
+    license: Publicerad nyhetsrapportering; källan anges
+    raw_file: data/live/sources/tv4_valdagsundersokning_2026_extract.txt
+    sha256: ce3303f52df94c6b3e631c6eaca8f19a8ed30b7c5b2a14e5314711ac5f63b8c9
+    status: verified_publication
+    usage: post_poll_close_live_forecast
+    notes: >
+      Artikeln är tidsstämplad 19:58 och uppdaterad 20:09. Underlaget används
+      först efter klockan 20. Ingen VALU-specifik historisk korrigering används.

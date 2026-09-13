@@ -1,8 +1,8 @@
 {
-  "retrieved_at": "2026-09-13T23:03:12+02:00",
+  "retrieved_at": "2026-09-13T23:13:11+02:00",
   "source_url": "https://resultat.val.se/resultatfiler/val2026/p/rd/Val_2026_preliminar_00_RD.zip",
-  "source_sha256": "a6bc3734f6f7c9abba292d539cbca354dd6b31b0a36a0ddc05ad806b8ca2eab2",
-  "valmyndigheten_updated_at": "2026-09-13T23:01:32",
-  "official_counted": 4641,
+  "source_sha256": "af510532ef35661666cfd8db93a60dbc6bc7b27406004f4be14d3a660621c258",
+  "valmyndigheten_updated_at": "2026-09-13T23:11:03",
+  "official_counted": 4866,
   "official_to_count": 6626
 }

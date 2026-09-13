@@ -21,6 +21,7 @@ from valforecast.evaluation.milestone_four_c import (
 from valforecast.evaluation.milestone_three import run_milestone_three
 from valforecast.evaluation.milestone_two import run_milestone_two
 from valforecast.experiments.advance_voting import run_advance_voting_backtest
+from valforecast.experiments.election_night_nowcast import run_election_night_backtest
 from valforecast.forecast.contract import load_forecast_contract
 from valforecast.forecast.lock import load_input_lock, write_input_lock
 from valforecast.forecast.produce import run_forecast_2026
@@ -192,6 +193,24 @@ def backtest_advance_voting() -> None:
                 "gates": summary["gates"],
                 "forecast_2026": summary["forecast_2026"],
                 "report": "reports/experiments/advance_voting/report.md",
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
+@app.command("backtest-election-night")
+def backtest_election_night() -> None:
+    summary = run_election_night_backtest(_root())
+    typer.echo(
+        json.dumps(
+            {
+                "primary_gate": summary["gate"],
+                "proportional_diagnostic": summary[
+                    "registered_secondary_proportional_diagnostic"
+                ],
+                "report": "reports/experiments/election_night_nowcast/report.md",
             },
             ensure_ascii=False,
             indent=2,

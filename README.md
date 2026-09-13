@@ -69,6 +69,18 @@ sak som väljarens hemkommun. Experimentet får därför aldrig ändra den fryst
 2026-prognosen; den nuvarande 2026-filen är dessutom hämtad efter datastoppet
 och är uttryckligen exkluderad.
 
+Valnattsreplayen använder Valmyndighetens verkliga rapporteringstider och
+preliminära distriktsröster från 2018 och 2022:
+
+```bash
+uv run valforecast sources fetch-experimental
+uv run valforecast backtest-election-night
+```
+
+Resultatet skrivs till
+`reports/experiments/election_night_nowcast/report.md`. Det är ett separat
+historiskt experiment och läser aldrig valresultat från 2026.
+
 ## Datapolicy
 
 - `data/raw` innehåller oförändrade originalfiler och committas inte.

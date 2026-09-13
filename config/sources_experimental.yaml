@@ -116,12 +116,12 @@ sources:
     provider: Valmyndigheten
     dataset: Preliminär röstfördelning per valdistrikt 2026
     url: https://resultat.val.se/resultatfiler/val2026/p/rd/Val_2026_preliminar_00_RD.zip
-    retrieved_at: "2026-09-13T20:23:10Z"
+    retrieved_at: "2026-09-13T20:33:10Z"
     reference_period: "2026-09-13T20:00:00/2026-09-14T02:00:00"
     geography_version: VALDISTRIKT_2026
     license: Fri användning med källangivelse
     raw_file: data/raw/election_night/2026/Val_2026_preliminar_00_RD.zip
-    sha256: ae4a35f3519a6b9266f23f24501c0dd22057989e0e81c09a9266a23e0d55217e
+    sha256: 68d78bc83c1177789743adff9216069f273b4e38c5ef3c0b93385563ae7c07f4
     status: live_refresh
     usage: election_night_live_nowcast
     notes: >

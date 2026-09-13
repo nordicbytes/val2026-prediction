@@ -49,6 +49,57 @@
 
   .wrap { max-width: 940px; margin: 0 auto; padding: 0 28px; }
 
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(251, 250, 248, 0.94);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+  }
+
+  .topbar-inner {
+    min-height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .brand {
+    color: var(--ink);
+    text-decoration: none;
+    font-family: "Gambetta", Georgia, serif;
+    font-size: 20px;
+    white-space: nowrap;
+  }
+
+  .view-nav { display: flex; align-self: stretch; gap: 8px; }
+
+  .view-link {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0 10px;
+    color: var(--ink-faint);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .view-link:hover { color: var(--ink); }
+  .view-link[aria-current="page"] { color: var(--ink); }
+  .view-link[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: -1px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .site-view[hidden] { display: none; }
+
   header {
     border-bottom: 1px solid var(--line);
     padding: 72px 0 40px;
@@ -510,6 +561,92 @@
 
   .fact .lbl { font-size: 13px; color: var(--ink-faint); display: block; margin-top: 3px; }
 
+  /* ---------- VALU / live ---------- */
+
+  .live-hero { background: linear-gradient(180deg, #f3f0ff 0%, var(--paper) 100%); }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    padding: 7px 12px;
+    margin: 0 0 18px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .status-pill::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d89512;
+  }
+
+  .status-pill.ready::before { background: #16874d; }
+
+  .live-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 26px;
+  }
+
+  .live-card h3 { margin-top: 0; }
+  .live-card p:last-child { margin-bottom: 0; }
+
+  .live-phases {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 22px;
+  }
+
+  .live-phase {
+    border-top: 2px solid var(--line);
+    padding-top: 13px;
+  }
+
+  .live-phase.active { border-top-color: var(--ink); }
+  .live-phase .time {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .live-phase b { display: block; margin-top: 3px; font-size: 15px; }
+  .live-phase span:last-child { display: block; color: var(--ink-faint); font-size: 13px; }
+
+  .compare-note {
+    background: #f3f0ff;
+    border-left: 3px solid #6652b8;
+    padding: 14px 16px;
+    margin: 20px 0 26px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .compare-table .party-cell { display: flex; align-items: center; gap: 9px; font-weight: 500; }
+  .compare-table .mini-mark {
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    display: inline-grid;
+    place-items: center;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 900;
+    flex: none;
+  }
+  .compare-table .mini-mark.light { color: var(--ink); }
+  .compare-table .live-value { font-weight: 700; }
+
   footer { padding: 44px 0 72px; font-size: 13.5px; color: var(--ink-faint); }
   footer a { color: var(--ink-soft); }
 
@@ -526,11 +663,29 @@
     .block-row { grid-template-columns: 120px 1fr 70px; }
     .value .pt { font-size: 17px; }
     .builder { grid-template-columns: 1fr; }
+    .live-phases { grid-template-columns: 1fr; }
+    .compare-table { min-width: 610px; }
+    .topbar-inner { min-height: 56px; gap: 10px; }
+    .brand { font-size: 17px; }
+    .view-nav { gap: 0; }
+    .view-link { padding: 0 7px; font-size: 13px; }
+    .view-link[aria-current="page"]::after { left: 7px; right: 7px; }
   }
 </style>
 </head>
 <body>
 
+<nav class="topbar" aria-label="Huvudnavigation">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#prognos">Valprognos 2026</a>
+    <div class="view-nav">
+      <a class="view-link" href="#prognos" data-view-link="forecast" aria-current="page">Prognos</a>
+      <a class="view-link" href="#live" data-view-link="live">VALU / Live</a>
+    </div>
+  </div>
+</nav>
+
+<main id="prognos" class="site-view" data-view="forecast">
 <header>
   <div class="wrap">
     <p class="eyebrow">Prognos · riksdagsvalet 13 september 2026</p>
@@ -1168,6 +1323,127 @@
     </p>
   </div>
 </footer>
+</main>
+
+<main id="live" class="site-view" data-view="live" hidden>
+  <header class="live-hero">
+    <div class="wrap">
+      <p class="eyebrow">Valdagen · ny information efter vallokalernas stängning</p>
+      <div class="status-pill" id="live-status-pill">Väntar på publicerad VALU</div>
+      <h1>VALU och valnattsprognosen</h1>
+      <p class="lede" id="live-lede">
+        Klockan 20 kopplar vi på SVT:s vallokalsundersökning. Därefter vägs den stegvis ihop med
+        förändringen i de valdistrikt som räknats och till sist med det faktiska röstantalet.
+      </p>
+      <div class="meta">
+        <span>Fryst prognos <b>11 sep 2026, 22:29</b></span>
+        <span>VALU-status <b id="live-meta-status">Ej publicerad</b></span>
+        <span>Livekedja <b>Kalibrerad och historiskt testad</b></span>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <h2 id="live-status-heading">Vi väntar på VALU</h2>
+      <p class="section-note" id="live-status-copy">
+        Den här sidan visar inga uppskattade VALU-siffror före publiceringen. När en verifierad fil
+        har lästs in visas den automatiskt här, utan att den ursprungliga prognosen skrivs över.
+      </p>
+      <div class="live-card">
+        <h3>Så byter liveprognosen informationskälla under kvällen</h3>
+        <div class="live-phases" aria-label="Liveprognosens tre faser">
+          <div class="live-phase" id="phase-valu">
+            <span class="time">Från 20:00</span>
+            <b>Kalibrerad VALU</b>
+            <span>Snabb första bild när vallokalerna stänger.</span>
+          </div>
+          <div class="live-phase">
+            <span class="time">När distrikt rapporterar</span>
+            <b>Förändring mot 2022</b>
+            <span>Samma distrikt jämförs med föregående val.</span>
+          </div>
+          <div class="live-phase">
+            <span class="time">När räkningen mognar</span>
+            <b>Faktiska röster</b>
+            <span>Råresultatet tar gradvis över prognosen.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="jamforelse">
+    <div class="wrap">
+      <h2>Vår prognos jämfört med VALU / live</h2>
+      <p class="section-note">
+        Prognosen är vår låsta uppskattning från före valdagen. VALU är SVT:s vallokalsundersökning.
+        Live visar den bästa sammanvägda uppskattningen med den information som finns just då.
+      </p>
+      <div class="compare-note" id="compare-note">
+        Före publicerad VALU är bara prognoskolumnen fylld. Streck betyder alltså att uppgiften ännu
+        inte finns, inte att partiet har noll procent.
+      </div>
+      <div class="scroll">
+        <table class="compare-table">
+          <caption id="compare-caption">Andel av giltiga röster, procent.</caption>
+          <thead>
+            <tr>
+              <th>Parti</th>
+              <th class="num">Prognos</th>
+              <th class="num">Rå VALU</th>
+              <th class="num">VALU / live</th>
+              <th class="num">Mot prognos</th>
+            </tr>
+          </thead>
+          <tbody id="live-comparison"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Vad det historiska testet visar</h2>
+      <p class="section-note">
+        Reglerna låstes innan resultaten räknades. Testet använder bara information som hade funnits
+        vid respektive tidpunkt under valkvällarna 2014, 2018 och 2022.
+      </p>
+      <div class="facts">
+        <div class="fact">
+          <span class="big" id="valu-improvement">4,5 %</span>
+          <span class="lbl">lägre genomsnittligt partifel efter försiktig VALU-kalibrering</span>
+        </div>
+        <div class="fact">
+          <span class="big" id="valu-cycles">3 av 3</span>
+          <span class="lbl">framåttest där kalibreringen slog rå VALU</span>
+        </div>
+        <div class="fact">
+          <span class="big">2018 + 2022</span>
+          <span class="lbl">valkvällar där hela livekedjan slog både VALU och rå rösträkning</span>
+        </div>
+      </div>
+      <h3>Det här är en ny prognos, inte en ändring av den gamla</h3>
+      <p>
+        Förvalprognosen ligger kvar exakt som den publicerades. VALU och räknade valdistrikt är
+        information som blir tillgänglig först efter vallokalernas stängning och redovisas därför i
+        en separat vy. Skillnaden mot prognosen visas öppet parti för parti.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p>Liveprognosen är ett valdagsexperiment och ersätter inte den frysta förvalprognosen.</p>
+      <p id="live-source"></p>
+    </div>
+  </footer>
+</main>
+
+<!-- LIVE_DATA:START -->
+<script>window.VALU_LIVE_DATA = {"schema_version":1,"status":"waiting_for_valu","forecast":{"V":{"point":0.074413,"low":0.06767,"high":0.080558},"S":{"point":0.283415,"low":0.273523,"high":0.294768},"MP":{"point":0.068087,"low":0.059249,"high":0.076302},"C":{"point":0.08067,"low":0.073531,"high":0.088506},"L":{"point":0.050835,"low":0.045744,"high":0.055878},"M":{"point":0.170836,"low":0.160173,"high":0.18195},"KD":{"point":0.066834,"low":0.059055,"high":0.074808},"SD":{"point":0.187132,"low":0.178852,"high":0.196346},"OTHER":{"point":0.017778,"low":0.013415,"high":0.022756}},"live":null,"backtest":{"topline_relative_improvement":0.045483063773062944,"topline_cycles_won":3,"topline_cycles_scored":3,"combined_cycles":[{"election_year":2018,"raw_auc":0.013771358180063815,"valu_auc":0.021421011855774663,"combined_auc":0.007633436340021343,"improvement_vs_raw":0.44570199683921297,"improvement_vs_valu":0.6436472566554541,"beats_raw":true,"beats_valu":true},{"election_year":2022,"raw_auc":0.01598751233778095,"valu_auc":0.009854969128112895,"combined_auc":0.005450863510976444,"improvement_vs_raw":0.6590549301347393,"improvement_vs_valu":0.4468918735192206,"beats_raw":true,"beats_valu":true}]}};
+</script>
+<!-- LIVE_DATA:END -->
 
 <script>
   const SCALE = 32;
@@ -1759,6 +2035,108 @@
     });
 
     select(tabs[0]);
+  })();
+
+  (function livePage() {
+    const ORDER = ["S", "SD", "M", "C", "V", "MP", "KD", "L", "OTHER"];
+    const NAMES = {
+      S: "Socialdemokraterna", SD: "Sverigedemokraterna", M: "Moderaterna",
+      C: "Centerpartiet", V: "Vänsterpartiet", MP: "Miljöpartiet",
+      KD: "Kristdemokraterna", L: "Liberalerna", OTHER: "Övriga"
+    };
+    const SHORT = { OTHER: "Ö" };
+    const COLOR = {
+      S: "var(--s)", SD: "var(--sd)", M: "var(--m)", C: "var(--c)", V: "var(--v)",
+      MP: "var(--mp)", KD: "var(--kd)", L: "var(--l)", OTHER: "var(--other)"
+    };
+    const LIGHT = new Set(["SD", "M", "MP"]);
+    const liveData = window.VALU_LIVE_DATA || {
+      status: "unavailable", forecast: {}, live: null, backtest: null
+    };
+
+    const signed = (value) => {
+      if (Math.abs(value) < 0.05) return "\u00b10,0";
+      return `${value > 0 ? "+" : "\u2212"}${nf(Math.abs(value))}`;
+    };
+    const percent = (value) => nf(value * 100);
+    const currentLive = liveData.live
+      ? (liveData.live.current_live || liveData.live.calibrated_valu)
+      : null;
+    const rawValu = liveData.live ? liveData.live.raw_valu : null;
+    const available = ORDER.filter((party) => liveData.forecast[party]);
+
+    document.getElementById("live-comparison").innerHTML = available.map((party) => {
+      const forecast = liveData.forecast[party].point;
+      const current = currentLive ? currentLive[party] : null;
+      return `
+        <tr>
+          <td>
+            <span class="party-cell">
+              <span class="mini-mark${LIGHT.has(party) ? " light" : ""}"
+                    style="background:${COLOR[party]}">${SHORT[party] || party}</span>
+              ${NAMES[party]}
+            </span>
+          </td>
+          <td class="num">${percent(forecast)}</td>
+          <td class="num">${rawValu ? percent(rawValu[party]) : "\u2013"}</td>
+          <td class="num live-value">${current === null ? "\u2013" : percent(current)}</td>
+          <td class="num">${current === null ? "\u2013" : signed((current - forecast) * 100)}</td>
+        </tr>
+      `;
+    }).join("");
+
+    if (liveData.status === "valu_ready") {
+      const published = new Date(liveData.live.published_at).toLocaleString("sv-SE", {
+        day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
+      });
+      const status = document.getElementById("live-status-pill");
+      status.textContent = "VALU inläst";
+      status.classList.add("ready");
+      document.getElementById("live-meta-status").textContent = `Publicerad ${published}`;
+      document.getElementById("live-status-heading").textContent = "VALU är inläst";
+      document.getElementById("live-status-copy").textContent =
+        "Den publicerade VALU-mätningen är verifierad och försiktigt kalibrerad mot historiska "
+        + "valkvällsfel. Den frysta prognosen ligger kvar oförändrad.";
+      document.getElementById("compare-note").textContent =
+        "Kolumnen Rå VALU återger den publicerade undersökningen. VALU / live visar den "
+        + "kalibrerade uppskattningen; skillnaden räknas mot vår frysta förvalprognos.";
+      document.getElementById("phase-valu").classList.add("active");
+      document.getElementById("live-source").textContent =
+        `VALU-källa: ${liveData.live.source_url} · hämtad ${liveData.live.retrieved_at}.`;
+    } else if (liveData.status === "unavailable") {
+      document.getElementById("live-status-pill").textContent = "Liveunderlag saknas";
+      document.getElementById("live-meta-status").textContent = "Ej tillgänglig";
+    }
+
+    if (liveData.backtest) {
+      document.getElementById("valu-improvement").textContent =
+        `${nf(liveData.backtest.topline_relative_improvement * 100)} %`;
+      document.getElementById("valu-cycles").textContent =
+        `${liveData.backtest.topline_cycles_won} av ${liveData.backtest.topline_cycles_scored}`;
+    }
+
+    function activateView() {
+      const hash = window.location.hash || "#prognos";
+      const live = hash === "#live" || hash === "#jamforelse";
+      document.querySelectorAll(".site-view").forEach((view) => {
+        view.hidden = (view.dataset.view === "live") !== live;
+      });
+      document.querySelectorAll("[data-view-link]").forEach((link) => {
+        const current = link.dataset.viewLink === (live ? "live" : "forecast");
+        if (current) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+      document.title = live
+        ? "VALU och liveprognos · riksdagsvalet 2026"
+        : "Prognos riksdagsvalet 2026";
+      if (hash === "#jamforelse") {
+        requestAnimationFrame(() =>
+          document.getElementById("jamforelse").scrollIntoView({ behavior: "smooth" }));
+      }
+    }
+
+    window.addEventListener("hashchange", activateView);
+    activateView();
   })();
 </script>
 

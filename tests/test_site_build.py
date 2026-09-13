@@ -5,7 +5,15 @@ from pathlib import Path
 
 import pytest
 
-from valforecast.site.build import END, START, build_site, load_seat_data
+from valforecast.site.build import (
+    END,
+    LIVE_END,
+    LIVE_START,
+    START,
+    build_site,
+    load_live_data,
+    load_seat_data,
+)
 
 PARTIES = ["V", "S", "MP", "C", "L", "M", "KD", "SD"]
 
@@ -34,7 +42,9 @@ def _write(root: Path, document: dict[str, object]) -> None:
         json.dumps(document, ensure_ascii=False), encoding="utf-8"
     )
     (root / "site" / "index.html").write_text(
-        f"<html><body>\n{START}\n{END}\n<script>1</script></body></html>", encoding="utf-8"
+        f"<html><body>\n{START}\n{END}\n{LIVE_START}\n{LIVE_END}\n"
+        "<script>1</script></body></html>",
+        encoding="utf-8",
     )
 
 
@@ -48,6 +58,8 @@ def test_build_site_inlines_the_draws_between_the_markers(tmp_path: Path) -> Non
     assert "window.SEAT_DATA" in html
     payload = html.split("window.SEAT_DATA = ", 1)[1].split(";</script>", 1)[0]
     assert json.loads(payload)["draws"] == draws
+    live_payload = html.split("window.VALU_LIVE_DATA = ", 1)[1].split(";\n</script>", 1)[0]
+    assert json.loads(live_payload)["status"] == "unavailable"
     assert html.index(START) < html.index("<script>1</script>")
 
 
@@ -90,3 +102,72 @@ def test_the_published_page_carries_seat_data_for_every_party() -> None:
     assert html.index(START) < html.rindex("<script>")
     for draw in payload["draws"]:
         assert sum(draw) == payload["total_seats"]
+
+
+def _write_live_sources(root: Path) -> None:
+    official = {
+        "prediction": {
+            "national": {
+                party: {"point": 0.1, "low": 0.08, "high": 0.12} for party in PARTIES
+            }
+            | {"OTHER": {"point": 0.2, "low": 0.18, "high": 0.22}}
+        }
+    }
+    summary = {
+        "topline_gate": {
+            "relative_improvement": 0.045,
+            "cycles_won": 3,
+            "cycles_scored": 3,
+        },
+        "combined_live_gate": {"cycles": [{"election_year": 2022}]},
+    }
+    (root / "forecast_snapshots").mkdir(parents=True)
+    (root / "forecast_snapshots" / "official_forecast_2026.json").write_text(
+        json.dumps(official), encoding="utf-8"
+    )
+    report = root / "reports" / "experiments" / "valu"
+    report.mkdir(parents=True)
+    (report / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
+
+
+def test_load_live_data_waits_without_inventing_valu(tmp_path: Path) -> None:
+    _write_live_sources(tmp_path)
+
+    document = load_live_data(tmp_path)
+
+    assert document["status"] == "waiting_for_valu"
+    assert document["live"] is None
+    assert document["forecast"]["S"]["point"] == pytest.approx(0.1)
+
+
+def test_load_live_data_exposes_a_verified_published_snapshot(tmp_path: Path) -> None:
+    _write_live_sources(tmp_path)
+    parties = [*PARTIES, "OTHER"]
+    live = {
+        "status": "valu_ready",
+        "raw_valu": dict.fromkeys(parties, 0.1),
+        "calibrated_valu": dict.fromkeys(parties, 0.1),
+    }
+    path = tmp_path / "reports" / "live"
+    path.mkdir(parents=True)
+    (path / "valu_2026.json").write_text(json.dumps(live), encoding="utf-8")
+
+    document = load_live_data(tmp_path)
+
+    assert document["status"] == "valu_ready"
+    assert document["live"]["raw_valu"]["S"] == pytest.approx(0.1)
+
+
+def test_load_live_data_rejects_an_incomplete_party_set(tmp_path: Path) -> None:
+    _write_live_sources(tmp_path)
+    live = {
+        "status": "valu_ready",
+        "raw_valu": {"S": 1.0},
+        "calibrated_valu": {"S": 1.0},
+    }
+    path = tmp_path / "reports" / "live"
+    path.mkdir(parents=True)
+    (path / "valu_2026.json").write_text(json.dumps(live), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="party set"):
+        load_live_data(tmp_path)

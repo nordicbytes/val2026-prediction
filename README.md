@@ -94,6 +94,15 @@ kopieras mallen och fylls med VALU:s publicerade toppvärden, källtidsstämplar
 och kontrollsumma. `--write` skapar en separat fil under `reports/live` och
 kan inte ändra den frysta förvalsprognosen.
 
+Bygg därefter om den fristående HTML-sidan:
+
+```bash
+uv run valforecast build-site
+```
+
+`VALU / Live`-vyn i `site/index.html` går då automatiskt från vänteläge till
+publicerad VALU och visar jämförelsen mot den frysta prognosen parti för parti.
+
 ## Datapolicy
 
 - `data/raw` innehåller oförändrade originalfiler och committas inte.

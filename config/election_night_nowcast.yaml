@@ -1,0 +1,106 @@
+schema_version: 1
+role: experimental_only_not_production
+registered_before_backtest: true
+
+question: >
+  Does estimating the change from the previous election in the districts that
+  have reported produce a more accurate national estimate than the raw shares
+  among counted districts?
+
+cycles:
+  target_years: [2018, 2022]
+  order: actual_official_reporting_timestamps
+  timezone: Europe/Stockholm
+  target: official_final_national_result
+
+checkpoints:
+  - "20:45"
+  - "21:00"
+  - "21:15"
+  - "21:30"
+  - "21:45"
+  - "22:00"
+  - "22:15"
+  - "22:30"
+  - "23:00"
+  - "00:00"
+  - "01:00"
+  - "02:00"
+  primary_window_start: "21:00"
+  primary_window_end: "23:00"
+  same_timestamp_policy: include_as_one_block
+
+party_order: [V, S, MP, C, L, M, KD, SD, OTHER]
+
+models:
+  raw_count:
+    id: B0_raw_reported_share
+    description: Party shares among all physical districts reported by checkpoint.
+  static_previous:
+    id: B1_previous_national
+    description: Final national party shares from the previous election.
+  additive_change:
+    id: C1_reported_additive_change
+    role: primary_candidate
+    description: >
+      For comparable reported districts, subtract their mapped previous-election
+      shares from their current preliminary shares. Add that percentage-point
+      change to the previous national result and project to the simplex.
+  proportional_change:
+    id: C2_reported_proportional_change
+    role: secondary_candidate
+    description: >
+      Apply party-wise ratios between current and previous shares in comparable
+      reported districts to the previous national result, then normalize.
+
+matching:
+  comparison_population:
+    2018: 4631
+    2022: 4164
+  source: canonical_temporal_transitions
+  use_noncomparable_districts:
+    raw_count: true
+    change_estimators: false
+
+metrics:
+  primary: national_mean_absolute_error_across_nine_party_categories
+  secondary:
+    - maximum_party_absolute_error
+    - largest_party_correct
+    - reported_district_share
+    - reported_valid_vote_share
+  units: vote_share_fraction
+
+gate:
+  model: C1_reported_additive_change
+  comparator: B0_raw_reported_share
+  window: "21:00/23:00"
+  requirements:
+    lower_time_integrated_mae_in_each_election: true
+    minimum_fraction_of_checkpoint_wins: 0.75
+  interpretation: >
+    Passing supports a separate election-night nowcast. It does not alter,
+    unfreeze or retrospectively improve the pre-election forecast.
+
+timestamp_caveat: >
+  The official archives preserve the latest preliminary record per district.
+  A later correction appears to have overwritten the initial timestamp for two
+  physical districts in each election. Primary checkpoints end at 02:00, so
+  those records remain unreported in the replay. A sensitivity may place them
+  last, but must not invent an earlier timestamp.
+
+forbidden:
+  - 2026_election_results
+  - valu
+  - exit_polls
+  - final_current_votes_from_unreported_districts
+  - oracle_final_national_swing_as_model_input
+  - synthetic_random_reporting_order_in_primary_backtest
+  - changing_any_frozen_forecast_artifact
+
+outputs:
+  directory: reports/experiments/election_night_nowcast
+  summary: summary.json
+  report: report.md
+  checkpoint_metrics: checkpoint_metrics.csv
+  replay_predictions: replay_predictions.parquet

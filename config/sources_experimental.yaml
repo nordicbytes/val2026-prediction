@@ -73,3 +73,40 @@ sources:
       Retrieved after the production cutoff 2026-09-11 22:29 CEST and already
       contains registrations for 2026-09-12. It may be audited but must never
       be used as a forecast input.
+
+  - id: election_night_preliminary_2018
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Valnattsrapportering per valdistrikt 2018
+    url: https://historik.val.se/val/val2018/valnatt/valnatt.zip
+    retrieved_at: "2026-09-13T08:20:04Z"
+    reference_period: "2018-09-09T20:00:00/2018-09-10T02:00:00"
+    geography_version: VALDISTRIKT_2018
+    license: Fri användning med källangivelse
+    raw_file: data/raw/election_night/2018/valnatt.zip
+    sha256: c12d10abbc28adfe04d2ebeb58f514a2cb81f841f8e50a1010eb472aa192e41e
+    status: verified_download
+    usage: historical_election_night_backtest
+    notes: >
+      Preliminära röster och TID_RAPPORT för 6 004 fysiska valdistrikt.
+      Arkivet innehåller senaste preliminära rapporten; senare rättelser kan
+      därför ha skrivit över den ursprungliga tidsstämpeln för två distrikt.
+
+  - id: election_night_preliminary_2022
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Preliminär röstfördelning per valdistrikt 2022
+    url: https://resultat.val.se/resultatfiler/val2022/p/rd/Val_20220911_preliminar_00_RD.zip
+    retrieved_at: "2026-09-13T08:20:04Z"
+    reference_period: "2022-09-11T20:00:00/2022-09-12T02:00:00"
+    geography_version: VALDISTRIKT_2022
+    license: Fri användning med källangivelse
+    raw_file: data/raw/election_night/2022/Val_20220911_preliminar_00_RD.zip
+    sha256: fceffc0b47ef60b9d89208324147597e844778579d9db04414c17a8b7b338b5d
+    status: verified_download
+    usage: historical_election_night_backtest
+    notes: >
+      Preliminära röster och rapporteringsTid. Primär replay använder endast
+      6 264 fysiska valdistrikt; 314 uppsamlingsdistrikt rapporterades senare.
+      Senare rättelser kan ha skrivit över ursprunglig tidsstämpel för två
+      fysiska distrikt.

@@ -9,11 +9,14 @@ import pytest
 
 from valforecast.experiments.election_night_nowcast import (
     PARTIES,
+    PHYSICAL_DISTRICTS_2026,
     _comparison_frame,
     build_replay_predictions,
     evaluate_gate,
+    nowcast_reported,
     read_2018_election_night,
     read_2022_election_night,
+    read_2026_election_night,
     replay_cycle,
     score_replay,
 )
@@ -154,3 +157,62 @@ def test_historical_replay_reproduces_the_registered_result() -> None:
         proportional.filter(pl.col("checkpoint").is_in(early))["mae"]
         < raw.filter(pl.col("checkpoint").is_in(early))["mae"]
     ).all()
+
+
+def test_nowcast_uses_only_reported_comparable_districts() -> None:
+    reported = pl.DataFrame(
+        [
+            {
+                "district_id": "a",
+                "valid_votes": 100,
+                **_party_values(S=60, M=40),
+            },
+            {
+                "district_id": "unmatched",
+                "valid_votes": 100,
+                **_party_values(S=10, M=90),
+            },
+        ]
+    )
+    comparison = pl.DataFrame(
+        [
+            {
+                "district_id": "a",
+                "previous_valid_votes": 100,
+                **{
+                    f"previous_{party}": value
+                    for party, value in _party_values(S=0.5, M=0.5).items()
+                },
+            }
+        ]
+    )
+    previous_national = np.array([_party_values(S=0.6, M=0.4)[party] for party in PARTIES])
+
+    result = nowcast_reported(
+        reported,
+        comparison,
+        previous_national=previous_national,
+        total_districts=10,
+    )
+
+    assert result["reported_districts"] == 2
+    assert result["matched_reported_districts"] == 1
+    assert result["reported_district_share"] == pytest.approx(0.2)
+    assert result["raw"]["S"] == pytest.approx(0.35)
+    assert result["proportional"]["S"] == pytest.approx(9 / 13)
+
+
+def test_2026_archive_contains_only_reported_physical_districts() -> None:
+    root = Path(__file__).resolve().parents[1]
+    path = root / "data/raw/election_night/2026/Val_2026_preliminar_00_RD.zip"
+    if not path.exists():
+        pytest.skip("2026 preliminary archive has not been downloaded")
+
+    reported, meta = read_2026_election_night(path)
+
+    assert meta["physical_districts"] == PHYSICAL_DISTRICTS_2026
+    assert reported.height == meta["reported_physical_districts"]
+    assert reported.height > 0
+    assert reported["district_id"].n_unique() == reported.height
+    assert int(reported["valid_votes"].sum()) > 0
+    assert reported["reported_at"].null_count() == 0

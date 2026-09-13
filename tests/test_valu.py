@@ -142,9 +142,12 @@ def test_additional_survey_is_raw_and_sample_size_weighted(tmp_path: Path) -> No
     valu_weight = 11_000 / 15_000
     tv4_weight = 4_000 / 15_000
     expected_s = result["calibrated_valu"]["S"] * valu_weight + 0.28 * tv4_weight
-    assert result["current_live"]["S"] == pytest.approx(expected_s)
+    assert result["survey_live"]["S"] == pytest.approx(expected_s)
     assert result["additional_surveys"][0]["correction"] == "none"
     assert result["survey_blend"]["total_sample_size"] == 15_000
+    if result.get("election_night") and result["election_night"].get("proportional"):
+        assert result["current_live"]["S"] != pytest.approx(expected_s)
+        assert sum(result["current_live"].values()) == pytest.approx(1.0)
 
 
 def test_same_sample_transition_is_raked_once_to_calibrated_topline(

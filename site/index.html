@@ -1339,7 +1339,7 @@
       <div class="meta">
         <span>Fryst prognos <b>11 sep 2026, 22:29</b></span>
         <span>VALU-status <b id="live-meta-status">Ej publicerad</b></span>
-        <span>Livekedja <b>VALU + fristående valundersökningar</b></span>
+        <span>Livekedja <b>VALU + undersökningar + räknade distrikt</b></span>
       </div>
     </div>
   </header>
@@ -1360,12 +1360,12 @@
             <b>Kalibrerad VALU</b>
             <span>Snabb första bild när vallokalerna stänger.</span>
           </div>
-          <div class="live-phase">
+          <div class="live-phase" id="phase-count">
             <span class="time">När distrikt rapporterar</span>
             <b>Förändring mot 2022</b>
             <span>Samma distrikt jämförs med föregående val.</span>
           </div>
-          <div class="live-phase">
+          <div class="live-phase" id="phase-raw">
             <span class="time">När räkningen mognar</span>
             <b>Faktiska röster</b>
             <span>Råresultatet tar gradvis över prognosen.</span>
@@ -1395,6 +1395,7 @@
               <th class="num">Prognos</th>
               <th class="num">Rå VALU</th>
               <th class="num">TV4</th>
+              <th class="num">Räknat</th>
               <th class="num">Vår live</th>
               <th class="num">Mot prognos</th>
             </tr>
@@ -1444,7 +1445,7 @@
 </main>
 
 <!-- LIVE_DATA:START -->
-<script>window.VALU_LIVE_DATA = {"schema_version":1,"status":"valu_ready","forecast":{"V":{"point":0.074413,"low":0.06767,"high":0.080558},"S":{"point":0.283415,"low":0.273523,"high":0.294768},"MP":{"point":0.068087,"low":0.059249,"high":0.076302},"C":{"point":0.08067,"low":0.073531,"high":0.088506},"L":{"point":0.050835,"low":0.045744,"high":0.055878},"M":{"point":0.170836,"low":0.160173,"high":0.18195},"KD":{"point":0.066834,"low":0.059055,"high":0.074808},"SD":{"point":0.187132,"low":0.178852,"high":0.196346},"OTHER":{"point":0.017778,"low":0.013415,"high":0.022756}},"live":{"schema_version":1,"role":"post_poll_close_live_forecast","status":"valu_ready","published_at":"2026-09-13T20:00:00+02:00","retrieved_at":"2026-09-13T20:10:00+02:00","source_url":"https://www.svt.se/nyheter/inrikes/senaste-nytt-om-val-2026?inlagg=e5875604c2e4cb9d29c52ed5a8bb9afd","source_sha256":"9ddd53ffaae9b51cf5507b8501698524376119db04156a39f734146c83e06a96","sample_size":13709,"frozen_pre_election_point":{"V":0.074413,"S":0.283415,"MP":0.068087,"C":0.08067,"L":0.050835,"M":0.170836,"KD":0.066834,"SD":0.187132,"OTHER":0.017778},"raw_valu":{"V":0.08,"S":0.284,"MP":0.074,"C":0.075,"L":0.054,"M":0.181,"KD":0.061,"SD":0.172,"OTHER":0.019},"calibrated_valu":{"V":0.07562379786650444,"S":0.29010309599277284,"MP":0.07004076829476126,"C":0.07131940561885192,"L":0.0526230109274711,"M":0.18837313057954394,"KD":0.058546579411035575,"SD":0.17504104672150872,"OTHER":0.018329164587550163},"additional_surveys":[{"name":"TV4:s valdagsundersökning","provider":"TV4","published_at":"2026-09-13T19:58:00+02:00","retrieved_at":"2026-09-13T20:10:00+02:00","source_url":"https://www.tv4.se/artikel/1l3Dd915TjRjgiTxOTZMi1/valdagsundersoekning-klar-majoritet-foer-de-roedgroena","source_sha256":"ce3303f52df94c6b3e631c6eaca8f19a8ed30b7c5b2a14e5314711ac5f63b8c9","sample_size":4045,"raw_topline":{"V":0.069,"S":0.284,"MP":0.07,"C":0.09,"L":0.05,"M":0.175,"KD":0.06,"SD":0.185,"OTHER":0.017},"correction":"none"}],"current_live":{"V":0.0741146583841337,"S":0.28871259113241654,"MP":0.07003147981034595,"C":0.07557551715832156,"L":0.05202539466062303,"M":0.18532625025993962,"KD":0.058877720916181514,"SD":0.17731005460770322,"OTHER":0.018026333070334865},"survey_blend":{"method":"sample_size_weighted_mean","inputs":[{"name":"SVT VALU, historiskt kalibrerad","sample_size":13709,"weight":0.7721640193759153},{"name":"TV4:s valdagsundersökning","sample_size":4045,"weight":0.22783598062408472}],"total_sample_size":17754,"valu_is_calibrated":true,"additional_surveys_are_calibrated":false},"calibration_lock_sha256":"809a6697abd8fd28e5018249edc69f4cf2d0263c858f581d7fde33ad0590d6d6","transition":null,"official_forecast_unchanged":true},"backtest":{"topline_relative_improvement":0.045483063773062944,"topline_cycles_won":3,"topline_cycles_scored":3,"combined_cycles":[{"election_year":2018,"raw_auc":0.013771358180063815,"valu_auc":0.021421011855774663,"combined_auc":0.007633436340021343,"improvement_vs_raw":0.44570199683921297,"improvement_vs_valu":0.6436472566554541,"beats_raw":true,"beats_valu":true},{"election_year":2022,"raw_auc":0.01598751233778095,"valu_auc":0.009854969128112895,"combined_auc":0.005450863510976444,"improvement_vs_raw":0.6590549301347393,"improvement_vs_valu":0.4468918735192206,"beats_raw":true,"beats_valu":true}]}};
+<script>window.VALU_LIVE_DATA = {"schema_version":1,"status":"valu_ready","forecast":{"V":{"point":0.074413,"low":0.06767,"high":0.080558},"S":{"point":0.283415,"low":0.273523,"high":0.294768},"MP":{"point":0.068087,"low":0.059249,"high":0.076302},"C":{"point":0.08067,"low":0.073531,"high":0.088506},"L":{"point":0.050835,"low":0.045744,"high":0.055878},"M":{"point":0.170836,"low":0.160173,"high":0.18195},"KD":{"point":0.066834,"low":0.059055,"high":0.074808},"SD":{"point":0.187132,"low":0.178852,"high":0.196346},"OTHER":{"point":0.017778,"low":0.013415,"high":0.022756}},"live":{"schema_version":1,"role":"post_poll_close_live_forecast","status":"valu_ready","published_at":"2026-09-13T20:00:00+02:00","retrieved_at":"2026-09-13T20:10:00+02:00","source_url":"https://www.svt.se/nyheter/inrikes/senaste-nytt-om-val-2026?inlagg=e5875604c2e4cb9d29c52ed5a8bb9afd","source_sha256":"9ddd53ffaae9b51cf5507b8501698524376119db04156a39f734146c83e06a96","sample_size":13709,"frozen_pre_election_point":{"V":0.074413,"S":0.283415,"MP":0.068087,"C":0.08067,"L":0.050835,"M":0.170836,"KD":0.066834,"SD":0.187132,"OTHER":0.017778},"raw_valu":{"V":0.08,"S":0.284,"MP":0.074,"C":0.075,"L":0.054,"M":0.181,"KD":0.061,"SD":0.172,"OTHER":0.019},"calibrated_valu":{"V":0.07562379786650444,"S":0.29010309599277284,"MP":0.07004076829476126,"C":0.07131940561885192,"L":0.0526230109274711,"M":0.18837313057954394,"KD":0.058546579411035575,"SD":0.17504104672150872,"OTHER":0.018329164587550163},"additional_surveys":[{"name":"TV4:s valdagsundersökning","provider":"TV4","published_at":"2026-09-13T19:58:00+02:00","retrieved_at":"2026-09-13T20:10:00+02:00","source_url":"https://www.tv4.se/artikel/1l3Dd915TjRjgiTxOTZMi1/valdagsundersoekning-klar-majoritet-foer-de-roedgroena","source_sha256":"ce3303f52df94c6b3e631c6eaca8f19a8ed30b7c5b2a14e5314711ac5f63b8c9","sample_size":4045,"raw_topline":{"V":0.069,"S":0.284,"MP":0.07,"C":0.09,"L":0.05,"M":0.175,"KD":0.06,"SD":0.185,"OTHER":0.017},"correction":"none"}],"survey_live":{"V":0.0741146583841337,"S":0.28871259113241654,"MP":0.07003147981034595,"C":0.07557551715832156,"L":0.05202539466062303,"M":0.18532625025993962,"KD":0.058877720916181514,"SD":0.17731005460770322,"OTHER":0.018026333070334865},"current_live":{"V":0.07354676604963005,"S":0.2863883839279872,"MP":0.06998763711112795,"C":0.07471118409195582,"L":0.05385023173283093,"M":0.18714316511891677,"KD":0.05902039621137519,"SD":0.17726552622390232,"OTHER":0.01808670953227377},"survey_blend":{"method":"sample_size_weighted_mean","inputs":[{"name":"SVT VALU, historiskt kalibrerad","sample_size":13709,"weight":0.7721640193759153},{"name":"TV4:s valdagsundersökning","sample_size":4045,"weight":0.22783598062408472}],"total_sample_size":17754,"valu_is_calibrated":true,"additional_surveys_are_calibrated":false},"election_night":{"status":"reported","model":"C2_reported_proportional_change","comparison":"2022_to_2026_official_district_mapping","source_url":"https://resultat.val.se/resultatfiler/val2026/p/rd/Val_2026_preliminar_00_RD.zip","source_sha256":"5cfca16a41cd9d57e4b663b2c7784d17230257d0826bea3a44fde5c0e2999cfa","updated_at":"2026-09-13T21:02:46","reported_districts":25,"physical_districts":6312,"reported_district_share":0.003960709759188847,"matched_reported_districts":21,"reported_valid_votes":11234,"raw":{"V":0.059462346448282,"S":0.23633612248531244,"MP":0.06142068719957273,"C":0.08776927185330248,"L":0.044151682392736334,"M":0.16343243724408046,"KD":0.08607797756809685,"SD":0.24301228413743992,"OTHER":0.018337190671176784},"proportional":{"V":0.06637780256590324,"S":0.2570479196737738,"MP":0.06943429358717597,"C":0.06379946445206293,"L":0.07688749255032704,"M":0.2100806358989829,"KD":0.060821129777152635,"SD":0.17670235141553436,"OTHER":0.018848910079087084},"valu_to_count_weight":0.07339988256018791,"count_to_raw_weight":1.581197902375273e-05,"count_point":{"V":0.06637769321885617,"S":0.25704759217927103,"MP":0.06943416687619985,"C":0.06379984346215475,"L":0.0768869749323835,"M":0.21007989829864426,"KD":0.06082152913790011,"SD":0.17670339990679962,"OTHER":0.018848901987790538}},"calibration_lock_sha256":"809a6697abd8fd28e5018249edc69f4cf2d0263c858f581d7fde33ad0590d6d6","transition":null,"official_forecast_unchanged":true},"backtest":{"topline_relative_improvement":0.045483063773062944,"topline_cycles_won":3,"topline_cycles_scored":3,"combined_cycles":[{"election_year":2018,"raw_auc":0.013771358180063815,"valu_auc":0.021421011855774663,"combined_auc":0.007633436340021343,"improvement_vs_raw":0.44570199683921297,"improvement_vs_valu":0.6436472566554541,"beats_raw":true,"beats_valu":true},{"election_year":2022,"raw_auc":0.01598751233778095,"valu_auc":0.009854969128112895,"combined_auc":0.005450863510976444,"improvement_vs_raw":0.6590549301347393,"improvement_vs_valu":0.4468918735192206,"beats_raw":true,"beats_valu":true}]}};
 </script>
 <!-- LIVE_DATA:END -->
 
@@ -2070,6 +2071,8 @@
       ? (liveData.live.additional_surveys || []).find((survey) => survey.provider === "TV4")
       : null;
     const rawTv4 = tv4Survey ? tv4Survey.raw_topline : null;
+    const electionNight = liveData.live ? liveData.live.election_night : null;
+    const rawCount = electionNight && electionNight.raw ? electionNight.raw : null;
     const available = ORDER.filter((party) => liveData.forecast[party]);
 
     if (currentLive) {
@@ -2110,6 +2113,7 @@
           <td class="num">${percent(forecast)}</td>
           <td class="num">${rawValu ? percent(rawValu[party]) : "\u2013"}</td>
           <td class="num">${rawTv4 ? percent(rawTv4[party]) : "\u2013"}</td>
+          <td class="num">${rawCount ? percent(rawCount[party]) : "\u2013"}</td>
           <td class="num live-value">${current === null ? "\u2013" : percent(current)}</td>
           <td class="num">${current === null ? "\u2013" : signed((current - forecast) * 100)}</td>
         </tr>
@@ -2122,31 +2126,56 @@
       });
       const status = document.getElementById("live-status-pill");
       const surveyCount = 1 + (liveData.live.additional_surveys || []).length;
-      status.textContent = surveyCount > 1
-        ? `${surveyCount} valundersökningar inlästa`
-        : "VALU inläst";
+      const counted = electionNight && electionNight.reported_districts
+        ? electionNight.reported_districts
+        : 0;
+      const coverage = electionNight ? electionNight.reported_district_share : 0;
+      status.textContent = counted
+        ? `${counted} valdistrikt räknade`
+        : (surveyCount > 1
+          ? `${surveyCount} valundersökningar inlästa`
+          : "VALU inläst");
       status.classList.add("ready");
-      document.getElementById("live-meta-status").textContent = `Publicerad ${published}`;
-      document.getElementById("live-status-heading").textContent = surveyCount > 1
-        ? "Valundersökningarna är inlästa"
-        : "VALU är inläst";
-      document.getElementById("live-status-copy").textContent =
-        "Den publicerade VALU-mätningen är verifierad och försiktigt kalibrerad mot historiska "
-        + "valkvällsfel. Fristående valundersökningar läggs till utan VALU-korrigering. Den frysta "
-        + "prognosen ligger kvar oförändrad.";
+      document.getElementById("live-meta-status").textContent = counted
+        ? `${counted} av ${electionNight.physical_districts} distrikt`
+        : `Publicerad ${published}`;
+      document.getElementById("live-status-heading").textContent = counted
+        ? "Räknade valdistrikt är inlästa"
+        : (surveyCount > 1
+          ? "Valundersökningarna är inlästa"
+          : "VALU är inläst");
+      document.getElementById("live-status-copy").textContent = counted
+        ? `Valmyndighetens preliminära räkning täcker nu ${nf(coverage * 100)} procent av de fysiska `
+          + "valdistrikten. Liveprognosen blandar kalibrerad VALU, TV4 och proportionell förändring "
+          + "i jämförbara rapporterade distrikt. Den frysta prognosen ligger kvar oförändrad."
+        : "Den publicerade VALU-mätningen är verifierad och försiktigt kalibrerad mot historiska "
+          + "valkvällsfel. Fristående valundersökningar läggs till utan VALU-korrigering. Den frysta "
+          + "prognosen ligger kvar oförändrad.";
       const blend = liveData.live.survey_blend;
       const weights = blend
         ? blend.inputs.map((input) => `${input.name}: ${nf(input.weight * 100)} %`).join(" · ")
         : null;
+      const countWeight = electionNight && electionNight.valu_to_count_weight
+        ? ` Räkningen väger ${nf(electionNight.valu_to_count_weight * 100)} % mot undersökningarna.`
+        : "";
       document.getElementById("compare-note").textContent =
-        "Rå VALU och TV4 återger de publicerade mätningarna. Vår liveprognos kombinerar "
-        + "historiskt kalibrerad VALU med rå TV4 efter urvalsstorlek. "
-        + (weights ? `Vikter: ${weights}.` : "");
+        "Rå VALU och TV4 återger de publicerade mätningarna. Räknat är de rapporterade "
+        + "fysiska valdistrikten. Vår liveprognos kombinerar historiskt kalibrerad VALU, rå TV4 "
+        + "och den låsta valnattskedjan. "
+        + (weights ? `Undersökningsvikter: ${weights}.` : "")
+        + countWeight;
       document.getElementById("phase-valu").classList.add("active");
+      if (counted) document.getElementById("phase-count").classList.add("active");
+      if (electionNight && electionNight.count_to_raw_weight >= 0.5) {
+        document.getElementById("phase-raw").classList.add("active");
+      }
       const sourceElement = document.getElementById("live-source");
       const sources = [{ label: "SVT VALU", url: liveData.live.source_url }];
       (liveData.live.additional_surveys || []).forEach((survey) =>
         sources.push({ label: survey.name, url: survey.source_url }));
+      if (electionNight && electionNight.source_url) {
+        sources.push({ label: "Valmyndigheten, preliminär räkning", url: electionNight.source_url });
+      }
       sourceElement.textContent = "Källor: ";
       sources.forEach((source, index) => {
         if (index) sourceElement.append(" · ");

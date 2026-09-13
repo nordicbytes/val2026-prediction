@@ -14,7 +14,10 @@ import yaml
 from matplotlib import pyplot as plt
 
 from valforecast.calibration.estimate import error_covariance
-from valforecast.experiments.election_night_nowcast import build_replay_predictions
+from valforecast.experiments.election_night_nowcast import (
+    build_replay_predictions,
+    load_2026_live_nowcast,
+)
 from valforecast.features.election_history import PARTIES
 from valforecast.models.baselines import project_simplex
 from valforecast.polls.transition_calibrate import calibrate_transition_matrix
@@ -416,6 +419,65 @@ def _transition_array(transition: object, config: dict[str, Any]) -> np.ndarray:
     return matrix
 
 
+def _party_vector(shares: dict[str, float]) -> np.ndarray:
+    return np.array([float(shares[party]) for party in PARTIES], dtype=float)
+
+
+def _blend_survey_with_counts(
+    root: Path,
+    config: dict[str, Any],
+    survey_live: np.ndarray,
+) -> tuple[np.ndarray, dict[str, Any] | None]:
+    night = config.get("election_night", {})
+    archive = night.get("archive")
+    if not archive:
+        return survey_live, None
+    archive_path = root / str(archive)
+    if not archive_path.exists():
+        return survey_live, {
+            "status": "waiting_for_preliminary_archive",
+            "archive": str(archive),
+        }
+    nowcast = load_2026_live_nowcast(root, archive_path)
+    coverage = float(nowcast["reported_district_share"])
+    election_night = {
+        "status": nowcast["status"],
+        "model": night.get("model"),
+        "comparison": night.get("comparison"),
+        "source_url": night.get("source_url"),
+        "source_sha256": sha256_file(archive_path),
+        "updated_at": nowcast.get("archive", {}).get("updated_at"),
+        "reported_districts": nowcast["reported_districts"],
+        "physical_districts": nowcast.get("archive", {}).get("physical_districts"),
+        "reported_district_share": coverage,
+        "matched_reported_districts": nowcast["matched_reported_districts"],
+        "reported_valid_votes": nowcast["reported_valid_votes"],
+        "raw": nowcast["raw"],
+        "proportional": nowcast["proportional"],
+        "valu_to_count_weight": 0.0,
+        "count_to_raw_weight": 0.0,
+        "count_point": None,
+    }
+    if nowcast["proportional"] is None:
+        return survey_live, election_night
+    raw_count = _party_vector(nowcast["raw"])
+    proportional = _party_vector(nowcast["proportional"])
+    valu_to_count = coverage / (coverage + 0.05)
+    count_to_raw = coverage**2 / (coverage**2 + (1.0 - coverage) ** 2)
+    count_point = (1.0 - count_to_raw) * proportional + count_to_raw * raw_count
+    combined = (1.0 - valu_to_count) * survey_live + valu_to_count * count_point
+    election_night.update(
+        {
+            "valu_to_count_weight": float(valu_to_count),
+            "count_to_raw_weight": float(count_to_raw),
+            "count_point": {
+                party: float(count_point[index]) for index, party in enumerate(PARTIES)
+            },
+        }
+    )
+    return combined, election_night
+
+
 def prepare_live_valu(
     root: Path,
     input_path: Path,
@@ -487,9 +549,12 @@ def prepare_live_valu(
                 "weight": 0.0,
             }
         )
-    current_live = weighted / total_sample
+    survey_live = weighted / total_sample
     for item in blend_inputs:
         item["weight"] = int(item["sample_size"]) / total_sample
+    current_live, election_night = _blend_survey_with_counts(
+        root, config, survey_live
+    )
     prior_document = json.loads(prior_path.read_text(encoding="utf-8"))
     prior_national = prior_document["prediction"]["national"]
     result: dict[str, Any] = {
@@ -507,6 +572,9 @@ def prepare_live_valu(
         "raw_valu": {party: float(raw[index]) for index, party in enumerate(PARTIES)},
         "calibrated_valu": {party: float(corrected[index]) for index, party in enumerate(PARTIES)},
         "additional_surveys": additional_surveys,
+        "survey_live": {
+            party: float(survey_live[index]) for index, party in enumerate(PARTIES)
+        },
         "current_live": {
             party: float(current_live[index]) for index, party in enumerate(PARTIES)
         },
@@ -517,6 +585,7 @@ def prepare_live_valu(
             "valu_is_calibrated": True,
             "additional_surveys_are_calibrated": False,
         },
+        "election_night": election_night,
         "calibration_lock_sha256": sha256_file(lock_path),
         "transition": None,
         "official_forecast_unchanged": True,
@@ -524,7 +593,7 @@ def prepare_live_valu(
     if document.get("transition") is not None:
         matrix = _transition_array(document["transition"], config)
         final_2022 = load_final_vectors(root, [2022])[2022]
-        calibrated = calibrate_transition_matrix(matrix, final_2022, current_live)
+        calibrated = calibrate_transition_matrix(matrix, final_2022, corrected)
         if not calibrated.converged:
             raise ValueError("VALU transition matrix did not rake to the top line")
         result["transition"] = {

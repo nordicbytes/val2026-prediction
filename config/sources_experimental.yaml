@@ -111,6 +111,24 @@ sources:
       Senare rättelser kan ha skrivit över ursprunglig tidsstämpel för två
       fysiska distrikt.
 
+  - id: election_night_preliminary_2026
+    source: Valmyndigheten
+    provider: Valmyndigheten
+    dataset: Preliminär röstfördelning per valdistrikt 2026
+    url: https://resultat.val.se/resultatfiler/val2026/p/rd/Val_2026_preliminar_00_RD.zip
+    retrieved_at: "2026-09-13T19:03:00Z"
+    reference_period: "2026-09-13T20:00:00/2026-09-14T02:00:00"
+    geography_version: VALDISTRIKT_2026
+    license: Fri användning med källangivelse
+    raw_file: data/raw/election_night/2026/Val_2026_preliminar_00_RD.zip
+    sha256: 5cfca16a41cd9d57e4b663b2c7784d17230257d0826bea3a44fde5c0e2999cfa
+    status: live_refresh
+    usage: election_night_live_nowcast
+    notes: >
+      Levande valnattsarkiv. Checksumman gäller den hämtade snapshoten och
+      uppdateras vid varje synk. Endast rapporterade fysiska valdistrikt
+      används; orapporterade distrikt får inte fyllas i.
+
   - id: valu_2010_report
     source: SVT VALU och Göteborgs universitet
     provider: Göteborgs universitet

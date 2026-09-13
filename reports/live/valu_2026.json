@@ -63,7 +63,7 @@
       "correction": "none"
     }
   ],
-  "current_live": {
+  "survey_live": {
     "V": 0.0741146583841337,
     "S": 0.28871259113241654,
     "MP": 0.07003147981034595,
@@ -73,6 +73,17 @@
     "KD": 0.058877720916181514,
     "SD": 0.17731005460770322,
     "OTHER": 0.018026333070334865
+  },
+  "current_live": {
+    "V": 0.07354676604963005,
+    "S": 0.2863883839279872,
+    "MP": 0.06998763711112795,
+    "C": 0.07471118409195582,
+    "L": 0.05385023173283093,
+    "M": 0.18714316511891677,
+    "KD": 0.05902039621137519,
+    "SD": 0.17726552622390232,
+    "OTHER": 0.01808670953227377
   },
   "survey_blend": {
     "method": "sample_size_weighted_mean",
@@ -91,6 +102,54 @@
     "total_sample_size": 17754,
     "valu_is_calibrated": true,
     "additional_surveys_are_calibrated": false
+  },
+  "election_night": {
+    "status": "reported",
+    "model": "C2_reported_proportional_change",
+    "comparison": "2022_to_2026_official_district_mapping",
+    "source_url": "https://resultat.val.se/resultatfiler/val2026/p/rd/Val_2026_preliminar_00_RD.zip",
+    "source_sha256": "5cfca16a41cd9d57e4b663b2c7784d17230257d0826bea3a44fde5c0e2999cfa",
+    "updated_at": "2026-09-13T21:02:46",
+    "reported_districts": 25,
+    "physical_districts": 6312,
+    "reported_district_share": 0.003960709759188847,
+    "matched_reported_districts": 21,
+    "reported_valid_votes": 11234,
+    "raw": {
+      "V": 0.059462346448282,
+      "S": 0.23633612248531244,
+      "MP": 0.06142068719957273,
+      "C": 0.08776927185330248,
+      "L": 0.044151682392736334,
+      "M": 0.16343243724408046,
+      "KD": 0.08607797756809685,
+      "SD": 0.24301228413743992,
+      "OTHER": 0.018337190671176784
+    },
+    "proportional": {
+      "V": 0.06637780256590324,
+      "S": 0.2570479196737738,
+      "MP": 0.06943429358717597,
+      "C": 0.06379946445206293,
+      "L": 0.07688749255032704,
+      "M": 0.2100806358989829,
+      "KD": 0.060821129777152635,
+      "SD": 0.17670235141553436,
+      "OTHER": 0.018848910079087084
+    },
+    "valu_to_count_weight": 0.07339988256018791,
+    "count_to_raw_weight": 1.581197902375273e-05,
+    "count_point": {
+      "V": 0.06637769321885617,
+      "S": 0.25704759217927103,
+      "MP": 0.06943416687619985,
+      "C": 0.06379984346215475,
+      "L": 0.0768869749323835,
+      "M": 0.21007989829864426,
+      "KD": 0.06082152913790011,
+      "SD": 0.17670339990679962,
+      "OTHER": 0.018848901987790538
+    }
   },
   "calibration_lock_sha256": "809a6697abd8fd28e5018249edc69f4cf2d0263c858f581d7fde33ad0590d6d6",
   "transition": null,

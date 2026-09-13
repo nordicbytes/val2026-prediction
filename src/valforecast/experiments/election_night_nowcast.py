@@ -130,6 +130,184 @@ def read_2022_election_night(path: Path) -> pl.DataFrame:
     return result
 
 
+PHYSICAL_DISTRICTS_2026 = 6_312
+
+
+def _party_counts_from_json_district(district: dict[str, Any]) -> dict[str, int]:
+    counts = _empty_party_counts()
+    valid = district["rostfordelning"]["rosterPaverkaMandat"]
+    for party_row in valid["partiRoster"]:
+        party = _canonical_party(str(party_row["partiforkortning"]))
+        counts[party] += int(party_row["antalRoster"])
+    counts["OTHER"] += int(valid["rosterOvrigaPartier"]["antalRoster"])
+    valid_votes = sum(counts.values())
+    if valid_votes != int(valid["antalRoster"]):
+        raise ValueError(f"Valid-vote mismatch for {district['valdistriktskod']}")
+    return counts
+
+
+def read_2026_election_night(path: Path) -> tuple[pl.DataFrame, dict[str, Any]]:
+    with zipfile.ZipFile(path) as archive:
+        candidates = [
+            name
+            for name in archive.namelist()
+            if "rostfordelning" in name and name.endswith(".json")
+        ]
+        if len(candidates) != 1:
+            raise ValueError("Expected one 2026 preliminary vote-distribution JSON")
+        document: dict[str, Any] = json.loads(archive.read(candidates[0]))
+    records: list[dict[str, object]] = []
+    physical_total = 0
+    for district in document["valdistrikt"]:
+        if district["valdistriktstyp"] != "valdistrikt":
+            continue
+        physical_total += 1
+        if not district.get("rapporteringsTid") or not district.get("rostfordelning"):
+            continue
+        counts = _party_counts_from_json_district(district)
+        records.append(
+            {
+                "election_year": 2026,
+                "district_id": str(district["valdistriktskod"]),
+                "district_name": str(district["namn"]),
+                "municipality_id": str(district["kommunkod"]),
+                "county_id": str(district["lankod"]),
+                "reported_at": datetime.fromisoformat(district["rapporteringsTid"]),
+                "valid_votes": sum(counts.values()),
+                **counts,
+            }
+        )
+    if physical_total != PHYSICAL_DISTRICTS_2026:
+        raise ValueError(
+            f"Expected {PHYSICAL_DISTRICTS_2026} physical 2026 districts, got {physical_total}"
+        )
+    reported = (
+        pl.DataFrame(records).sort("reported_at", "district_id")
+        if records
+        else pl.DataFrame(
+            schema={
+                "election_year": pl.Int64,
+                "district_id": pl.String,
+                "district_name": pl.String,
+                "municipality_id": pl.String,
+                "county_id": pl.String,
+                "reported_at": pl.Datetime,
+                "valid_votes": pl.Int64,
+                **{party: pl.Int64 for party in PARTIES},
+            }
+        )
+    )
+    meta = {
+        "updated_at": str(document["senasteUppdateringstid"]),
+        "official_counted": int(document["antalValdistriktRaknade"]),
+        "official_to_count": int(document["antalValdistriktSomSkaRaknas"]),
+        "physical_districts": physical_total,
+        "reported_physical_districts": reported.height,
+    }
+    return reported, meta
+
+
+def build_2026_comparison_frame(root: Path) -> pl.DataFrame:
+    from valforecast.forecast.universe import (
+        _district_share_map,
+        read_official_val2022_2026_crosswalk,
+    )
+    from valforecast.ingest.elections import read_val2022_district_results
+
+    mapping = read_official_val2022_2026_crosswalk(
+        root / "data/raw/valmyndigheten/2026/valdistrikt_jamforelser_2022_2026.xlsx"
+    )
+    results = read_val2022_district_results(
+        root / "data/raw/valmyndigheten/2022/roster_per_distrikt_slutligt_riksdag.xlsx"
+    )
+    district_map, _municipality = _district_share_map(results)
+    rows: list[dict[str, object]] = []
+    for record in mapping.iter_rows(named=True):
+        from_ids = [str(value) for value in record["from_district_ids"]]
+        relation = str(record["relation"])
+        if relation in {"SAME", "COMPARABLE"} and len(from_ids) == 1 and from_ids[0] in district_map:
+            vector, valid_votes = district_map[from_ids[0]]
+        elif relation == "MERGED" and from_ids and all(item in district_map for item in from_ids):
+            parts = [district_map[item] for item in from_ids]
+            totals = np.array([valid for _, valid in parts], dtype=float)
+            vector = sum(share * valid for share, valid in parts) / totals.sum()
+            valid_votes = int(totals.sum())
+        else:
+            continue
+        rows.append(
+            {
+                "district_id": str(record["to_district_id"]),
+                "previous_valid_votes": int(valid_votes),
+                **{
+                    f"previous_{party}": float(vector[index])
+                    for index, party in enumerate(PARTIES)
+                },
+            }
+        )
+    return pl.DataFrame(rows)
+
+
+def load_2022_national_shares(root: Path) -> np.ndarray:
+    results = pl.read_parquet(root / "data/processed/election_results_2022.parquet")
+    return _national_shares(results)
+
+
+def nowcast_reported(
+    reported: pl.DataFrame,
+    comparison: pl.DataFrame,
+    *,
+    previous_national: np.ndarray,
+    total_districts: int,
+) -> dict[str, Any]:
+    empty = {
+        "status": "no_reports",
+        "reported_districts": 0,
+        "reported_district_share": 0.0,
+        "matched_reported_districts": 0,
+        "reported_valid_votes": 0,
+        "raw": None,
+        "proportional": None,
+    }
+    if reported.is_empty() or total_districts <= 0:
+        return empty
+    matched = reported.join(comparison, on="district_id", how="inner")
+    raw = _share_vector(reported, "valid_votes")
+    result: dict[str, Any] = {
+        "status": "reported",
+        "reported_districts": reported.height,
+        "reported_district_share": reported.height / total_districts,
+        "matched_reported_districts": matched.height,
+        "reported_valid_votes": int(reported["valid_votes"].sum()),
+        "raw": {party: float(raw[index]) for index, party in enumerate(PARTIES)},
+        "proportional": None,
+    }
+    if matched.is_empty():
+        return result
+    current_matched = _share_vector(matched, "valid_votes")
+    previous_matched = _previous_subset_shares(matched)
+    proportional = predict_proportional_swing(
+        previous_national,
+        previous_matched,
+        current_matched,
+    )
+    result["proportional"] = {
+        party: float(proportional[index]) for index, party in enumerate(PARTIES)
+    }
+    return result
+
+
+def load_2026_live_nowcast(root: Path, archive_path: Path) -> dict[str, Any]:
+    reported, meta = read_2026_election_night(archive_path)
+    nowcast = nowcast_reported(
+        reported,
+        build_2026_comparison_frame(root),
+        previous_national=load_2022_national_shares(root),
+        total_districts=int(meta["physical_districts"]),
+    )
+    nowcast["archive"] = meta
+    return nowcast
+
+
 def verify_election_night_sources(root: Path) -> dict[int, Path]:
     manifest: dict[str, Any] = yaml.safe_load(
         (root / "config" / "sources_experimental.yaml").read_text(encoding="utf-8")

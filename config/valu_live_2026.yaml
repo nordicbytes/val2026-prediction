@@ -35,6 +35,8 @@ additional_surveys:
 election_night:
   model: C2_reported_proportional_change
   comparison: 2022_to_2026_official_district_mapping
+  archive: data/raw/election_night/2026/Val_2026_preliminar_00_RD.zip
+  source_url: https://resultat.val.se/resultatfiler/val2026/p/rd/Val_2026_preliminar_00_RD.zip
   blend:
     coverage_axis: reported_district_share
     valu_to_count: c / (c + 0.05)

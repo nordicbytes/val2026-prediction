@@ -440,12 +440,21 @@ def _blend_survey_with_counts(
         }
     nowcast = load_2026_live_nowcast(root, archive_path)
     coverage = float(nowcast["reported_district_share"])
+    sidecar = night.get("retrieve_log")
+    retrieved_at = None
+    if sidecar:
+        sidecar_path = root / str(sidecar)
+        if sidecar_path.exists():
+            retrieved_at = json.loads(sidecar_path.read_text(encoding="utf-8")).get(
+                "retrieved_at"
+            )
     election_night = {
         "status": nowcast["status"],
         "model": night.get("model"),
         "comparison": night.get("comparison"),
         "source_url": night.get("source_url"),
         "source_sha256": sha256_file(archive_path),
+        "retrieved_at": retrieved_at,
         "updated_at": nowcast.get("archive", {}).get("updated_at"),
         "reported_districts": nowcast["reported_districts"],
         "physical_districts": nowcast.get("archive", {}).get("physical_districts"),

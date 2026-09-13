@@ -1,0 +1,8 @@
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  CDN-Cache-Control: no-store
+  Pragma: no-cache
+
+/
+  Cache-Control: no-cache, must-revalidate
+  CDN-Cache-Control: no-store

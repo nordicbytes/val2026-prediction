@@ -14,18 +14,19 @@ cycles:
   target: official_final_national_result
 
 checkpoints:
-  - "20:45"
-  - "21:00"
-  - "21:15"
-  - "21:30"
-  - "21:45"
-  - "22:00"
-  - "22:15"
-  - "22:30"
-  - "23:00"
-  - "00:00"
-  - "01:00"
-  - "02:00"
+  times:
+    - "20:45"
+    - "21:00"
+    - "21:15"
+    - "21:30"
+    - "21:45"
+    - "22:00"
+    - "22:15"
+    - "22:30"
+    - "23:00"
+    - "00:00"
+    - "01:00"
+    - "02:00"
   primary_window_start: "21:00"
   primary_window_end: "23:00"
   same_timestamp_policy: include_as_one_block

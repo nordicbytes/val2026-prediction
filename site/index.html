@@ -85,6 +85,7 @@
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
+    white-space: nowrap;
   }
 
   .view-link:hover { color: var(--ink); }
@@ -666,7 +667,8 @@
     .builder { grid-template-columns: 1fr; }
     .live-phases { grid-template-columns: 1fr; }
     .compare-table { min-width: 700px; }
-    .topbar-inner { min-height: 56px; gap: 10px; }
+    .topbar-inner { min-height: 56px; gap: 4px 10px; flex-wrap: wrap; padding: 8px 0; }
+    .view-nav { width: 100%; }
     .brand { font-size: 17px; }
     .view-nav { gap: 0; }
     .view-link { padding: 0 7px; font-size: 13px; }
@@ -682,6 +684,7 @@
     <div class="view-nav">
       <a class="view-link" href="#prognos" data-view-link="forecast" aria-current="page">Prognos</a>
       <a class="view-link" href="#live" data-view-link="live">VALU / Live</a>
+      <a class="view-link" href="personval.html">Personval</a>
     </div>
   </div>
 </nav>

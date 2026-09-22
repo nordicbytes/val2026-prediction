@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Personvalsspärren · riksdagsvalet 2026</title>
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f%5B%5D=satoshi@400,500,700,900&f%5B%5D=gambetta@400,500&display=swap" />
+<style>
+  :root {
+    --ink: #14161a;
+    --ink-soft: #4a5058;
+    --ink-faint: #868d96;
+    --paper: #fbfaf8;
+    --line: #e6e3dd;
+    --line-soft: #f0eee9;
+    --s: #e8112d;
+    --sd: #ddb500;
+    --m: #52bdec;
+    --c: #009933;
+    --v: #af0000;
+    --mp: #83cf39;
+    --kd: #231977;
+    --l: #006ab3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Satoshi", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 28px; }
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(251, 250, 248, 0.94);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+  }
+  .topbar-inner {
+    min-height: 62px; display: flex; align-items: center;
+    justify-content: space-between; gap: 24px;
+  }
+  .brand {
+    color: var(--ink); text-decoration: none;
+    font-family: "Gambetta", Georgia, serif; font-size: 20px; white-space: nowrap;
+  }
+  .view-nav { display: flex; align-self: stretch; gap: 8px; }
+  .view-link {
+    display: flex; align-items: center; position: relative;
+    padding: 0 10px; color: var(--ink-faint); text-decoration: none;
+    font-size: 14px; font-weight: 500; white-space: nowrap;
+  }
+  .view-link:hover { color: var(--ink); }
+  .view-link[aria-current="page"] { color: var(--ink); }
+  .view-link[aria-current="page"]::after {
+    content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px;
+    border-bottom: 2px solid var(--ink);
+  }
+  header { border-bottom: 1px solid var(--line); padding: 72px 0 40px; }
+  .eyebrow {
+    font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 700; margin: 0 0 18px;
+  }
+  h1 {
+    font-family: "Gambetta", Georgia, serif; font-weight: 500;
+    font-size: clamp(38px, 6vw, 62px); line-height: 1.04;
+    letter-spacing: -0.015em; margin: 0 0 20px;
+  }
+  .lede { font-size: 20px; color: var(--ink-soft); max-width: 62ch; margin: 0 0 32px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px 28px; font-size: 14px; color: var(--ink-faint); }
+  .meta b { color: var(--ink); font-weight: 500; }
+  h2 {
+    font-family: "Gambetta", Georgia, serif; font-weight: 500;
+    font-size: clamp(26px, 3.4vw, 34px); letter-spacing: -0.01em; margin: 0 0 8px;
+  }
+  h3 { font-size: 17px; font-weight: 700; margin: 0 0 12px; }
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  .section-note { color: var(--ink-soft); max-width: 68ch; margin: 0 0 28px; }
+  .caption { font-size: 13px; color: var(--ink-faint); margin: 22px 0 0; max-width: 75ch; }
+  .switch { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 28px; }
+  .party-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+    border-radius: 999px; padding: 4px 12px 4px 4px;
+    font: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+  }
+  .party-btn[aria-pressed="true"] { border-color: var(--ink); }
+  .mark {
+    width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    color: #fff; font-size: 11px; font-weight: 900;
+  }
+  .mark.light { color: #14161a; }
+  .summary { color: var(--ink-soft); max-width: 68ch; margin: 0 0 28px; }
+  .lists { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th {
+    text-align: left; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 700; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line);
+  }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
+  .scroll { overflow-x: auto; max-width: 100%; }
+  .shift { margin: 18px 0 0; color: var(--ink-soft); }
+  @media (max-width: 800px) {
+    .lists { grid-template-columns: 1fr; }
+    .topbar-inner { min-height: 56px; gap: 4px 10px; flex-wrap: wrap; padding: 8px 0; }
+    .view-nav { width: 100%; }
+    .brand { font-size: 17px; }
+    .view-link { padding: 0 7px; font-size: 13px; }
+    .view-link[aria-current="page"]::after { left: 7px; right: 7px; }
+    header { padding: 48px 0 32px; }
+    h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<nav class="topbar" aria-label="Huvudnavigation">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="index.html">Valprognos 2026</a>
+    <div class="view-nav">
+      <a class="view-link" href="index.html#prognos">Prognos</a>
+      <a class="view-link" href="index.html#live">VALU / Live</a>
+      <a class="view-link" href="personval.html" aria-current="page">Personval</a>
+    </div>
+  </div>
+</nav>
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Personval · riksdagsvalet 2026</p>
+    <h1>Var spärren är lägst</h1>
+    <p class="lede">
+      För att gå före listan krävs personkryss för minst 5 procent av partiets röster i valkretsen.
+      Här är valkretsarna där det talet är lägst och högst 2026, jämfört med 2022, bland dem där partiet tar minst ett fast mandat.
+    </p>
+    <div class="meta">
+      <span>Räknat <b>17 sep 2026, 18:03</b></span>
+      <span>Distrikt <b>6 626 av 6 626</b></span>
+      <span>Jämförelse <b>slutresultat 2022</b></span>
+    </div>
+  </div>
+</header>
+<section>
+  <div class="wrap">
+    <h2>Lättast och svårast per parti</h2>
+    <p class="section-note">
+      Ett lägre tal betyder färre personkryss för att nå spärren. Listan gäller fasta mandat.
+      Utjämningsmandat är inte placerade på valkrets, så en valkrets utan fast mandat kan ändå få en ledamot den vägen.
+    </p>
+    <div class="switch" id="switch" role="group" aria-label="Parti"></div>
+    <p class="summary" id="summary"></p>
+    <div class="lists">
+      <div>
+        <h3>Lättast</h3>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Valkrets</th>
+                <th class="num">Kryss 2026</th>
+                <th class="num">2022</th>
+                <th class="num">Skillnad</th>
+              </tr>
+            </thead>
+            <tbody id="easy"></tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <h3>Svårast</h3>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Valkrets</th>
+                <th class="num">Kryss 2026</th>
+                <th class="num">2022</th>
+                <th class="num">Skillnad</th>
+              </tr>
+            </thead>
+            <tbody id="hard"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <p class="shift" id="shift"></p>
+    <p class="caption">
+      Källa: Valmyndighetens preliminära röstfördelning 17 september 2026, alla fysiska valdistrikt och alla 314 uppsamlingsdistrikt, samt det slutliga resultatet 2022.
+      Spärren är 5 procent av partiets giltiga röster i valkretsen, avrundad uppåt.
+      Fasta mandat är beräknade med samma jämkade uddatalsmetod som på prognossidan, med Valmyndighetens mandatantal per valkrets.
+      Klarar fler kandidater spärren än det finns mandat avgör antalet personröster ordningen.
+    </p>
+  </div>
+</section>
+<script>
+  const DATA = {"updatedAt":"2026-09-17T18:03:31","districts":6626,"parties":{"V":{"national2022":24,"national2026":30,"fixedCount2022":11,"fixedCount2026":18,"held":[{"name":"Norrbottens län","kryss2026":548,"kryss2022":564,"votes2026":10942,"seats2026":1,"seats2022":1},{"name":"Skåne läns norra och östra","kryss2026":613,"kryss2022":null,"votes2026":12249,"seats2026":1,"seats2022":0},{"name":"Gävleborgs län","kryss2026":621,"kryss2022":null,"votes2026":12420,"seats2026":1,"seats2022":0},{"name":"Västra Götalands läns norra","kryss2026":623,"kryss2022":null,"votes2026":12453,"seats2026":1,"seats2022":0},{"name":"Södermanlands län","kryss2026":697,"kryss2022":null,"votes2026":13924,"seats2026":1,"seats2022":0},{"name":"Västmanlands län","kryss2026":700,"kryss2022":524,"votes2026":13995,"seats2026":1,"seats2022":1},{"name":"Jönköpings län","kryss2026":701,"kryss2022":null,"votes2026":14009,"seats2026":1,"seats2022":0},{"name":"Skåne läns västra","kryss2026":781,"kryss2022":null,"votes2026":15611,"seats2026":1,"seats2022":0},{"name":"Örebro län","kryss2026":790,"kryss2022":594,"votes2026":15782,"seats2026":1,"seats2022":1},{"name":"Skåne läns södra","kryss2026":813,"kryss2022":null,"votes2026":16243,"seats2026":1,"seats2022":0},{"name":"Västra Götalands läns västra","kryss2026":817,"kryss2022":705,"votes2026":16334,"seats2026":1,"seats2022":1},{"name":"Västerbottens län","kryss2026":841,"kryss2022":755,"votes2026":16808,"seats2026":1,"seats2022":1},{"name":"Östergötlands län","kryss2026":1092,"kryss2022":845,"votes2026":21823,"seats2026":1,"seats2022":1},{"name":"Uppsala län","kryss2026":1284,"kryss2022":978,"votes2026":25672,"seats2026":1,"seats2022":1},{"name":"Malmö kommun","kryss2026":1820,"kryss2022":1200,"votes2026":36398,"seats2026":2,"seats2022":1},{"name":"Göteborgs kommun","kryss2026":2862,"kryss2022":2231,"votes2026":57237,"seats2026":3,"seats2022":2},{"name":"Stockholms län","kryss2026":3573,"kryss2022":2582,"votes2026":71453,"seats2026":4,"seats2022":3},{"name":"Stockholms kommun","kryss2026":4220,"kryss2022":3559,"votes2026":84384,"seats2026":4,"seats2022":3}],"gained":["Gävleborgs län","Jönköpings län","Skåne läns norra och östra","Skåne läns södra","Skåne läns västra","Södermanlands län","Västra Götalands läns norra"],"lost":[]},"S":{"national2022":107,"national2026":99,"fixedCount2022":29,"fixedCount2026":29,"held":[{"name":"Gotlands län","kryss2026":643,"kryss2022":719,"votes2026":12858,"seats2026":1,"seats2022":1},{"name":"Jämtlands län","kryss2026":1361,"kryss2022":1534,"votes2026":27214,"seats2026":2,"seats2022":2},{"name":"Blekinge län","kryss2026":1487,"kryss2022":1613,"votes2026":29740,"seats2026":2,"seats2022":2},{"name":"Kronobergs län","kryss2026":1770,"kryss2022":1936,"votes2026":35395,"seats2026":2,"seats2022":2},{"name":"Västra Götalands läns södra","kryss2026":1991,"kryss2022":2068,"votes2026":39809,"seats2026":2,"seats2022":2},{"name":"Kalmar län","kryss2026":2340,"kryss2022":2559,"votes2026":46800,"seats2026":2,"seats2022":3},{"name":"Skåne läns norra och östra","kryss2026":2386,"kryss2022":2558,"votes2026":47718,"seats2026":3,"seats2022":3},{"name":"Västra Götalands läns östra","kryss2026":2502,"kryss2022":2772,"votes2026":50027,"seats2026":3,"seats2022":3},{"name":"Västra Götalands läns norra","kryss2026":2509,"kryss2022":2716,"votes2026":50180,"seats2026":2,"seats2022":3},{"name":"Skåne läns västra","kryss2026":2606,"kryss2022":2621,"votes2026":52117,"seats2026":3,"seats2022":3},{"name":"Västmanlands län","kryss2026":2682,"kryss2022":2733,"votes2026":53630,"seats2026":3,"seats2022":3},{"name":"Västernorrlands län","kryss2026":2719,"kryss2022":3129,"votes2026":54379,"seats2026":3,"seats2022":4},{"name":"Dalarnas län","kryss2026":2754,"kryss2022":2954,"votes2026":55079,"seats2026":3,"seats2022":3},{"name":"Värmlands län","kryss2026":2856,"kryss2022":3152,"votes2026":57107,"seats2026":3,"seats2022":4},{"name":"Södermanlands län","kryss2026":2903,"kryss2022":3045,"votes2026":58052,"seats2026":3,"seats2022":4},{"name":"Gävleborgs län","kryss2026":2924,"kryss2022":3171,"votes2026":58462,"seats2026":3,"seats2022":4},{"name":"Hallands län","kryss2026":2927,"kryss2022":3134,"votes2026":58540,"seats2026":3,"seats2022":3},{"name":"Norrbottens län","kryss2026":2992,"kryss2022":3362,"votes2026":59839,"seats2026":3,"seats2022":4},{"name":"Örebro län","kryss2026":3067,"kryss2022":3229,"votes2026":61337,"seats2026":3,"seats2022":3},{"name":"Malmö kommun","kryss2026":3072,"kryss2022":2840,"votes2026":61429,"seats2026":3,"seats2022":3},{"name":"Skåne läns södra","kryss2026":3076,"kryss2022":3288,"votes2026":61507,"seats2026":3,"seats2022":3},{"name":"Jönköpings län","kryss2026":3127,"kryss2022":3329,"votes2026":62535,"seats2026":3,"seats2022":4},{"name":"Västra Götalands läns västra","kryss2026":3264,"kryss2022":3474,"votes2026":65273,"seats2026":2,"seats2022":3},{"name":"Västerbottens län","kryss2026":3330,"kryss2022":3616,"votes2026":66585,"seats2026":3,"seats2022":4},{"name":"Uppsala län","kryss2026":3587,"kryss2022":3625,"votes2026":71732,"seats2026":3,"seats2022":3},{"name":"Östergötlands län","kryss2026":4399,"kryss2022":4592,"votes2026":87975,"seats2026":4,"seats2022":4},{"name":"Göteborgs kommun","kryss2026":5137,"kryss2022":4799,"votes2026":102727,"seats2026":5,"seats2022":5},{"name":"Stockholms kommun","kryss2026":8532,"kryss2022":8516,"votes2026":170639,"seats2026":8,"seats2022":8},{"name":"Stockholms län","kryss2026":11393,"kryss2022":11153,"votes2026":227850,"seats2026":11,"seats2022":11}],"gained":[],"lost":[]},"MP":{"national2022":18,"national2026":22,"fixedCount2022":7,"fixedCount2026":9,"held":[{"name":"Västerbottens län","kryss2026":676,"kryss2022":null,"votes2026":13517,"seats2026":1,"seats2022":0},{"name":"Västra Götalands läns västra","kryss2026":815,"kryss2022":null,"votes2026":16283,"seats2026":1,"seats2022":0},{"name":"Östergötlands län","kryss2026":874,"kryss2022":696,"votes2026":17477,"seats2026":1,"seats2022":1},{"name":"Skåne läns södra","kryss2026":980,"kryss2022":720,"votes2026":19599,"seats2026":1,"seats2022":1},{"name":"Malmö kommun","kryss2026":985,"kryss2022":720,"votes2026":19681,"seats2026":1,"seats2022":1},{"name":"Uppsala län","kryss2026":1109,"kryss2022":838,"votes2026":22172,"seats2026":1,"seats2022":1},{"name":"Göteborgs kommun","kryss2026":1719,"kryss2022":1375,"votes2026":34362,"seats2026":2,"seats2022":1},{"name":"Stockholms län","kryss2026":2524,"kryss2022":2115,"votes2026":50473,"seats2026":2,"seats2022":2},{"name":"Stockholms kommun","kryss2026":3621,"kryss2022":3040,"votes2026":72411,"seats2026":3,"seats2022":3}],"gained":["Västerbottens län","Västra Götalands läns västra"],"lost":[]},"C":{"national2022":24,"national2026":25,"fixedCount2022":19,"fixedCount2026":13,"held":[{"name":"Värmlands län","kryss2026":558,"kryss2022":578,"votes2026":11144,"seats2026":1,"seats2022":1},{"name":"Dalarnas län","kryss2026":611,"kryss2022":607,"votes2026":12204,"seats2026":1,"seats2022":1},{"name":"Malmö kommun","kryss2026":623,"kryss2022":528,"votes2026":12443,"seats2026":1,"seats2022":1},{"name":"Västerbottens län","kryss2026":650,"kryss2022":692,"votes2026":12983,"seats2026":1,"seats2022":1},{"name":"Jönköpings län","kryss2026":828,"kryss2022":854,"votes2026":16541,"seats2026":1,"seats2022":1},{"name":"Hallands län","kryss2026":867,"kryss2022":780,"votes2026":17334,"seats2026":1,"seats2022":1},{"name":"Västra Götalands läns västra","kryss2026":953,"kryss2022":795,"votes2026":19056,"seats2026":1,"seats2022":1},{"name":"Uppsala län","kryss2026":1026,"kryss2022":902,"votes2026":20505,"seats2026":1,"seats2022":1},{"name":"Östergötlands län","kryss2026":1059,"kryss2022":974,"votes2026":21180,"seats2026":1,"seats2022":1},{"name":"Skåne läns södra","kryss2026":1078,"kryss2022":859,"votes2026":21550,"seats2026":1,"seats2022":1},{"name":"Göteborgs kommun","kryss2026":1234,"kryss2022":1018,"votes2026":24678,"seats2026":1,"seats2022":1},{"name":"Stockholms kommun","kryss2026":3183,"kryss2022":2572,"votes2026":63641,"seats2026":3,"seats2022":3},{"name":"Stockholms län","kryss2026":3456,"kryss2022":3039,"votes2026":69107,"seats2026":3,"seats2022":3}],"gained":[],"lost":["Gävleborgs län","Skåne läns västra","Södermanlands län","Västernorrlands län","Västra Götalands läns södra","Örebro län"]},"L":{"national2022":16,"national2026":19,"fixedCount2022":6,"fixedCount2026":8,"held":[{"name":"Uppsala län","kryss2026":659,"kryss2022":624,"votes2026":13174,"seats2026":1,"seats2022":1},{"name":"Hallands län","kryss2026":683,"kryss2022":null,"votes2026":13654,"seats2026":1,"seats2022":0},{"name":"Östergötlands län","kryss2026":762,"kryss2022":null,"votes2026":15233,"seats2026":1,"seats2022":0},{"name":"Västra Götalands läns västra","kryss2026":816,"kryss2022":674,"votes2026":16316,"seats2026":1,"seats2022":1},{"name":"Skåne läns södra","kryss2026":882,"kryss2022":798,"votes2026":17624,"seats2026":1,"seats2022":1},{"name":"Göteborgs kommun","kryss2026":1123,"kryss2022":1016,"votes2026":22449,"seats2026":1,"seats2022":1},{"name":"Stockholms kommun","kryss2026":2311,"kryss2022":2084,"votes2026":46207,"seats2026":2,"seats2022":2},{"name":"Stockholms län","kryss2026":2931,"kryss2022":2448,"votes2026":58620,"seats2026":3,"seats2022":2}],"gained":["Hallands län","Östergötlands län"],"lost":[]},"M":{"national2022":68,"national2026":70,"fixedCount2022":29,"fixedCount2026":29,"held":[{"name":"Gotlands län","kryss2026":379,"kryss2022":349,"votes2026":7577,"seats2026":1,"seats2022":1},{"name":"Jämtlands län","kryss2026":753,"kryss2022":629,"votes2026":15047,"seats2026":1,"seats2022":1},{"name":"Blekinge län","kryss2026":951,"kryss2022":925,"votes2026":19018,"seats2026":1,"seats2022":1},{"name":"Kronobergs län","kryss2026":1278,"kryss2022":1220,"votes2026":25555,"seats2026":1,"seats2022":2},{"name":"Västernorrlands län","kryss2026":1285,"kryss2022":1109,"votes2026":25684,"seats2026":1,"seats2022":1},{"name":"Norrbottens län","kryss2026":1307,"kryss2022":1096,"votes2026":26139,"seats2026":2,"seats2022":1},{"name":"Västerbottens län","kryss2026":1387,"kryss2022":1257,"votes2026":27723,"seats2026":1,"seats2022":1},{"name":"Västra Götalands läns södra","kryss2026":1426,"kryss2022":1343,"votes2026":28503,"seats2026":2,"seats2022":2},{"name":"Kalmar län","kryss2026":1511,"kryss2022":1434,"votes2026":30201,"seats2026":2,"seats2022":2},{"name":"Gävleborgs län","kryss2026":1628,"kryss2022":1484,"votes2026":32545,"seats2026":2,"seats2022":2},{"name":"Västra Götalands läns norra","kryss2026":1674,"kryss2022":1523,"votes2026":33463,"seats2026":2,"seats2022":2},{"name":"Dalarnas län","kryss2026":1708,"kryss2022":1534,"votes2026":34142,"seats2026":2,"seats2022":2},{"name":"Västmanlands län","kryss2026":1733,"kryss2022":1634,"votes2026":34648,"seats2026":2,"seats2022":2},{"name":"Malmö kommun","kryss2026":1746,"kryss2022":1716,"votes2026":34902,"seats2026":2,"seats2022":2},{"name":"Västra Götalands läns östra","kryss2026":1779,"kryss2022":1640,"votes2026":35569,"seats2026":2,"seats2022":2},{"name":"Örebro län","kryss2026":1781,"kryss2022":1626,"votes2026":35609,"seats2026":2,"seats2022":2},{"name":"Värmlands län","kryss2026":1848,"kryss2022":1554,"votes2026":36943,"seats2026":2,"seats2022":2},{"name":"Södermanlands län","kryss2026":1861,"kryss2022":1776,"votes2026":37206,"seats2026":2,"seats2022":2},{"name":"Skåne läns västra","kryss2026":2012,"kryss2022":1900,"votes2026":40231,"seats2026":2,"seats2022":2},{"name":"Skåne läns norra och östra","kryss2026":2143,"kryss2022":1980,"votes2026":42847,"seats2026":2,"seats2022":2},{"name":"Jönköpings län","kryss2026":2326,"kryss2022":2146,"votes2026":46512,"seats2026":2,"seats2022":2},{"name":"Uppsala län","kryss2026":2433,"kryss2022":2273,"votes2026":48649,"seats2026":2,"seats2022":2},{"name":"Hallands län","kryss2026":2676,"kryss2022":2491,"votes2026":53506,"seats2026":2,"seats2022":2},{"name":"Västra Götalands läns västra","kryss2026":2774,"kryss2022":2536,"votes2026":55478,"seats2026":2,"seats2022":2},{"name":"Skåne läns södra","kryss2026":3143,"kryss2022":2861,"votes2026":62841,"seats2026":3,"seats2022":3},{"name":"Östergötlands län","kryss2026":3184,"kryss2022":2982,"votes2026":63673,"seats2026":3,"seats2022":3},{"name":"Göteborgs kommun","kryss2026":3442,"kryss2022":3208,"votes2026":68836,"seats2026":3,"seats2022":3},{"name":"Stockholms kommun","kryss2026":6193,"kryss2022":5786,"votes2026":123844,"seats2026":6,"seats2022":6},{"name":"Stockholms län","kryss2026":10496,"kryss2022":9874,"votes2026":209911,"seats2026":10,"seats2022":10}],"gained":[],"lost":[]},"KD":{"national2022":19,"national2026":22,"fixedCount2022":12,"fixedCount2026":20,"held":[{"name":"Kronobergs län","kryss2026":512,"kryss2022":null,"votes2026":10222,"seats2026":1,"seats2022":0},{"name":"Södermanlands län","kryss2026":546,"kryss2022":null,"votes2026":10914,"seats2026":1,"seats2022":0},{"name":"Västernorrlands län","kryss2026":555,"kryss2022":null,"votes2026":11099,"seats2026":1,"seats2022":0},{"name":"Gävleborgs län","kryss2026":569,"kryss2022":null,"votes2026":11380,"seats2026":1,"seats2022":0},{"name":"Västra Götalands läns södra","kryss2026":575,"kryss2022":null,"votes2026":11481,"seats2026":1,"seats2022":0},{"name":"Västra Götalands läns norra","kryss2026":610,"kryss2022":536,"votes2026":12200,"seats2026":1,"seats2022":1},{"name":"Örebro län","kryss2026":628,"kryss2022":null,"votes2026":12546,"seats2026":1,"seats2022":0},{"name":"Värmlands län","kryss2026":631,"kryss2022":null,"votes2026":12617,"seats2026":1,"seats2022":0},{"name":"Dalarnas län","kryss2026":663,"kryss2022":null,"votes2026":13253,"seats2026":1,"seats2022":0},{"name":"Kalmar län","kryss2026":676,"kryss2022":562,"votes2026":13515,"seats2026":1,"seats2022":1},{"name":"Skåne läns norra och östra","kryss2026":707,"kryss2022":624,"votes2026":14122,"seats2026":1,"seats2022":1},{"name":"Västra Götalands läns östra","kryss2026":716,"kryss2022":615,"votes2026":14303,"seats2026":1,"seats2022":1},{"name":"Hallands län","kryss2026":809,"kryss2022":667,"votes2026":16170,"seats2026":1,"seats2022":1},{"name":"Uppsala län","kryss2026":881,"kryss2022":739,"votes2026":17614,"seats2026":1,"seats2022":1},{"name":"Göteborgs kommun","kryss2026":920,"kryss2022":759,"votes2026":18394,"seats2026":1,"seats2022":1},{"name":"Västra Götalands läns västra","kryss2026":932,"kryss2022":779,"votes2026":18639,"seats2026":1,"seats2022":1},{"name":"Östergötlands län","kryss2026":1025,"kryss2022":898,"votes2026":20485,"seats2026":1,"seats2022":1},{"name":"Jönköpings län","kryss2026":1206,"kryss2022":1067,"votes2026":24119,"seats2026":1,"seats2022":1},{"name":"Stockholms kommun","kryss2026":1265,"kryss2022":962,"votes2026":25282,"seats2026":1,"seats2022":1},{"name":"Stockholms län","kryss2026":2522,"kryss2022":2011,"votes2026":50431,"seats2026":2,"seats2022":2}],"gained":["Dalarnas län","Gävleborgs län","Kronobergs län","Södermanlands län","Värmlands län","Västernorrlands län","Västra Götalands läns södra","Örebro län"],"lost":[]},"SD":{"national2022":73,"national2026":62,"fixedCount2022":28,"fixedCount2026":28,"held":[{"name":"Jämtlands län","kryss2026":758,"kryss2022":855,"votes2026":15152,"seats2026":1,"seats2022":1},{"name":"Västerbottens län","kryss2026":1148,"kryss2022":1284,"votes2026":22947,"seats2026":1,"seats2022":1},{"name":"Blekinge län","kryss2026":1266,"kryss2022":1478,"votes2026":25319,"seats2026":2,"seats2022":2},{"name":"Kronobergs län","kryss2026":1300,"kryss2022":1476,"votes2026":26000,"seats2026":2,"seats2022":2},{"name":"Malmö kommun","kryss2026":1389,"kryss2022":1572,"votes2026":27774,"seats2026":1,"seats2022":2},{"name":"Norrbottens län","kryss2026":1445,"kryss2022":1639,"votes2026":28881,"seats2026":2,"seats2022":2},{"name":"Västra Götalands läns södra","kryss2026":1511,"kryss2022":1674,"votes2026":30213,"seats2026":2,"seats2022":2},{"name":"Västernorrlands län","kryss2026":1515,"kryss2022":1642,"votes2026":30288,"seats2026":2,"seats2022":2},{"name":"Kalmar län","kryss2026":1722,"kryss2022":1976,"votes2026":34434,"seats2026":2,"seats2022":2},{"name":"Örebro län","kryss2026":1795,"kryss2022":2146,"votes2026":35893,"seats2026":2,"seats2022":2},{"name":"Västmanlands län","kryss2026":1799,"kryss2022":2021,"votes2026":35968,"seats2026":2,"seats2022":2},{"name":"Värmlands län","kryss2026":1812,"kryss2022":2078,"votes2026":36227,"seats2026":2,"seats2022":2},{"name":"Västra Götalands läns norra","kryss2026":1896,"kryss2022":2209,"votes2026":37903,"seats2026":2,"seats2022":2},{"name":"Västra Götalands läns östra","kryss2026":1909,"kryss2022":2129,"votes2026":38175,"seats2026":2,"seats2022":2},{"name":"Södermanlands län","kryss2026":1916,"kryss2022":2128,"votes2026":38317,"seats2026":2,"seats2022":2},{"name":"Gävleborgs län","kryss2026":1977,"kryss2022":2200,"votes2026":39527,"seats2026":2,"seats2022":2},{"name":"Uppsala län","kryss2026":2067,"kryss2022":2262,"votes2026":41334,"seats2026":2,"seats2022":2},{"name":"Dalarnas län","kryss2026":2073,"kryss2022":2397,"votes2026":41444,"seats2026":2,"seats2022":3},{"name":"Göteborgs kommun","kryss2026":2237,"kryss2022":2545,"votes2026":44727,"seats2026":2,"seats2022":3},{"name":"Hallands län","kryss2026":2248,"kryss2022":2503,"votes2026":44959,"seats2026":2,"seats2022":3},{"name":"Västra Götalands läns västra","kryss2026":2346,"kryss2022":2628,"votes2026":46910,"seats2026":2,"seats2022":2},{"name":"Skåne läns västra","kryss2026":2406,"kryss2022":2756,"votes2026":48105,"seats2026":3,"seats2022":3},{"name":"Jönköpings län","kryss2026":2422,"kryss2022":2667,"votes2026":48434,"seats2026":3,"seats2022":3},{"name":"Skåne läns södra","kryss2026":2671,"kryss2022":3029,"votes2026":53405,"seats2026":2,"seats2022":3},{"name":"Stockholms kommun","kryss2026":2707,"kryss2022":3237,"votes2026":54126,"seats2026":2,"seats2022":3},{"name":"Skåne läns norra och östra","kryss2026":2801,"kryss2022":3268,"votes2026":56002,"seats2026":3,"seats2022":4},{"name":"Östergötlands län","kryss2026":2859,"kryss2022":3187,"votes2026":57168,"seats2026":2,"seats2022":3},{"name":"Stockholms län","kryss2026":6581,"kryss2022":7216,"votes2026":131617,"seats2026":6,"seats2022":7}],"gained":[],"lost":[]}},"ui":[{"key":"S","name":"Socialdemokraterna","color":"var(--s)"},{"key":"SD","name":"Sverigedemokraterna","color":"var(--sd)","light":true},{"key":"M","name":"Moderaterna","color":"var(--m)","light":true},{"key":"C","name":"Centerpartiet","color":"var(--c)"},{"key":"V","name":"Vänsterpartiet","color":"var(--v)"},{"key":"MP","name":"Miljöpartiet","color":"var(--mp)","light":true},{"key":"KD","name":"Kristdemokraterna","color":"var(--kd)"},{"key":"L","name":"Liberalerna","color":"var(--l)"}]};
+  const fmt = (value) => value.toLocaleString("sv-SE");
+  const switcher = document.getElementById("switch");
+  let current = "S";
+
+  function delta(row) {
+    if (row.kryss2022 == null) return "nytt";
+    const diff = row.kryss2026 - row.kryss2022;
+    return (diff > 0 ? "+" : "") + fmt(diff);
+  }
+
+  function cells(row) {
+    const previous = row.kryss2022 == null ? "nytt" : fmt(row.kryss2022);
+    return `<td>${row.name}</td><td class="num">${fmt(row.kryss2026)}</td><td class="num">${previous}</td><td class="num">${delta(row)}</td>`;
+  }
+
+  function listText(items) {
+    if (!items.length) return "inga";
+    return items.join(", ");
+  }
+
+  function render(party) {
+    current = party;
+    const record = DATA.parties[party];
+    const held = record.held;
+    const limit = Math.min(10, held.length);
+    const easy = held.slice(0, limit);
+    const hard = held.slice().reverse().slice(0, limit);
+    document.getElementById("easy").innerHTML = easy.map((row) => `<tr>${cells(row)}</tr>`).join("");
+    document.getElementById("hard").innerHTML = hard.map((row) => `<tr>${cells(row)}</tr>`).join("");
+    const easiest = held[0];
+    const hardest = held[held.length - 1];
+    const short = held.length < 10
+      ? ` Partiet har fasta mandat i ${held.length} valkretsar, så båda listorna visar hela mängden.`
+      : "";
+    document.getElementById("summary").textContent =
+      `${party} har fasta mandat i ${record.fixedCount2026} valkretsar 2026, mot ${record.fixedCount2022} år 2022. ` +
+      `Lägst spärr är ${easiest.name}, ${fmt(easiest.kryss2026)} personkryss. ` +
+      `Högst är ${hardest.name}, ${fmt(hardest.kryss2026)}. ` +
+      `Nationellt ger samma beräkning ${record.national2026} mandat 2026, mot ${record.national2022} år 2022.` +
+      short;
+    const gained = record.gained.length ? `Nya fasta mandat: ${listText(record.gained)}.` : "Inga nya valkretsar med fast mandat.";
+    const lost = record.lost.length ? ` Tappade fasta mandat: ${listText(record.lost)}.` : "";
+    document.getElementById("shift").textContent = gained + lost;
+    switcher.querySelectorAll("button").forEach((button) => {
+      button.setAttribute("aria-pressed", button.dataset.party === party ? "true" : "false");
+    });
+  }
+
+  DATA.ui.forEach((party) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "party-btn";
+    button.dataset.party = party.key;
+    button.setAttribute("aria-pressed", party.key === current ? "true" : "false");
+    const mark = document.createElement("span");
+    mark.className = "mark" + (party.light ? " light" : "");
+    mark.style.background = party.color;
+    mark.textContent = party.key;
+    button.append(mark, document.createTextNode(party.name));
+    button.addEventListener("click", () => render(party.key));
+    switcher.append(button);
+  });
+  render(current);
+</script>
+</body>
+</html>
